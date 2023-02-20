@@ -1,5 +1,6 @@
 #include <gb/gb.h>
 #include <gb/metasprites.h>
+#include <stdio.h>
 
 #include "sprites/frog_baby.h"
 #include "sprites/frog_child.h"
@@ -42,11 +43,85 @@ uint8_t state = NORMAL_STATE;
 uint8_t x_pos = 0;
 uint8_t y_pos = 0;
 
+uint8_t age = 0;
 uint8_t frame = 0;
 uint8_t animation_counter = 0;
 uint8_t animation_speed = 32;
 
-uint8_t age = 0;
+uint8_t trust = 0;
+
+uint8_t happiness = 0;
+uint8_t hunger = 0;
+uint8_t sleepiness = 0;
+uint8_t dirtiness = 0;
+
+void check_clock(void);
+void set_frog_evolution(uint8_t new_evolution);
+void set_frog_state(uint8_t new_state);
+void draw_frog(void);
+void move_frog(uint8_t new_x, uint8_t new_y);
+void animate_frog(void);
+void update_frog(void);
+
+void main(void) {
+	DISPLAY_ON;
+	SHOW_SPRITES;
+	SPRITES_8x8;
+	
+	ENABLE_RAM;
+	volatile uint8_t * const rtc_register = (volatile uint8_t * const)0xA000;
+	SWITCH_RAM(0xB);
+	*rtc_register = 0x18;
+	SWITCH_RAM(0xC);
+	*rtc_register = 0b10000001;
+	DISABLE_RAM;
+	
+	set_frog_evolution(BABY);
+	move_frog(88, 80);
+	
+    while(1) {
+    	update_frog();
+		animate_frog();
+
+		// Done processing, yield CPU and wait for start of next frame
+        wait_vbl_done();
+    }
+}
+
+void check_clock(void) {
+	/* MBC3 RTC: https://gbdev.io/pandocs/MBC3.html */
+	/* Thanks to CasualPokePlayer and NanoCodeBug for help with this! */
+	
+	ENABLE_RAM;
+	
+	volatile uint8_t * const latch_clock = (volatile uint8_t * const)0x6000;
+	*latch_clock = 0;
+	*latch_clock = 1;
+	
+	volatile uint8_t * const rtc_register = (volatile uint8_t * const)0xA000;
+	SWITCH_RAM(0x8);
+	uint8_t seconds = *rtc_register;
+	SWITCH_RAM(0x9);
+	uint8_t minutes = *rtc_register;
+	SWITCH_RAM(0xA);
+	uint8_t hours = *rtc_register;
+	SWITCH_RAM(0xB);
+	uint16_t days = *rtc_register;
+	SWITCH_RAM(0xC);
+	// bit 0 is the most significant bit of the day register
+	// day is a total of 9 bits or 511 days
+	if (*rtc_register & 0x01) {
+		days |= 0x0100;
+	}
+	// day overflow bit set
+	if (*rtc_register & 0b10000000) {
+		days += 512;
+	}
+	
+	printf("%d %d %d %d\n", days, hours, minutes, seconds);
+	
+	DISABLE_RAM;
+}
 
 void set_frog_evolution(uint8_t new_evolution) {
 	evolution = new_evolution;
@@ -141,6 +216,7 @@ void move_frog(uint8_t new_x, uint8_t new_y) {
 
 void animate_frog(void) {
 	if (animation_counter >= animation_speed) {
+		check_clock();
 		age++;
 		if (age == 10) {
 			set_frog_state(WALK_STATE);
@@ -185,18 +261,6 @@ void animate_frog(void) {
 	animation_counter++;
 }
 
-void main(void) {
-	DISPLAY_ON;
-	SHOW_SPRITES;
-	SPRITES_8x8;
+void update_frog() {
 	
-	set_frog_evolution(BABY);
-	move_frog(88, 80);
-	
-    while(1) {
-		animate_frog();
-
-		// Done processing, yield CPU and wait for start of next frame
-        wait_vbl_done();
-    }
 }
