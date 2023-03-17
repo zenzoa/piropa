@@ -11,7 +11,7 @@
 #define frog_mushroom_TILE_H 8
 #define frog_mushroom_WIDTH 32
 #define frog_mushroom_HEIGHT 32
-#define frog_mushroom_TILE_COUNT 165
+#define frog_mushroom_TILE_COUNT 131
 #define frog_mushroom_PALETTE_COUNT 1
 #define frog_mushroom_COLORS_PER_PALETTE 4
 #define frog_mushroom_TOTAL_COLORS 4
@@ -23,7 +23,7 @@
 BANKREF_EXTERN(frog_mushroom)
 
 extern const palette_color_t frog_mushroom_palettes[4];
-extern const uint8_t frog_mushroom_tiles[2640];
+extern const uint8_t frog_mushroom_tiles[2096];
 
 extern const metasprite_t* const frog_mushroom_metasprites[25];
 

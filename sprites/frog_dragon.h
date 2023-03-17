@@ -11,7 +11,7 @@
 #define frog_dragon_TILE_H 8
 #define frog_dragon_WIDTH 32
 #define frog_dragon_HEIGHT 32
-#define frog_dragon_TILE_COUNT 194
+#define frog_dragon_TILE_COUNT 156
 #define frog_dragon_PALETTE_COUNT 1
 #define frog_dragon_COLORS_PER_PALETTE 4
 #define frog_dragon_TOTAL_COLORS 4
@@ -23,7 +23,7 @@
 BANKREF_EXTERN(frog_dragon)
 
 extern const palette_color_t frog_dragon_palettes[4];
-extern const uint8_t frog_dragon_tiles[3104];
+extern const uint8_t frog_dragon_tiles[2496];
 
 extern const metasprite_t* const frog_dragon_metasprites[25];
 
