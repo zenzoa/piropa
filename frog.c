@@ -2,18 +2,18 @@
 
 #include "clock.h"
 #include "hand.h"
-#include "sprites/frog_baby.h"
-#include "sprites/frog_child.h"
-#include "sprites/frog_teen.h"
-#include "sprites/frog_teen_tail.h"
-#include "sprites/frog_teen_apple.h"
-#include "sprites/frog_normal.h"
-#include "sprites/frog_axolotl.h"
-#include "sprites/frog_apple.h"
-#include "sprites/frog_mushroom.h"
-#include "sprites/frog_dragon.h"
+#include "sprites/frog/frog_baby.h"
+#include "sprites/frog/frog_child.h"
+#include "sprites/frog/frog_teen.h"
+#include "sprites/frog/frog_teen_tail.h"
+#include "sprites/frog/frog_teen_apple.h"
+#include "sprites/frog/frog_normal.h"
+#include "sprites/frog/frog_axolotl.h"
+#include "sprites/frog/frog_apple.h"
+#include "sprites/frog/frog_mushroom.h"
+#include "sprites/frog/frog_dragon.h"
 
-#define FROG_SPRITE 90
+#define FROG_SPRITE 46
 
 #define EGG 0
 #define BABY 1

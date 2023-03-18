@@ -4,7 +4,7 @@
 #include "clock.h"
 #include "frog.h"
 #include "hand.h"
-#include "sprites/bg_main.h"
+#include "sprites/background/bg_main.h"
 
 uint8_t joypad_current = 0;
 uint8_t button_pressed = 0;
@@ -90,28 +90,28 @@ void read_joypad() {
 		if (y > 132) {
 			// jar
 			if (x <= 40) {
-				if (hand_type == HOLD_JAR_EMPTY || hand_type == HOLD_JAR_FULL || hand_type == HOLD_JAR_2_3 || hand_type == HOLD_JAR_1_3) {
-					hand_type = DEFAULT_HAND;
+				if (hand_type == JAR_EMPTY || hand_type == JAR_FULL || hand_type == JAR_2_3 || hand_type == JAR_1_3) {
+					set_hand_type(DEFAULT_HAND);
 				} else {
-					hand_type = HOLD_JAR_EMPTY;
+					set_hand_type(JAR_EMPTY);
 					// TODO: replace icon with outline
 				}
 			}
 			// soap
 			else if (x > 40 && x <= 72) {
 				if (hand_type == HOLD_SOAP) {
-					hand_type = DEFAULT_HAND;
+					set_hand_type(DEFAULT_HAND);
 				} else {
-					hand_type = HOLD_SOAP;
+					set_hand_type(HOLD_SOAP);
 					// TODO: replace icon with outline
 				}
 			}
 			// moon
 			else if (x > 72 && x <= 104) {
 				if (hand_type == HOLD_MOON) {
-					hand_type = DEFAULT_HAND;
+					set_hand_type(DEFAULT_HAND);
 				} else {
-					hand_type = HOLD_MOON;
+					set_hand_type(HOLD_MOON);
 					// TODO: replace icon with outline
 				}
 			}
@@ -127,31 +127,36 @@ void read_joypad() {
 		} else if (is_hand_on_frog()) {
 			switch (hand_type) {
 				case DEFAULT_HAND:
-					hand_type = TICKLE_1;
+					set_hand_type(TICKLE_1);
 					// tickle frog
 					break;
 
 				case TICKLE_1:
-					hand_type = TICKLE_2;
+					set_hand_type(TICKLE_2);
 					// tickle frog
 					break;
 
-				case HOLD_JAR_FULL:
+				case TICKLE_2:
+					set_hand_type(TICKLE_1);
+					// tickle frog
+					break;
+
+				case JAR_FULL:
 					// animate pouring
 					// make frog sad (and wet)
 					break;
 
-				case HOLD_JAR_2_3:
+				case JAR_2_3:
 					// animate pouring
 					// make frog sad (and wet)
 					break;
 
-				case HOLD_JAR_1_3:
+				case JAR_1_3:
 					// animate pouring
 					// make frog sad (and wet)
 					break;
 
-				case HOLD_JAR_EMPTY:
+				case JAR_EMPTY:
 					// animate pouring... nothing
 					// confused frog reaction?
 					break;
@@ -178,7 +183,7 @@ void read_joypad() {
 			}
 
 		} else if (hand_type == TICKLE_1 || hand_type == TICKLE_2) {
-			hand_type = DEFAULT_HAND;
+			set_hand_type(DEFAULT_HAND);
 		}
 
 	} else if (!(joypad_current & J_A)) {

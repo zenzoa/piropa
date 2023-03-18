@@ -11,7 +11,7 @@
 #define hand_normal_TILE_H 8
 #define hand_normal_WIDTH 24
 #define hand_normal_HEIGHT 16
-#define hand_normal_TILE_COUNT 45
+#define hand_normal_TILE_COUNT 46
 #define hand_normal_PALETTE_COUNT 1
 #define hand_normal_COLORS_PER_PALETTE 4
 #define hand_normal_TOTAL_COLORS 4
@@ -23,7 +23,7 @@
 BANKREF_EXTERN(hand_normal)
 
 extern const palette_color_t hand_normal_palettes[4];
-extern const uint8_t hand_normal_tiles[720];
+extern const uint8_t hand_normal_tiles[736];
 
 extern const metasprite_t* const hand_normal_metasprites[8];
 
