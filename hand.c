@@ -67,25 +67,19 @@ void move_hand(int16_t dx, int16_t dy) {
 
 void draw_hand(uint8_t *last_used_sprite, uint8_t frog_x) {
 	uint8_t frog_left = frog_x - 16; // adjust for pivot to find left edge
-	uint8_t left = (hand_x >> 8) - 8;
-	uint8_t top = (hand_y >> 8) - 8;
+	uint8_t hand_left = (hand_x >> 8) - 12;
+
 	uint8_t hand_offset = 0;
-
-	if (left >= frog_left && left < frog_left + 8) {
-		hand_offset = left - frog_left;
-		left = frog_left - 4;
-	} else if (left >= frog_left + 8 && left < frog_left + 16) {
-		hand_offset = left - (frog_left + 8);
-		left = frog_left + 4;
-	} else if (left >= frog_left + 16 && left < frog_left + 24) {
-		hand_offset = left - (frog_left + 16);
-		left = frog_left + 12;
-	} else if (left >= frog_left + 24 && left < frog_left + 32) {
-		hand_offset = left - (frog_left + 24);
-		left = frog_left + 20;
+	uint8_t frog_mod = frog_left % 8;
+	uint8_t hand_mod = hand_left % 8;
+	if (frog_mod > hand_mod) {
+		hand_offset = (hand_mod + 8) - frog_mod;
+	} else {
+		hand_offset = hand_mod - frog_mod;
 	}
+	hand_left -= hand_offset;
 
-	*last_used_sprite += move_metasprite(hand_metasprites[hand_offset], HAND_SPRITE + hand_swap, *last_used_sprite, left + 8, top + 8);
+	*last_used_sprite += move_metasprite(hand_metasprites[hand_offset], HAND_SPRITE + hand_swap, *last_used_sprite, hand_left + 12, hand_y >> 8);
 	hide_sprites_range(*last_used_sprite, MAX_HARDWARE_SPRITES);
 }
 
