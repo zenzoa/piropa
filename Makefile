@@ -16,7 +16,7 @@ sprites/background/%.c: sprites/background/%.png
 	$(PNG2ASSET) $< -map -noflip
 
 sprites/hand/%.c: sprites/hand/%.png
-	$(PNG2ASSET) $< -spr8x8 -sw 24 -sh 16 -b 255 -keep_duplicate_tiles
+	$(PNG2ASSET) $< -spr8x8 -sw 24 -sh 16 -b 255
 
 sprites/frog/%.c: sprites/frog/%.png
 	$(PNG2ASSET) $< -spr8x8 -sw 32 -sh 32 -b 255

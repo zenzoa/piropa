@@ -13,7 +13,7 @@
 #include "sprites/frog/frog_mushroom.h"
 #include "sprites/frog/frog_dragon.h"
 
-#define FROG_SPRITE 46
+#define FROG_SPRITE 92
 
 #define EGG 0
 #define BABY 1

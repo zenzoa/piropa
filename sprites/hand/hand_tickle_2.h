@@ -11,7 +11,7 @@
 #define hand_tickle_2_TILE_H 8
 #define hand_tickle_2_WIDTH 24
 #define hand_tickle_2_HEIGHT 16
-#define hand_tickle_2_TILE_COUNT 41
+#define hand_tickle_2_TILE_COUNT 40
 #define hand_tickle_2_PALETTE_COUNT 1
 #define hand_tickle_2_COLORS_PER_PALETTE 4
 #define hand_tickle_2_TOTAL_COLORS 4
@@ -23,7 +23,7 @@
 BANKREF_EXTERN(hand_tickle_2)
 
 extern const palette_color_t hand_tickle_2_palettes[4];
-extern const uint8_t hand_tickle_2_tiles[656];
+extern const uint8_t hand_tickle_2_tiles[640];
 
 extern const metasprite_t* const hand_tickle_2_metasprites[8];
 

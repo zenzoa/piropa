@@ -137,46 +137,51 @@ void read_joypad() {
 			switch (hand_type) {
 				case DEFAULT_HAND:
 					set_hand_type(TICKLE_1);
+					animating_hand = 1;
+					hand_anim_frame = 1;
+					hand_anim_counter = 0;
 					// tickle frog
 					break;
 
 				case TICKLE_1:
 					set_hand_type(TICKLE_2);
+					animating_hand = 1;
+					hand_anim_frame = 1;
+					hand_anim_counter = 0;
 					// tickle frog
 					break;
 
 				case TICKLE_2:
 					set_hand_type(TICKLE_1);
+					animating_hand = 1;
+					hand_anim_frame = 1;
+					hand_anim_counter = 0;
 					// tickle frog
 					break;
 
-				case JAR_FULL:
-					set_hand_type(JAR_FULL_TIP);
-					jar_animation = 2;
-					// animate pouring
-					// make frog sad (and wet)
-					break;
+				// case JAR_FULL:
+				// 	set_hand_type(JAR_FULL_TIP);
+				// 	// animate pouring
+				// 	// make frog sad (and wet)
+				// 	break;
 
-				case JAR_2_3:
-					set_hand_type(JAR_2_3_TIP);
-					jar_animation = 2;
-					// animate pouring
-					// make frog sad (and wet)
-					break;
+				// case JAR_2_3:
+				// 	set_hand_type(JAR_2_3_TIP);
+				// 	// animate pouring
+				// 	// make frog sad (and wet)
+				// 	break;
 
-				case JAR_1_3:
-					set_hand_type(JAR_1_3_TIP);
-					jar_animation = 2;
-					// animate pouring
-					// make frog sad (and wet)
-					break;
+				// case JAR_1_3:
+				// 	set_hand_type(JAR_1_3_TIP);
+				// 	// animate pouring
+				// 	// make frog sad (and wet)
+				// 	break;
 
-				case JAR_EMPTY:
-					set_hand_type(JAR_EMPTY_TIP);
-					jar_animation = 2;
-					// animate pouring... nothing
-					// confused frog reaction?
-					break;
+				// case JAR_EMPTY:
+				// 	set_hand_type(JAR_EMPTY_TIP);
+				// 	// animate pouring... nothing
+				// 	// confused frog reaction?
+				// 	break;
 
 				case HOLD_SOAP:
 					// bathe frog
@@ -202,7 +207,7 @@ void read_joypad() {
 		} else if (hand_type == TICKLE_1 || hand_type == TICKLE_2) {
 			set_hand_type(DEFAULT_HAND);
 		} else if (hand_type == JAR_FULL || hand_type == JAR_2_3 || hand_type == JAR_1_3 || hand_type == JAR_EMPTY) {
-			jar_animation = 3;
+			hand_anim_frame = 3;
 			animating_hand = 1;
 			hand_anim_counter = 0;
 			switch (hand_type) {

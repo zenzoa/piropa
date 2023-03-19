@@ -17,7 +17,7 @@
 
 extern uint8_t hand_type;
 extern uint8_t animating_hand;
-extern uint8_t jar_animation;
+extern uint8_t hand_anim_frame;
 
 extern void init_hand();
 extern void set_hand_type(uint8_t new_hand_type);

@@ -13,7 +13,7 @@ const palette_color_t hand_tickle_2_palettes[4] = {
 	
 };
 
-const uint8_t hand_tickle_2_tiles[656] = {
+const uint8_t hand_tickle_2_tiles[640] = {
 	0x01,0x01,0x07,0x06,
 	0x0f,0x08,0x1f,0x10,
 	0x2f,0x30,0x2f,0x30,
@@ -139,11 +139,6 @@ const uint8_t hand_tickle_2_tiles[656] = {
 	0x90,0x70,0x90,0x70,
 	0x90,0x70,0x10,0xf0,
 	
-0x01,0x01,0x01,0x01,
-	0x00,0x00,0x00,0x00,
-	0x00,0x00,0x00,0x00,
-	0x00,0x00,0x00,0x00,
-	
 0xae,0x71,0x60,0xdf,
 	0xe6,0x9f,0x8c,0xfb,
 	0x9d,0xf3,0x52,0x7e,
@@ -238,19 +233,19 @@ const metasprite_t hand_tickle_2_metasprite3[] = {
 };
 
 const metasprite_t hand_tickle_2_metasprite4[] = {
-	METASPR_ITEM(-8, -12, 22, 0), METASPR_ITEM(0, 8, 23, 0), METASPR_ITEM(0, 8, 24, 0), METASPR_ITEM(8, -16, 25, 0), METASPR_ITEM(0, 8, 26, 0), METASPR_ITEM(0, 8, 27, 0), METASPR_TERM
+	METASPR_ITEM(-8, -12, 22, 0), METASPR_ITEM(0, 8, 23, 0), METASPR_ITEM(0, 8, 24, 0), METASPR_ITEM(8, -16, 9, 32), METASPR_ITEM(0, 8, 25, 0), METASPR_ITEM(0, 8, 26, 0), METASPR_TERM
 };
 
 const metasprite_t hand_tickle_2_metasprite5[] = {
-	METASPR_ITEM(-8, -12, 28, 0), METASPR_ITEM(0, 8, 29, 0), METASPR_ITEM(0, 8, 30, 0), METASPR_ITEM(8, -8, 31, 0), METASPR_ITEM(0, 8, 32, 0), METASPR_TERM
+	METASPR_ITEM(-8, -12, 27, 0), METASPR_ITEM(0, 8, 28, 0), METASPR_ITEM(0, 8, 29, 0), METASPR_ITEM(8, -8, 30, 0), METASPR_ITEM(0, 8, 31, 0), METASPR_TERM
 };
 
 const metasprite_t hand_tickle_2_metasprite6[] = {
-	METASPR_ITEM(-8, -4, 33, 0), METASPR_ITEM(0, 8, 34, 0), METASPR_ITEM(8, -8, 35, 0), METASPR_ITEM(0, 8, 36, 0), METASPR_TERM
+	METASPR_ITEM(-8, -4, 32, 0), METASPR_ITEM(0, 8, 33, 0), METASPR_ITEM(8, -8, 34, 0), METASPR_ITEM(0, 8, 35, 0), METASPR_TERM
 };
 
 const metasprite_t hand_tickle_2_metasprite7[] = {
-	METASPR_ITEM(-8, -4, 37, 0), METASPR_ITEM(0, 8, 38, 0), METASPR_ITEM(8, -8, 39, 0), METASPR_ITEM(0, 8, 40, 0), METASPR_TERM
+	METASPR_ITEM(-8, -4, 36, 0), METASPR_ITEM(0, 8, 37, 0), METASPR_ITEM(8, -8, 38, 0), METASPR_ITEM(0, 8, 39, 0), METASPR_TERM
 };
 
 const metasprite_t* const hand_tickle_2_metasprites[8] = {

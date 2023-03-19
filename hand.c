@@ -39,13 +39,15 @@
 uint8_t hand_bank = BANK(hand_normal);
 const metasprite_t** hand_metasprites;
 
+uint8_t hand_swap = 0;
+
 uint8_t hand_type = DEFAULT_HAND;
 
 uint16_t hand_x = 60 << 8;
 uint16_t hand_y = 60 << 8;
 
 uint8_t animating_hand = 0;
-uint8_t jar_animation = 0;
+uint8_t hand_anim_frame = 0;
 
 void set_hand_type(uint8_t new_hand_type);
 
@@ -58,118 +60,124 @@ void init_hand() {
 void set_hand_type(uint8_t new_hand_type) NONBANKED {
 	hand_type = new_hand_type;
 
+	if (hand_swap == 0) {
+		hand_swap = 46;
+	} else {
+		hand_swap = 0;
+	}
+
 	uint8_t old_bank = CURRENT_BANK;
 
 	switch (hand_type) {
 		case DEFAULT_HAND:
 			hand_bank = BANK(hand_normal);
 			SWITCH_ROM(hand_bank);
-			set_sprite_data(HAND_SPRITE, hand_normal_TILE_COUNT, hand_normal_tiles);
+			set_sprite_data(HAND_SPRITE + hand_swap, hand_normal_TILE_COUNT, hand_normal_tiles);
 			hand_metasprites = hand_normal_metasprites;
 			break;
 
 		case TICKLE_1:
 			hand_bank = BANK(hand_tickle_1);
 			SWITCH_ROM(hand_bank);
-			set_sprite_data(HAND_SPRITE, hand_tickle_1_TILE_COUNT, hand_tickle_1_tiles);
+			set_sprite_data(HAND_SPRITE + hand_swap, hand_tickle_1_TILE_COUNT, hand_tickle_1_tiles);
 			hand_metasprites = hand_tickle_1_metasprites;
 			break;
 
 		case TICKLE_2:
 			hand_bank = BANK(hand_tickle_2);
 			SWITCH_ROM(hand_bank);
-			set_sprite_data(HAND_SPRITE, hand_tickle_2_TILE_COUNT, hand_tickle_2_tiles);
+			set_sprite_data(HAND_SPRITE + hand_swap, hand_tickle_2_TILE_COUNT, hand_tickle_2_tiles);
 			hand_metasprites = hand_tickle_2_metasprites;
 			break;
 
 		case JAR_EMPTY:
 			hand_bank = BANK(hand_jar_empty);
 			SWITCH_ROM(hand_bank);
-			set_sprite_data(HAND_SPRITE, hand_jar_empty_TILE_COUNT, hand_jar_empty_tiles);
+			set_sprite_data(HAND_SPRITE + hand_swap, hand_jar_empty_TILE_COUNT, hand_jar_empty_tiles);
 			hand_metasprites = hand_jar_empty_metasprites;
 			break;
 
 		case JAR_EMPTY_TIP:
 			hand_bank = BANK(hand_jar_empty_tip);
 			SWITCH_ROM(hand_bank);
-			set_sprite_data(HAND_SPRITE, hand_jar_empty_tip_TILE_COUNT, hand_jar_empty_tip_tiles);
+			set_sprite_data(HAND_SPRITE + hand_swap, hand_jar_empty_tip_TILE_COUNT, hand_jar_empty_tip_tiles);
 			hand_metasprites = hand_jar_empty_tip_metasprites;
 			break;
 
 		case JAR_FULL:
 			hand_bank = BANK(hand_jar_full);
 			SWITCH_ROM(hand_bank);
-			set_sprite_data(HAND_SPRITE, hand_jar_full_TILE_COUNT, hand_jar_full_tiles);
+			set_sprite_data(HAND_SPRITE + hand_swap, hand_jar_full_TILE_COUNT, hand_jar_full_tiles);
 			hand_metasprites = hand_jar_full_metasprites;
 			break;
 
 		case JAR_FULL_TIP:
 			hand_bank = BANK(hand_jar_full_tip);
 			SWITCH_ROM(hand_bank);
-			set_sprite_data(HAND_SPRITE, hand_jar_full_tip_TILE_COUNT, hand_jar_full_tip_tiles);
+			set_sprite_data(HAND_SPRITE + hand_swap, hand_jar_full_tip_TILE_COUNT, hand_jar_full_tip_tiles);
 			hand_metasprites = hand_jar_full_tip_metasprites;
 			break;
 
 		case JAR_2_3:
 			hand_bank = BANK(hand_jar_2_3);
 			SWITCH_ROM(hand_bank);
-			set_sprite_data(HAND_SPRITE, hand_jar_2_3_TILE_COUNT, hand_jar_2_3_tiles);
+			set_sprite_data(HAND_SPRITE + hand_swap, hand_jar_2_3_TILE_COUNT, hand_jar_2_3_tiles);
 			hand_metasprites = hand_jar_2_3_metasprites;
 			break;
 
 		case JAR_2_3_TIP:
 			hand_bank = BANK(hand_jar_2_3_tip);
 			SWITCH_ROM(hand_bank);
-			set_sprite_data(HAND_SPRITE, hand_jar_2_3_tip_TILE_COUNT, hand_jar_2_3_tip_tiles);
+			set_sprite_data(HAND_SPRITE + hand_swap, hand_jar_2_3_tip_TILE_COUNT, hand_jar_2_3_tip_tiles);
 			hand_metasprites = hand_jar_2_3_tip_metasprites;
 			break;
 
 		case JAR_1_3:
 			hand_bank = BANK(hand_jar_1_3);
 			SWITCH_ROM(hand_bank);
-			set_sprite_data(HAND_SPRITE, hand_jar_1_3_TILE_COUNT, hand_jar_1_3_tiles);
+			set_sprite_data(HAND_SPRITE + hand_swap, hand_jar_1_3_TILE_COUNT, hand_jar_1_3_tiles);
 			hand_metasprites = hand_jar_1_3_metasprites;
 			break;
 
 		case JAR_1_3_TIP:
 			hand_bank = BANK(hand_jar_1_3_tip);
 			SWITCH_ROM(hand_bank);
-			set_sprite_data(HAND_SPRITE, hand_jar_1_3_tip_TILE_COUNT, hand_jar_1_3_tip_tiles);
+			set_sprite_data(HAND_SPRITE + hand_swap, hand_jar_1_3_tip_TILE_COUNT, hand_jar_1_3_tip_tiles);
 			hand_metasprites = hand_jar_1_3_tip_metasprites;
 			break;
 
 		case HOLD_SOAP:
 			hand_bank = BANK(hand_soap);
 			SWITCH_ROM(hand_bank);
-			set_sprite_data(HAND_SPRITE, hand_soap_TILE_COUNT, hand_soap_tiles);
+			set_sprite_data(HAND_SPRITE + hand_swap, hand_soap_TILE_COUNT, hand_soap_tiles);
 			hand_metasprites = hand_soap_metasprites;
 			break;
 
 		case HOLD_MOON:
 			hand_bank = BANK(hand_moon);
 			SWITCH_ROM(hand_bank);
-			set_sprite_data(HAND_SPRITE, hand_moon_TILE_COUNT, hand_moon_tiles);
+			set_sprite_data(HAND_SPRITE + hand_swap, hand_moon_TILE_COUNT, hand_moon_tiles);
 			hand_metasprites = hand_moon_metasprites;
 			break;
 
 		case HOLD_STRAWBERRY:
 			hand_bank = BANK(hand_strawberry);
 			SWITCH_ROM(hand_bank);
-			set_sprite_data(HAND_SPRITE, hand_strawberry_TILE_COUNT, hand_strawberry_tiles);
+			set_sprite_data(HAND_SPRITE + hand_swap, hand_strawberry_TILE_COUNT, hand_strawberry_tiles);
 			hand_metasprites = hand_strawberry_metasprites;
 			break;
 
 		case HOLD_BLUEBERRY:
 			hand_bank = BANK(hand_blueberry);
 			SWITCH_ROM(hand_bank);
-			set_sprite_data(HAND_SPRITE, hand_blueberry_TILE_COUNT, hand_blueberry_tiles);
+			set_sprite_data(HAND_SPRITE + hand_swap, hand_blueberry_TILE_COUNT, hand_blueberry_tiles);
 			hand_metasprites = hand_blueberry_metasprites;
 			break;
 
 		case HOLD_BLACKBERRY:
 			hand_bank = BANK(hand_blackberry);
 			SWITCH_ROM(hand_bank);
-			set_sprite_data(HAND_SPRITE, hand_blackberry_TILE_COUNT, hand_blackberry_tiles);
+			set_sprite_data(HAND_SPRITE + hand_swap, hand_blackberry_TILE_COUNT, hand_blackberry_tiles);
 			hand_metasprites = hand_blackberry_metasprites;
 			break;
 	}
@@ -211,7 +219,7 @@ void draw_hand(uint8_t *last_used_sprite, uint8_t frog_x) {
 	uint8_t old_bank = CURRENT_BANK;
 	SWITCH_ROM(hand_bank);
 
-	*last_used_sprite += move_metasprite(hand_metasprites[hand_offset], HAND_SPRITE, *last_used_sprite, hand_left + 12, hand_y >> 8);
+	*last_used_sprite += move_metasprite(hand_metasprites[hand_offset], HAND_SPRITE + hand_swap, *last_used_sprite, hand_left + 12, hand_y >> 8);
 	hide_sprites_range(*last_used_sprite, MAX_HARDWARE_SPRITES);
 
 	SWITCH_ROM(old_bank);
@@ -223,7 +231,7 @@ void get_hand_position(uint8_t *x, uint8_t *y) {
 }
 
 void update_hand() {
-	if (jar_animation == 2) {
+	if (hand_anim_frame == 2) {
 		switch (hand_type) {
 			case JAR_FULL_TIP:
 				set_hand_type(JAR_2_3_TIP);
@@ -241,8 +249,16 @@ void update_hand() {
 				set_hand_type(JAR_EMPTY);
 				break;
 		}
-	} else if (jar_animation == 1) {
+	} else if (hand_anim_frame == 1) {
 		switch (hand_type) {
+			case TICKLE_1:
+				set_hand_type(DEFAULT_HAND);
+				break;
+
+			case TICKLE_2:
+				set_hand_type(DEFAULT_HAND);
+				break;
+
 			case JAR_FULL_TIP:
 				set_hand_type(JAR_FULL);
 				break;
@@ -261,7 +277,8 @@ void update_hand() {
 		}
 		animating_hand = 0;
 	}
-	if (jar_animation > 0) {
-		jar_animation--;
+
+	if (hand_anim_frame > 0) {
+		hand_anim_frame--;
 	}
 }

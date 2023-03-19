@@ -11,7 +11,7 @@
 #define hand_moon_TILE_H 8
 #define hand_moon_WIDTH 24
 #define hand_moon_HEIGHT 16
-#define hand_moon_TILE_COUNT 46
+#define hand_moon_TILE_COUNT 43
 #define hand_moon_PALETTE_COUNT 1
 #define hand_moon_COLORS_PER_PALETTE 4
 #define hand_moon_TOTAL_COLORS 4
@@ -23,7 +23,7 @@
 BANKREF_EXTERN(hand_moon)
 
 extern const palette_color_t hand_moon_palettes[4];
-extern const uint8_t hand_moon_tiles[736];
+extern const uint8_t hand_moon_tiles[688];
 
 extern const metasprite_t* const hand_moon_metasprites[8];
 

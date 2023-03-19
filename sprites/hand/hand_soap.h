@@ -11,7 +11,7 @@
 #define hand_soap_TILE_H 8
 #define hand_soap_WIDTH 24
 #define hand_soap_HEIGHT 16
-#define hand_soap_TILE_COUNT 45
+#define hand_soap_TILE_COUNT 43
 #define hand_soap_PALETTE_COUNT 1
 #define hand_soap_COLORS_PER_PALETTE 4
 #define hand_soap_TOTAL_COLORS 4
@@ -23,7 +23,7 @@
 BANKREF_EXTERN(hand_soap)
 
 extern const palette_color_t hand_soap_palettes[4];
-extern const uint8_t hand_soap_tiles[720];
+extern const uint8_t hand_soap_tiles[688];
 
 extern const metasprite_t* const hand_soap_metasprites[8];
 
