@@ -16,9 +16,12 @@
 #define HOLD_BLACKBERRY 15
 
 extern uint8_t hand_type;
+extern uint8_t animating_hand;
+extern uint8_t jar_animation;
 
 extern void init_hand();
 extern void set_hand_type(uint8_t new_hand_type);
 extern void draw_hand(uint8_t *last_used_sprite, uint8_t frog_x);
 extern void move_hand(int16_t dx, int16_t dy);
 extern void get_hand_position(uint8_t *x, uint8_t *y);
+extern void update_hand();

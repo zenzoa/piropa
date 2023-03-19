@@ -10,6 +10,7 @@ uint8_t joypad_current = 0;
 uint8_t button_pressed = 0;
 
 uint8_t animation_counter = 0;
+uint8_t hand_anim_counter = 0;
 uint8_t animation_speed = 32;
 
 void read_joypad();
@@ -45,6 +46,14 @@ void main(void) {
 			animation_counter = 0;
 		}
 		animation_counter++;
+
+		if (animating_hand > 0) {
+			if (hand_anim_counter >= animation_speed) {
+				update_hand();
+				hand_anim_counter = 0;
+			}
+			hand_anim_counter++;
+		}
 
 		draw_sprites();
 
@@ -93,7 +102,7 @@ void read_joypad() {
 				if (hand_type == JAR_EMPTY || hand_type == JAR_FULL || hand_type == JAR_2_3 || hand_type == JAR_1_3) {
 					set_hand_type(DEFAULT_HAND);
 				} else {
-					set_hand_type(JAR_EMPTY);
+					set_hand_type(JAR_FULL);
 					// TODO: replace icon with outline
 				}
 			}
@@ -142,21 +151,29 @@ void read_joypad() {
 					break;
 
 				case JAR_FULL:
+					set_hand_type(JAR_FULL_TIP);
+					jar_animation = 2;
 					// animate pouring
 					// make frog sad (and wet)
 					break;
 
 				case JAR_2_3:
+					set_hand_type(JAR_2_3_TIP);
+					jar_animation = 2;
 					// animate pouring
 					// make frog sad (and wet)
 					break;
 
 				case JAR_1_3:
+					set_hand_type(JAR_1_3_TIP);
+					jar_animation = 2;
 					// animate pouring
 					// make frog sad (and wet)
 					break;
 
 				case JAR_EMPTY:
+					set_hand_type(JAR_EMPTY_TIP);
+					jar_animation = 2;
 					// animate pouring... nothing
 					// confused frog reaction?
 					break;
@@ -184,6 +201,30 @@ void read_joypad() {
 
 		} else if (hand_type == TICKLE_1 || hand_type == TICKLE_2) {
 			set_hand_type(DEFAULT_HAND);
+		} else if (hand_type == JAR_FULL || hand_type == JAR_2_3 || hand_type == JAR_1_3 || hand_type == JAR_EMPTY) {
+			jar_animation = 3;
+			animating_hand = 1;
+			hand_anim_counter = 0;
+			switch (hand_type) {
+				case JAR_FULL:
+					set_hand_type(JAR_FULL_TIP);
+					// water plant
+					break;
+
+				case JAR_2_3:
+					set_hand_type(JAR_2_3_TIP);
+					// water plant
+					break;
+
+				case JAR_1_3:
+					set_hand_type(JAR_1_3_TIP);
+					// water plant
+					break;
+
+				case JAR_EMPTY:
+					set_hand_type(JAR_EMPTY_TIP);
+					break;
+			}
 		}
 
 	} else if (!(joypad_current & J_A)) {

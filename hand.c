@@ -44,6 +44,9 @@ uint8_t hand_type = DEFAULT_HAND;
 uint16_t hand_x = 60 << 8;
 uint16_t hand_y = 60 << 8;
 
+uint8_t animating_hand = 0;
+uint8_t jar_animation = 0;
+
 void set_hand_type(uint8_t new_hand_type);
 
 /* ========================================================================= */
@@ -217,4 +220,48 @@ void draw_hand(uint8_t *last_used_sprite, uint8_t frog_x) {
 void get_hand_position(uint8_t *x, uint8_t *y) {
 	*x = (hand_x >> 8);
 	*y = (hand_y >> 8);
+}
+
+void update_hand() {
+	if (jar_animation == 2) {
+		switch (hand_type) {
+			case JAR_FULL_TIP:
+				set_hand_type(JAR_2_3_TIP);
+				break;
+
+			case JAR_2_3_TIP:
+				set_hand_type(JAR_1_3_TIP);
+				break;
+
+			case JAR_1_3_TIP:
+				set_hand_type(JAR_EMPTY_TIP);
+				break;
+
+			case JAR_EMPTY_TIP:
+				set_hand_type(JAR_EMPTY);
+				break;
+		}
+	} else if (jar_animation == 1) {
+		switch (hand_type) {
+			case JAR_FULL_TIP:
+				set_hand_type(JAR_FULL);
+				break;
+
+			case JAR_2_3_TIP:
+				set_hand_type(JAR_2_3);
+				break;
+
+			case JAR_1_3_TIP:
+				set_hand_type(JAR_1_3);
+				break;
+
+			case JAR_EMPTY_TIP:
+				set_hand_type(JAR_EMPTY);
+				break;
+		}
+		animating_hand = 0;
+	}
+	if (jar_animation > 0) {
+		jar_animation--;
+	}
 }
