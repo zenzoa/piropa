@@ -13,7 +13,7 @@ $(BINARY): $(C_SOURCES) $(C_SPRITES)
 all_sprites: $(patsubst sprites/%.png,sprites/%.c,$(shell find sprites/*/ -name '*.png'))
 
 sprites/background/%.c: sprites/background/%.png
-	$(PNG2ASSET) $< -map -noflip
+	$(PNG2ASSET) $< -map -noflip -b 255
 
 sprites/hand/%.c: sprites/hand/%.png
 	$(PNG2ASSET) $< -spr8x8 -sw 24 -sh 16 -b 255
@@ -21,8 +21,13 @@ sprites/hand/%.c: sprites/hand/%.png
 sprites/frog/%.c: sprites/frog/%.png
 	$(PNG2ASSET) $< -spr8x8 -sw 32 -sh 32 -b 255
 
+sprites/ui/%.c: sprites/ui/%.png
+	$(PNG2ASSET) $< -spr8x8 -sw 8 -sh 8 -b 255
+
 clean_sprites:
 	rm -f sprites/*/*.c sprites/*/*.h
 
 clean:
 	rm -f *.o *.lst *.map *.gb *.ihx *.sym *.cdb *.adb *.asm
+
+all: clean clean_sprites all_sprites $(BINARY)

@@ -10,8 +10,8 @@
 #define bg_main_TILE_W 8
 #define bg_main_TILE_H 8
 #define bg_main_WIDTH 160
-#define bg_main_HEIGHT 144
-#define bg_main_TILE_COUNT 106
+#define bg_main_HEIGHT 176
+#define bg_main_TILE_COUNT 159
 #define bg_main_PALETTE_COUNT 1
 #define bg_main_COLORS_PER_PALETTE 4
 #define bg_main_TOTAL_COLORS 4
@@ -20,8 +20,8 @@
 BANKREF_EXTERN(bg_main)
 
 extern const palette_color_t bg_main_palettes[4];
-extern const uint8_t bg_main_tiles[1696];
+extern const uint8_t bg_main_tiles[2544];
 
-extern const unsigned char bg_main_map[360];
+extern const unsigned char bg_main_map[440];
 
 #endif
