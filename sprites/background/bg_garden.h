@@ -10,8 +10,8 @@
 #define bg_garden_TILE_W 8
 #define bg_garden_TILE_H 8
 #define bg_garden_WIDTH 160
-#define bg_garden_HEIGHT 192
-#define bg_garden_TILE_COUNT 207
+#define bg_garden_HEIGHT 144
+#define bg_garden_TILE_COUNT 89
 #define bg_garden_PALETTE_COUNT 1
 #define bg_garden_COLORS_PER_PALETTE 4
 #define bg_garden_TOTAL_COLORS 4
@@ -20,8 +20,8 @@
 BANKREF_EXTERN(bg_garden)
 
 extern const palette_color_t bg_garden_palettes[4];
-extern const uint8_t bg_garden_tiles[3312];
+extern const uint8_t bg_garden_tiles[1424];
 
-extern const unsigned char bg_garden_map[480];
+extern const unsigned char bg_garden_map[360];
 
 #endif

@@ -10,8 +10,8 @@
 #define bg_pond_TILE_W 8
 #define bg_pond_TILE_H 8
 #define bg_pond_WIDTH 160
-#define bg_pond_HEIGHT 176
-#define bg_pond_TILE_COUNT 190
+#define bg_pond_HEIGHT 144
+#define bg_pond_TILE_COUNT 99
 #define bg_pond_PALETTE_COUNT 1
 #define bg_pond_COLORS_PER_PALETTE 4
 #define bg_pond_TOTAL_COLORS 4
@@ -20,8 +20,8 @@
 BANKREF_EXTERN(bg_pond)
 
 extern const palette_color_t bg_pond_palettes[4];
-extern const uint8_t bg_pond_tiles[3040];
+extern const uint8_t bg_pond_tiles[1584];
 
-extern const unsigned char bg_pond_map[440];
+extern const unsigned char bg_pond_map[360];
 
 #endif

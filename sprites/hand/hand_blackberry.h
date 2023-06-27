@@ -11,7 +11,7 @@
 #define hand_blackberry_TILE_H 8
 #define hand_blackberry_WIDTH 24
 #define hand_blackberry_HEIGHT 16
-#define hand_blackberry_TILE_COUNT 41
+#define hand_blackberry_TILE_COUNT 40
 #define hand_blackberry_PALETTE_COUNT 1
 #define hand_blackberry_COLORS_PER_PALETTE 4
 #define hand_blackberry_TOTAL_COLORS 4
@@ -23,7 +23,7 @@
 BANKREF_EXTERN(hand_blackberry)
 
 extern const palette_color_t hand_blackberry_palettes[4];
-extern const uint8_t hand_blackberry_tiles[656];
+extern const uint8_t hand_blackberry_tiles[640];
 
 extern const metasprite_t* const hand_blackberry_metasprites[8];
 
