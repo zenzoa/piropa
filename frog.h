@@ -29,6 +29,7 @@ extern uint8_t frog_evo;
 extern uint8_t frog_state;
 extern uint8_t frog_anim_frame;
 extern uint8_t frog_anim_speed;
+extern uint8_t frog_anim_loops;
 extern uint8_t frog_eating_fruit;
 extern uint8_t frog_eating_fly;
 extern uint8_t show_emote;

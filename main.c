@@ -1136,6 +1136,21 @@ void draw_frog() {
 	}
 
 	SWITCH_ROM(BANK(frog_code));
+
+	if (frog_state == FROG_EVOLVING) {
+		if (frog_anim_frame == 1) {
+			BGP_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_DARK_GRAY, DMG_DARK_GRAY, DMG_DARK_GRAY);
+		} else {
+			BGP_REG = DMG_PALETTE(DMG_LITE_GRAY, DMG_LITE_GRAY, DMG_LITE_GRAY, DMG_LITE_GRAY);
+			if (frog_anim_speed > 16) {
+				frog_anim_speed -= 2;
+			}
+		}
+		if (frog_anim_loops == 2) {
+			HIDE_SPRITES;
+		}
+	}
+
 	if (show_emote) {
 		if (frog_state == FROG_HAPPY) {
 			SWITCH_ROM(BANK(emote_happy));

@@ -321,26 +321,11 @@ void animate_frog(uint8_t wandering) {
 		frog_anim_counter = 0;
 		frog_anim_frame += 1;
 
-		if (frog_state == FROG_EVOLVING) {
-			if (frog_anim_frame == 1) {
-				BGP_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_DARK_GRAY, DMG_DARK_GRAY, DMG_DARK_GRAY);
-			} else {
-				BGP_REG = DMG_PALETTE(DMG_LITE_GRAY, DMG_LITE_GRAY, DMG_LITE_GRAY, DMG_LITE_GRAY);
-				if (frog_anim_speed > 16) {
-					frog_anim_speed -= 2;
-				}
-			}
-		}
-
 		if (frog_anim_frame >= 2) {
 			frog_anim_frame = 0;
 
 			if (frog_anim_loops > 0) {
 				frog_anim_loops -= 1;
-
-				if (frog_state == FROG_EVOLVING && frog_anim_loops == 2) {
-					HIDE_SPRITES;
-				}
 
 				if (frog_anim_loops == 0) {
 					if (frog_state == FROG_EVOLVING) {
