@@ -2403,7 +2403,7 @@ void draw_sprites() {
 		draw_hand();
 	}
 
-	if (current_screen != SCREEN_STATS && (frog_state != FROG_SLEEP || current_screen == SCREEN_FIELD)) {
+	if (current_screen != SCREEN_STATS && ((frog_state != FROG_SLEEP && frog_evo != EVO_EGG) || current_screen == SCREEN_FIELD)) {
 		draw_frog();
 	}
 

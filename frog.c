@@ -250,14 +250,14 @@ void frog_evolve() {
 }
 
 void move_frog(uint8_t x, uint8_t y) {
-	if (frog_state != FROG_SLEEP) {
+	if (frog_state != FROG_SLEEP && frog_evo != EVO_EGG) {
 		frog_x = x;
 		frog_y = y;
 	}
 }
 
 void set_goal(uint8_t x, uint8_t y) {
-	if (frog_state != FROG_SLEEP) {
+	if (frog_state != FROG_SLEEP && frog_evo != EVO_EGG) {
 		frog_goal_x = x;
 		frog_goal_y = y;
 	}

@@ -3,7 +3,6 @@ A virtual frog friend for your game boy.
 
 ## To-Do
 - title screen
-- egg disappears from field when you leave and come back
 - flies don't respawn
 - death
 - sound effects
