@@ -50,9 +50,10 @@ uint8_t frog_goal_x = 88;
 uint8_t frog_goal_y = 84;
 
 uint8_t frog_evo = EVO_EGG;
-uint8_t frog_state = FROG_STAND;
-
+uint8_t next_evo = EVO_EGG;
 uint8_t frog_evolving = FALSE;
+
+uint8_t frog_state = FROG_STAND;
 
 uint8_t frog_move_speed = 8;
 uint8_t frog_move_counter = 0;
@@ -192,60 +193,59 @@ void frog_change_rooms() {
 }
 
 void frog_evolve() {
-	uint8_t old_evo = frog_evo;
-
 	switch (frog_evo) {
 		case EVO_EGG:
 			if (frog_min >= 1 || frog_hour >= 1) {
-				frog_evo = EVO_BABY;
+				next_evo = EVO_BABY;
 			}
 			break;
 
 		case EVO_BABY:
-			if (frog_min >= 1 || frog_hour >= 1) {
-				frog_evo = EVO_CHILD;
+			if (frog_min >= 1 || frog_hour >= 1) { // TODO: should be 1 hour baby -> child
+				next_evo = EVO_CHILD;
 			}
 			break;
 
 		case EVO_CHILD:
-			if (frog_min >= 1 || frog_hour >= 1) {
+			if (frog_min >= 1 || frog_hour >= 1) { // TODO: should be 24 hours child -> teen
 				if (fruit_eaten && !fly_eaten) {
-					frog_evo = EVO_TEEN_APPLE;
+					next_evo = EVO_TEEN_APPLE;
 				} else if (fly_eaten && !fruit_eaten) {
-					frog_evo = EVO_TEEN_TAIL;
+					next_evo = EVO_TEEN_TAIL;
 				} else {
-					frog_evo = EVO_TEEN;
+					next_evo = EVO_TEEN;
 				}
 			}
 			break;
 
 		case EVO_TEEN_APPLE:
-			if (frog_min >= 1 || frog_hour >= 1) {
-				frog_evo = EVO_APPLE;
+			if (frog_min >= 1 || frog_hour >= 1) { // TODO: should be 48 hours teen -> adult
+				next_evo = EVO_APPLE;
 			}
 			break;
 
 		case EVO_TEEN_TAIL:
-			if (frog_min >= 1 || frog_hour >= 1) {
-				frog_evo = EVO_AXO;
+			if (frog_min >= 1 || frog_hour >= 1) { // TODO: should be 48 hours teen -> adult
+				next_evo = EVO_AXO;
 			}
 			break;
 
 		case EVO_TEEN:
-			if (frog_min >= 1 || frog_hour >= 1) {
-				frog_evo = EVO_ADULT;
+			if (frog_min >= 1 || frog_hour >= 1) { // TODO: should be 48 hours teen -> adult
+				next_evo = EVO_ADULT;
 			}
 			break;
 	}
 
-	if (old_evo != frog_evo) {
-		save_item(DATA_FROG_EVO, frog_evo);
+	if (next_evo != frog_evo) {
+		save_item(DATA_FROG_EVO, next_evo);
 		frog_sec = 0;
 		frog_min = 0;
 		save_item(DATA_FROG_MIN, frog_min);
 		frog_hour = 0;
 		save_item(DATA_FROG_HOUR, frog_hour);
 		frog_state = FROG_EVOLVING;
+		frog_anim_loops = 9;
 	}
 }
 
@@ -320,13 +320,33 @@ void animate_frog(uint8_t wandering) {
 	if (frog_anim_counter > frog_anim_speed) {
 		frog_anim_counter = 0;
 		frog_anim_frame += 1;
+
+		if (frog_state == FROG_EVOLVING) {
+			if (frog_anim_frame == 1) {
+				BGP_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_DARK_GRAY, DMG_DARK_GRAY, DMG_DARK_GRAY);
+			} else {
+				BGP_REG = DMG_PALETTE(DMG_LITE_GRAY, DMG_LITE_GRAY, DMG_LITE_GRAY, DMG_LITE_GRAY);
+				if (frog_anim_speed > 16) {
+					frog_anim_speed -= 2;
+				}
+			}
+		}
+
 		if (frog_anim_frame >= 2) {
 			frog_anim_frame = 0;
 
 			if (frog_anim_loops > 0) {
 				frog_anim_loops -= 1;
+
+				if (frog_state == FROG_EVOLVING && frog_anim_loops == 2) {
+					HIDE_SPRITES;
+				}
+
 				if (frog_anim_loops == 0) {
 					if (frog_state == FROG_EVOLVING) {
+						BGP_REG = DMG_PALETTE(DMG_WHITE, DMG_LITE_GRAY, DMG_DARK_GRAY, DMG_BLACK);
+						SHOW_SPRITES;
+						frog_evo = next_evo;
 						frog_rejoice_big();
 
 					} else if (frog_state == FROG_WASH && washes >= 4) {
@@ -411,6 +431,7 @@ void animate_frog(uint8_t wandering) {
 
 void update_frog(uint8_t time_speed) {
 	frog_sec += 1;
+
 	if (frog_sec >= 60) {
 		frog_sec = 0;
 		frog_min += 1;
@@ -423,7 +444,7 @@ void update_frog(uint8_t time_speed) {
 			save_item(DATA_FROG_HOUR, frog_hour);
 		}
 
-		if (frog_state <= FROG_WALK_RIGHT) {
+		if (frog_state != FROG_EVOLVING && frog_state <= FROG_WALK_RIGHT) {
 			frog_evolve();
 		}
 

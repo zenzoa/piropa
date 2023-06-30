@@ -5,7 +5,6 @@ A virtual frog friend for your game boy.
 - title screen
 - egg disappears from field when you leave and come back
 - flies don't respawn
-- evolution animation
 - death
 - sound effects
 - background music

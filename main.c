@@ -208,8 +208,6 @@
 #include "sprites/frog_dino/frog_dino_sleep.h"
 #include "sprites/frog_dino/frog_dino_wash.h"
 
-#include "sprites/frog_evolving/frog_evolving.h"
-
 #include "sprites/misc_8x8/emote_happy.h"
 #include "sprites/misc_8x8/emote_sad.h"
 #include "sprites/misc_8x8/emote_hungry.h"
@@ -1048,7 +1046,17 @@ void set_frog_state(uint8_t new_state) {
 		frog_vram = FROG_VRAM_1;
 	}
 
-	if (frog_evo == EVO_EGG) {
+	if (current_frog_state == FROG_EVOLVING) {
+		SWITCH_ROM(BANK(frog_code));
+		frog_anim_speed = 24;
+		if (current_frog_evo != EVO_EGG) {
+			set_frog_state_stand();
+		} else {
+			set_frog_egg();
+			return;
+		}
+
+	} else if (current_frog_evo == EVO_EGG) {
 		set_frog_egg();
 		SWITCH_ROM(BANK(frog_code));
 		frog_anim_speed = 32;
@@ -1109,16 +1117,6 @@ void set_frog_state(uint8_t new_state) {
 				set_frog_state_wash();
 				SWITCH_ROM(BANK(frog_code));
 				frog_anim_speed = 24;
-				break;
-
-			case FROG_EVOLVING:
-				frog_sprite_bank = BANK(frog_evolving);
-				SWITCH_ROM(frog_sprite_bank);
-				set_sprite_data(frog_vram, frog_evolving_TILE_COUNT, frog_evolving_tiles);
-				frog_metasprites = frog_evolving_metasprites;
-				SWITCH_ROM(BANK(frog_code));
-				frog_anim_speed = 24;
-				frog_anim_loops = 6;
 				break;
 		}
 
@@ -2401,7 +2399,7 @@ void draw_sprites() {
 		set_hand_state(HAND_EMPTY);
 	}
 
-	if (hand_frame < 255) {
+	if (hand_frame < 255 && current_frog_state != FROG_EVOLVING) {
 		draw_hand();
 	}
 

@@ -21,6 +21,7 @@ BANKREF_EXTERN(frog_code)
 #define FROG_TICKLED 6
 #define FROG_SLEEP 7
 #define FROG_WASH 8
+#define FROG_EVOLVING 9
 
 extern uint8_t frog_x;
 extern uint8_t frog_y;
