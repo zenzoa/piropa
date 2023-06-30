@@ -46,6 +46,10 @@
 #include "sprites/background/speed_normal.h"
 #include "sprites/background/speed_fast.h"
 
+/* TITLE */
+
+#include "sprites/background/title_screen.h"
+
 /* MENU */
 
 #include "sprites/background/menu_jar_full.h"
@@ -269,8 +273,9 @@ const unsigned char full_dot_tile_map[4] = { 0x08, 0x09, 0x0E, 0x0F };
 #define SCREEN_POND 3
 #define SCREEN_GARDEN 4
 #define SCREEN_STATS 5
-uint8_t prev_screen = SCREEN_FIELD;
-uint8_t current_screen = SCREEN_FIELD;
+#define SCREEN_TITLE 6
+uint8_t prev_screen = SCREEN_TITLE;
+uint8_t current_screen = SCREEN_TITLE;
 uint8_t next_screen = SCREEN_NONE;
 uint8_t switching_screens = FALSE;
 uint8_t switching_screens_counter = 0;
@@ -1812,6 +1817,12 @@ void draw_field_bg() {
 	}
 }
 
+void draw_title_screen() {
+	SWITCH_ROM(BANK(title_screen));
+	set_bkg_data(0, title_screen_TILE_COUNT, title_screen_tiles);
+	set_bkg_tiles(0, 0, 20, 18, title_screen_map);
+}
+
 /* ============ */
 /*     POND     */
 /* ============ */
@@ -2453,12 +2464,28 @@ void setup() {
 	update_after_break();
 }
 
+void title_screen_loop() {
+	draw_title_screen();
+	while(1) {
+		uint8_t joypad_value = joypad();
+		if (joypad_value & J_A && !a_button_pressed) {
+			a_button_pressed = TRUE;
+			break;
+		} else if (!(joypad_value & J_A)) {
+			a_button_pressed = FALSE;
+		}
+		wait_vbl_done(); // wait for next frame
+	}
+}
+
 void main(void) {
 	DISPLAY_ON;
 	SHOW_BKG;
 	SHOW_SPRITES;
 	SPRITES_8x8;
 	OBP0_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_WHITE, DMG_LITE_GRAY, DMG_BLACK);
+
+	title_screen_loop();
 
 	setup();
 
