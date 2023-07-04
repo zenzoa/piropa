@@ -11,7 +11,7 @@
 #define title_screen_TILE_H 8
 #define title_screen_WIDTH 160
 #define title_screen_HEIGHT 144
-#define title_screen_TILE_COUNT 90
+#define title_screen_TILE_COUNT 104
 #define title_screen_PALETTE_COUNT 1
 #define title_screen_COLORS_PER_PALETTE 4
 #define title_screen_TOTAL_COLORS 4
@@ -20,7 +20,7 @@
 BANKREF_EXTERN(title_screen)
 
 extern const palette_color_t title_screen_palettes[4];
-extern const uint8_t title_screen_tiles[1440];
+extern const uint8_t title_screen_tiles[1664];
 
 extern const unsigned char title_screen_map[360];
 

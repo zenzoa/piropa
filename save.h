@@ -49,3 +49,5 @@
 
 extern void save_item(uint8_t item_id, uint8_t item_value);
 extern uint8_t load_item(uint8_t item_id, uint8_t default_value);
+extern void reset_all_items();
+extern uint8_t check_for_save();

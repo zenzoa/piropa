@@ -82,3 +82,28 @@ uint8_t load_item(uint8_t item_id, uint8_t default_value) {
 
 	return item_value;
 }
+
+void reset_all_items() {
+	ENABLE_RAM;
+	SWITCH_RAM(0);
+
+	uint8_t i = 0;
+	while (i < SAVE_DATA_COUNT) {
+		save_data_locations[i].flag_addr[0] = 0;
+		i += 1;
+	}
+
+	DISABLE_RAM;
+}
+
+uint8_t check_for_save() {
+	ENABLE_RAM;
+	SWITCH_RAM(0);
+	if (save_data_locations[0].flag_addr[0] == SAVED_FLAG) {
+		DISABLE_RAM;
+		return 1;
+	} else {
+		DISABLE_RAM;
+		return 0;
+	}
+}

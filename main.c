@@ -9,6 +9,7 @@
 
 #include <gbdk/emu_debug.h>
 
+#include "title.h"
 #include "clock.h"
 #include "frog.h"
 #include "pond.h"
@@ -45,10 +46,6 @@
 #include "sprites/background/speed_slow.h"
 #include "sprites/background/speed_normal.h"
 #include "sprites/background/speed_fast.h"
-
-/* TITLE */
-
-#include "sprites/background/title_screen.h"
 
 /* MENU */
 
@@ -1817,12 +1814,6 @@ void draw_field_bg() {
 	}
 }
 
-void draw_title_screen() {
-	SWITCH_ROM(BANK(title_screen));
-	set_bkg_data(0, title_screen_TILE_COUNT, title_screen_tiles);
-	set_bkg_tiles(0, 0, 20, 18, title_screen_map);
-}
-
 /* ============ */
 /*     POND     */
 /* ============ */
@@ -2455,26 +2446,13 @@ void draw_sprites() {
 	hide_sprites_range(last_used_sprite, MAX_HARDWARE_SPRITES);
 }
 
-void setup() {
+void setup(uint8_t restart) {
 	initrand(DIV_REG);
 	load_data();
 	setup_frog();
 	set_hand_state(HAND_EMPTY);
-	set_screen(SCREEN_FIELD);
-	update_after_break();
-}
-
-void title_screen_loop() {
-	draw_title_screen();
-	while(1) {
-		uint8_t joypad_value = joypad();
-		if (joypad_value & J_A && !a_button_pressed) {
-			a_button_pressed = TRUE;
-			break;
-		} else if (!(joypad_value & J_A)) {
-			a_button_pressed = FALSE;
-		}
-		wait_vbl_done(); // wait for next frame
+	if (!restart) {
+		update_after_break();
 	}
 }
 
@@ -2485,9 +2463,14 @@ void main(void) {
 	SPRITES_8x8;
 	OBP0_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_WHITE, DMG_LITE_GRAY, DMG_BLACK);
 
-	title_screen_loop();
+	draw_title_screen();
+	uint8_t reset = title_screen_loop();
 
-	setup();
+	if (reset) {
+		reset_all_items();
+	}
+	setup(reset);
+	go_screen(SCREEN_FIELD);
 
 	clock_t prev_time = clock();
 
