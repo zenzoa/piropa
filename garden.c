@@ -4,8 +4,6 @@
 #include <gbdk/metasprites.h>
 #include <rand.h>
 
-#include <gbdk/emu_debug.h>
-
 #include "save.h"
 
 BANKREF(garden_code)
@@ -216,7 +214,6 @@ void update_garden(uint8_t time_speed, uint8_t draw) {
 
 void update_plant_after_break(uint8_t time_speed, uint8_t *seconds, uint8_t missed_minutes, uint8_t *watered, uint8_t *stage, uint8_t *sec, uint8_t *min) {
 	if (*watered) {
-		EMU_printf("old age: %d", *min);
 		*sec += *seconds;
 		if (*sec >= 60) {
 			*sec = 0;
@@ -229,7 +226,6 @@ void update_plant_after_break(uint8_t time_speed, uint8_t *seconds, uint8_t miss
 		} else {
 			*min += missed_minutes;
 		}
-		EMU_printf("new age: %d", *min);
 		if (*min >= time_speed * TIME_TO_GROW) {
 			grow_plant(watered, stage);
 		}
@@ -237,8 +233,6 @@ void update_plant_after_break(uint8_t time_speed, uint8_t *seconds, uint8_t miss
 }
 
 void update_garden_after_break(uint8_t time_speed, uint16_t *days, uint8_t *hours, uint8_t *minutes, uint8_t *seconds) {
-	EMU_MESSAGE("UPDATE GARDEN");
-
 	uint8_t missed_minutes = *minutes;
 	if (*hours >= 3 || *days >= 1) {
 		missed_minutes = 255;

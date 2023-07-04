@@ -7,8 +7,6 @@
 #include <time.h>
 #include <rand.h>
 
-#include <gbdk/emu_debug.h>
-
 #include "title.h"
 #include "clock.h"
 #include "frog.h"
@@ -2376,9 +2374,6 @@ void update_after_break() {
 	uint8_t minutes = 0;
 	uint8_t seconds = 0;
 	read_clock(&days, &hours, &minutes, &seconds);
-
-	EMU_MESSAGE("");
-	EMU_printf("TIME: %d days, %hd hours, %hd minutes, %hd seconds", days, (uint8_t) hours, (uint8_t) minutes, (uint8_t) seconds);
 
 	if (time_speed != SPEED_PAUSE) {
 		SWITCH_ROM(BANK(frog_code));

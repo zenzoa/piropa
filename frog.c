@@ -4,8 +4,6 @@
 #include <gbdk/metasprites.h>
 #include <rand.h>
 
-#include <gbdk/emu_debug.h>
-
 #include "save.h"
 #include "clock.h"
 
@@ -421,7 +419,6 @@ void update_frog(uint8_t time_speed) {
 		frog_sec = 0;
 		frog_min += 1;
 		save_item(DATA_FROG_MIN, frog_min);
-		EMU_MESSAGE("RESET CLOCK");
 		reset_clock();
 		if (frog_min >= 60) {
 			frog_min = 0;
@@ -486,9 +483,6 @@ void update_frog(uint8_t time_speed) {
 }
 
 void update_frog_after_break(uint8_t time_speed, uint16_t *days, uint8_t *hours, uint8_t *minutes, uint8_t *seconds) {
-	EMU_MESSAGE("UPDATE FROG");
-	EMU_printf("old age: %d : %d : %d", frog_hour, frog_min, frog_sec);
-
 	uint16_t missed_minutes = *minutes + (*hours * 60);
 	uint16_t total_hours = frog_hour + *hours;
 
@@ -514,10 +508,6 @@ void update_frog_after_break(uint8_t time_speed, uint16_t *days, uint8_t *hours,
 		frog_hour = 255;
 	}
 
-	EMU_printf("new age: %d : %d : %d", frog_hour, frog_min, frog_sec);
-
-	EMU_printf("missed minutes: %d", missed_minutes);
-
 	uint8_t full_rate = time_speed * FULL_TIME_TO_DECREASE;
 	uint8_t full_decrease = missed_minutes / full_rate;
 	full_timer = missed_minutes % full_rate;
@@ -530,9 +520,6 @@ void update_frog_after_break(uint8_t time_speed, uint16_t *days, uint8_t *hours,
 	} else {
 		full = 0;
 	}
-	EMU_printf("full decrease: %d", full_decrease);
-	EMU_printf("full: %d", full);
-	EMU_printf("full timer: %d", full_timer);
 
 	uint8_t clean_rate = time_speed * CLEAN_TIME_TO_DECREASE;
 	uint8_t clean_decrease = missed_minutes / clean_rate;
@@ -546,9 +533,6 @@ void update_frog_after_break(uint8_t time_speed, uint16_t *days, uint8_t *hours,
 	} else {
 		clean = 0;
 	}
-	EMU_printf("clean decrease: %d", clean_decrease);
-	EMU_printf("clean: %d", clean);
-	EMU_printf("clean timer: %d", clean_timer);
 
 	uint8_t energy_rate = time_speed * ENERGY_TIME_TO_DECREASE;
 	uint8_t energy_decrease = missed_minutes / energy_rate;
@@ -562,9 +546,6 @@ void update_frog_after_break(uint8_t time_speed, uint16_t *days, uint8_t *hours,
 	} else {
 		energy = 0;
 	}
-	EMU_printf("energy decrease: %d", energy_decrease);
-	EMU_printf("energy: %d", energy);
-	EMU_printf("energy timer: %d", energy_timer);
 
 	uint8_t happy_rate = time_speed * HAPPY_TIME_TO_DECREASE;
 	uint8_t happy_decrease = missed_minutes / happy_rate;
@@ -578,14 +559,9 @@ void update_frog_after_break(uint8_t time_speed, uint16_t *days, uint8_t *hours,
 	} else {
 		happy = 0;
 	}
-	EMU_printf("happy decrease: %d", happy_decrease);
-	EMU_printf("happy: %d", happy);
-	EMU_printf("happy timer: %d", happy_timer);
 
 	// if too long, frog is dead
-	// otherwise calc stat decreases
 	// figure out if it would have evolved, how many times, and which ones
-
 }
 
 void load_frog_data() {

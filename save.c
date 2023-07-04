@@ -1,5 +1,4 @@
 #include <gbdk/platform.h>
-#include <gbdk/emu_debug.h>
 
 #define SAVE_DATA_COUNT 35
 
@@ -63,8 +62,6 @@ void save_item(uint8_t item_id, uint8_t item_value) {
 	save_data_locations[item_id].RAM_addr[0] = item_value;
 
 	DISABLE_RAM;
-
-	EMU_printf("save item %d: %d", item_id, item_value);
 }
 
 uint8_t load_item(uint8_t item_id, uint8_t default_value) {
@@ -75,7 +72,6 @@ uint8_t load_item(uint8_t item_id, uint8_t default_value) {
 
 	if (save_data_locations[item_id].flag_addr[0] == SAVED_FLAG) {
 		item_value = save_data_locations[item_id].RAM_addr[0];
-		EMU_printf("load item %d: %d", item_id, item_value);
 	}
 
 	DISABLE_RAM;
