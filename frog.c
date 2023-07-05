@@ -191,6 +191,8 @@ void frog_change_rooms() {
 }
 
 void frog_evolve() {
+	next_evo = frog_evo;
+
 	switch (frog_evo) {
 		case EVO_EGG:
 			if (frog_min >= 1 || frog_hour >= 1) {
@@ -199,13 +201,13 @@ void frog_evolve() {
 			break;
 
 		case EVO_BABY:
-			if (frog_min >= 1 || frog_hour >= 1) { // TODO: should be 1 hour baby -> child
+			if (frog_hour >= 1) {
 				next_evo = EVO_CHILD;
 			}
 			break;
 
 		case EVO_CHILD:
-			if (frog_min >= 1 || frog_hour >= 1) { // TODO: should be 24 hours child -> teen
+			if (frog_hour >= 24) {
 				if (fruit_eaten && !fly_eaten) {
 					next_evo = EVO_TEEN_APPLE;
 				} else if (fly_eaten && !fruit_eaten) {
@@ -217,19 +219,19 @@ void frog_evolve() {
 			break;
 
 		case EVO_TEEN_APPLE:
-			if (frog_min >= 1 || frog_hour >= 1) { // TODO: should be 48 hours teen -> adult
+			if (frog_hour >= 24) {
 				next_evo = EVO_APPLE;
 			}
 			break;
 
 		case EVO_TEEN_TAIL:
-			if (frog_min >= 1 || frog_hour >= 1) { // TODO: should be 48 hours teen -> adult
+			if (frog_hour >= 24) {
 				next_evo = EVO_AXO;
 			}
 			break;
 
 		case EVO_TEEN:
-			if (frog_min >= 1 || frog_hour >= 1) { // TODO: should be 48 hours teen -> adult
+			if (frog_hour >= 24) {
 				next_evo = EVO_ADULT;
 			}
 			break;
@@ -403,7 +405,7 @@ void animate_frog(uint8_t wandering) {
 		}
 
 		if (frog_evo != EVO_EGG && wandering && !frog_anim_loops && frog_state == FROG_STAND && frog_x == frog_goal_x && frog_y == frog_goal_y) {
-			if (rand() < 25) {
+			if (rand() < 10) {
 				set_random_goal();
 			} else {
 				frog_anim_loops = 3;
