@@ -2,7 +2,6 @@
 A virtual frog friend for your game boy.
 
 ## To-Do
-- flies don't respawn
 - death
 - sound effects
 - background music

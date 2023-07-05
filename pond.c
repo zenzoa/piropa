@@ -4,6 +4,8 @@
 #include <gbdk/metasprites.h>
 #include <rand.h>
 
+#include "save.h"
+
 BANKREF(pond_code)
 
 #define POND_SPARKLE_VRAM 0xE6
@@ -24,21 +26,21 @@ uint8_t fly1_x = 40;
 uint8_t fly1_y = 40;
 uint8_t fly1_frame = 0;
 uint8_t fly1_counter = 0;
-uint8_t fly1_respawn = 0;
+uint16_t fly1_respawn = 0;
 
 uint8_t fly2_state = FLY_ALIVE;
 uint8_t fly2_x = 20;
 uint8_t fly2_y = 30;
 uint8_t fly2_frame = 0;
 uint8_t fly2_counter = 0;
-uint8_t fly2_respawn = 0;
+uint16_t fly2_respawn = 0;
 
 uint8_t fly3_state = FLY_ALIVE;
 uint8_t fly3_x = 30;
 uint8_t fly3_y = 50;
 uint8_t fly3_frame = 0;
 uint8_t fly3_counter = 0;
-uint8_t fly3_respawn = 0;
+uint16_t fly3_respawn = 0;
 
 const metasprite_t my_fly_metasprite0[] = {
 	METASPR_ITEM(-4, -4, 0, 0), METASPR_TERM
@@ -146,6 +148,16 @@ void release_fly(uint8_t hand_x, uint8_t hand_y) {
 	}
 }
 
+void feed_fly() {
+	if (fly1_state == FLY_HELD) {
+		fly1_state = FLY_EATEN;
+	} else if (fly2_state == FLY_HELD) {
+		fly2_state = FLY_EATEN;
+	} else {
+		fly3_state = FLY_EATEN;
+	}
+}
+
 void reset_flies() {
 	if (fly1_state == FLY_OFF || fly1_state == FLY_FLEE) {
 		fly1_state = FLY_ALIVE;
@@ -164,10 +176,55 @@ void reset_flies() {
 	}
 }
 
-// void update_flies() {
+void update_pond(uint8_t time_speed) {
+	if (fly1_state == FLY_EATEN) {
+		if (fly1_respawn < time_speed * 300) {
+			fly1_respawn += 1;
+		} else {
+			fly1_respawn = 0;
+			fly1_state = FLY_OFF;
+		}
+	}
 
-// }
+	if (fly2_state == FLY_EATEN) {
+		if (fly2_respawn < time_speed * 300) {
+			fly2_respawn += 1;
+		} else {
+			fly1_respawn = 0;
+			fly2_state = FLY_OFF;
+		}
+	}
 
-// void update_flies_after_break() {
+	if (fly3_state == FLY_EATEN) {
+		if (fly3_respawn < time_speed * 300) {
+			fly3_respawn += 1;
+		} else {
+			fly1_respawn = 0;
+			fly3_state = FLY_OFF;
+		}
+	}
+}
 
-// }
+void update_pond_after_break(uint8_t time_speed, uint16_t *days, uint8_t *hours, uint8_t *minutes, uint8_t *seconds) {
+	if (*days >= 1 || *hours >= 1) {
+		fly1_respawn = time_speed * 300;
+		fly2_respawn = time_speed * 300;
+		fly3_respawn = time_speed * 300;
+	} else {
+		fly1_respawn += (*minutes * 60) + *seconds;
+		fly2_respawn += (*minutes * 60) + *seconds;
+		fly3_respawn += (*minutes * 60) + *seconds;
+	}
+}
+
+
+void load_pond_data() {
+	fly1_state = load_item(DATA_FLY1_STATE, fly1_state);
+	fly1_respawn = load_item(DATA_FLY1_RESPAWN, fly1_respawn);
+
+	fly2_state = load_item(DATA_FLY2_STATE, fly2_state);
+	fly2_respawn = load_item(DATA_FLY2_RESPAWN, fly2_respawn);
+
+	fly3_state = load_item(DATA_FLY3_STATE, fly3_state);
+	fly3_respawn = load_item(DATA_FLY3_RESPAWN, fly3_respawn);
+}

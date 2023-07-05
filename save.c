@@ -50,8 +50,14 @@ const SaveDataLocations save_data_locations[SAVE_DATA_COUNT] = {
 	{ 0xA06C, 0xA06E }, // plant_3_stage
 	{ 0xA070, 0xA072 }, // plant_3_min
 
-	// { 0xA06C, 0xA06E }, // fly1_state
-	// { 0xA070, 0xA072 }, // fly1_respawn
+	{ 0xA074, 0xA076 }, // fly1_state
+	{ 0xA078, 0xA07A }, // fly1_respawn
+
+	{ 0xA07C, 0xA07E }, // fly2_state
+	{ 0xA080, 0xA082 }, // fly2_respawn
+
+	{ 0xA084, 0xA086 }, // fly3_state
+	{ 0xA088, 0xA08A }, // fly3_respawn
 };
 
 void save_item(uint8_t item_id, uint8_t item_value) {

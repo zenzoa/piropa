@@ -2169,6 +2169,8 @@ void tap_frog() {
 		case HAND_HOLD_FLY:
 			SWITCH_ROM(BANK(frog_code));
 			frog_eat_fly();
+			SWITCH_ROM(BANK(pond_code));
+			feed_fly();
 			break;
 	}
 
@@ -2360,6 +2362,9 @@ void load_data() {
 	SWITCH_ROM(BANK(frog_code));
 	load_frog_data();
 
+	SWITCH_ROM(BANK(pond_code));
+	load_pond_data();
+
 	SWITCH_ROM(BANK(garden_code));
 	load_garden_data();
 }
@@ -2378,6 +2383,9 @@ void update_after_break() {
 	if (time_speed != SPEED_PAUSE) {
 		SWITCH_ROM(BANK(frog_code));
 		update_frog_after_break(time_speed, &days, &hours, &minutes, &seconds);
+
+		SWITCH_ROM(BANK(pond_code));
+		update_pond_after_break(time_speed, &days, &hours, &minutes, &seconds);
 
 		SWITCH_ROM(BANK(garden_code));
 		update_garden_after_break(time_speed, &days, &hours, &minutes, &seconds);
@@ -2485,6 +2493,9 @@ void main(void) {
 			if (current_screen == SCREEN_STATS) {
 				draw_stats();
 			}
+
+			SWITCH_ROM(BANK(pond_code));
+			update_pond(time_speed);
 
 			SWITCH_ROM(BANK(garden_code));
 			update_garden(time_speed, current_screen == SCREEN_GARDEN);
