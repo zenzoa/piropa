@@ -1,4 +1,8 @@
-*.gb
+.DS_Store
 *.rtc
 *.sav
 *.zip
+*.ase
+*.png
+sprites/*/*.c
+sprites/*/*.h

@@ -4,583 +4,233 @@
 #include <gbdk/metasprites.h>
 #include <rand.h>
 
-#include "save.h"
-#include "clock.h"
+#include "animation.h"
+#include "frog_sprites.h"
+#include "emote_sprites.h"
 
-BANKREF(frog_code)
+#include "sprites/misc_16x8/dirt.h"
 
-#define FALSE 0
-#define TRUE 1
+BANKREF(frog_bank)
 
-#define EVO_EGG 0
-#define EVO_BABY 1
-#define EVO_CHILD 2
-#define EVO_TEEN 3
-#define EVO_TEEN_TAIL 4
-#define EVO_TEEN_APPLE 5
-#define EVO_ADULT 6
-#define EVO_AXO 7
-#define EVO_APPLE 8
-#define EVO_MUSH 9
-#define EVO_DINO 10
+uint8_t frog_x;
+uint8_t frog_y;
 
-#define FROG_STAND 0
-#define FROG_WALK_LEFT 1
-#define FROG_WALK_RIGHT 2
-#define FROG_HAPPY 3
-#define FROG_SAD 4
-#define FROG_EAT 5
-#define FROG_TICKLED 6
-#define FROG_SLEEP 7
-#define FROG_WASH 8
-#define FROG_EVOLVING 9
+uint8_t goal_x;
+uint8_t goal_y;
 
-#define HAPPY_TIME_TO_DECREASE 1
-#define FULL_TIME_TO_DECREASE 2
-#define CLEAN_TIME_TO_DECREASE 3
-#define ENERGY_TIME_TO_DECREASE 4
+uint8_t fullness;
+uint16_t last_fullness_decrease; // age (in mins)
+#define TIME_TO_FULLNESS_DECREASE 1 //60
+#define MAX_FULLNESS 12
 
-#define ENERGY_TIME_TO_INCREASE 1
+uint8_t happiness;
+uint16_t last_happiness_decrease; // age (in mins)
+#define TIME_TO_HAPPINESS_DECREASE 1 //60
+#define MAX_HAPPINESS 12
 
-uint8_t frog_x = 88;
-uint8_t frog_y = 84;
-uint8_t frog_goal_x = 88;
-uint8_t frog_goal_y = 84;
+uint8_t cleanliness;
+uint16_t last_cleanliness_decrease; // age (in mins)
+#define TIME_TO_CLEANLINESS_DECREASE 720
+#define MAX_CLEANLINESS 12
 
-uint8_t frog_evo = EVO_EGG;
-uint8_t next_evo = EVO_EGG;
-uint8_t frog_evolving = FALSE;
+uint8_t care_mistakes;
+uint16_t empty_fullness_time; // age (in mins)
+uint16_t empty_happiness_time; // age (in mins)
+uint16_t empty_cleanliness_time; // age (in mins)
+#define TIME_TO_CARE_MISTAKE 60
 
-uint8_t frog_state = FROG_STAND;
+uint8_t sickness_counter;
+uint16_t last_sickness_increase; // age (in mins)
+#define TIME_TO_SICKNESS_INCREASE 60
+#define MAX_SICKNESS 12
 
-uint8_t frog_move_speed = 8;
-uint8_t frog_move_counter = 0;
+uint8_t friendship_points;
+uint16_t last_friendship_increase; // age (in mins)
+#define TIME_TO_FRIENDSHIP_INCREASE 60
+#define FRIENDSHIP_POINTS_PER_LEVEL 6
 
-uint8_t frog_anim_speed = 32;
-uint8_t frog_anim_counter = 0;
-uint8_t frog_anim_frame = 0;
-uint8_t frog_anim_loops = 0;
-uint8_t show_emote = FALSE;
+uint8_t friendship_level;
+#define POINTS_PER_FRIENDSHIP_LEVEL 6
+#define MAX_FRIENDSHIP 10
 
-uint8_t frog_sec = 0;
-uint8_t frog_min = 0;
-uint8_t frog_hour = 0;
+uint8_t vegetarian;
+uint8_t carnivore;
 
-uint8_t tickles = 0;
+uint16_t age; // in minutes
+#define AGE_TADPOLE 1
+#define AGE_POLLIWOG 61
+#define AGE_FROGLET 1501
+#define AGE_ADULT 4381
+#define AGE_SPECIAL_ADULT 8701
+#define AGE_DEATH 20160
+#define AGE_SPECIAL_DEATH 30240
 
-uint8_t washes = 0;
+uint8_t stage;
+uint8_t face;
+uint8_t emote;
 
-uint8_t frog_eating_fruit = 0;
-uint8_t frog_eating_fly = 0;
-uint8_t fruit_eaten = FALSE;
-uint8_t fly_eaten = FALSE;
+uint8_t personality;
+#define PERSONALITY_NORMAL 0
+#define PERSONALITY_SHY 1
+#define PERSONALITY_FRIENDLY 2
+#define PERSONALITY_ANGRY 3
 
-uint8_t happy = 6;
-uint8_t full = 6;
-uint8_t clean = 6;
-uint8_t energy = 6;
+uint8_t state;
+uint8_t prev_state;
+#define STATE_STAND 0
+#define STATE_WALK 1
+#define STATE_SLEEP 2
+#define STATE_RETREAT 3
+#define STATE_EAT 4
+#define STATE_BATH 5
+#define STATE_PET 6
+#define STATE_HEAL 7
+#define STATE_HAPPY 8
+#define STATE_HUNGRY 9
+#define STATE_DIRTY 10
+#define STATE_SAD 11
+#define STATE_SICK 12
+#define STATE_GROW 13
+#define STATE_FRIENDSHIP 14
+#define STATE_DEAD 15
 
-uint8_t happy_timer = 0;
-uint8_t full_timer = 0;
-uint8_t clean_timer = 0;
-uint8_t energy_timer = 0;
+animation_t frog_anim;
+animation_t emote_anim;
 
-void set_state(uint8_t new_state) {
-	frog_state = new_state;
-	frog_anim_counter = 0;
-	frog_anim_frame = 0;
-	frog_anim_loops = 0;
-	show_emote = FALSE;
+void care_mistake() {
+	care_mistakes++;
 }
 
-void frog_rejoice_small() {
-	set_state(FROG_HAPPY);
-	frog_anim_loops = 1;
+void die_of_sickness() {
+	state = STATE_DEAD;
 }
 
-void frog_rejoice_big() {
-	set_state(FROG_HAPPY);
-	frog_anim_loops = 3;
-	show_emote = TRUE;
+void die_of_old_age() {
+	state = STATE_DEAD;
 }
 
-void frog_refuse() {
-	set_state(FROG_SAD);
-	frog_anim_loops = 3;
+void friendship_level_up() {
+	friendship_level++;
+	state = STATE_FRIENDSHIP;
 }
 
-void frog_tickle(uint8_t frame) {
-	// TODO: don't do this if shy, return something to let hand know what's up, shake head to refuse
-	if (frog_state != FROG_TICKLED) {
-		set_state(FROG_TICKLED);
-	}
-	frog_anim_frame = frame;
-	frog_anim_counter = 0;
-	tickles += 1;
-}
+void update_stats(uint16_t time_diff) {
+	// update age
+	age += time_diff;
 
-void frog_sleep() {
-	if (energy < 12) {
-		set_state(FROG_SLEEP);
-		show_emote = TRUE;
-	} else {
-		frog_refuse();
-	}
-}
+	uint8_t d;
 
-void frog_wake() {
-	if (energy < 12) {
-		frog_rejoice_small();
-	} else {
-		frog_rejoice_big();
-	}
-}
-
-void frog_start_wash() {
-	washes = 0;
-	if (clean < 12) {
-		set_state(FROG_WASH);
-	} else {
-		frog_refuse();
-	}
-}
-
-void frog_stop_wash() {
-	if (frog_anim_loops == 0) {
-		frog_anim_counter = 0;
-		frog_anim_frame = 0;
-		frog_anim_loops = 1;
-	}
-}
-
-uint8_t frog_eat_fruit() {
-	if (full < 12) {
-		frog_eating_fruit = 1;
-		set_state(FROG_HAPPY);
-		frog_anim_frame = 1;
-		if (!fruit_eaten) {
-			fruit_eaten = TRUE;
-			save_item(DATA_FRUIT_EATEN, TRUE);
-		}
-		return TRUE;
-	} else {
-		frog_refuse();
-		return FALSE;
-	}
-}
-
-void frog_eat_fly() {
-	if (full < 12) {
-		frog_eating_fly = 1;
-		set_state(FROG_HAPPY);
-		frog_anim_frame = 1;
-		if (!fly_eaten) {
-			fly_eaten = TRUE;
-			save_item(DATA_FLY_EATEN, TRUE);
-		}
-	} else {
-		frog_refuse();
-	}
-}
-
-void frog_change_rooms() {
-	if (frog_state != FROG_SLEEP) {
-		set_state(FROG_STAND);
-		frog_anim_loops = 0;
-	}
-}
-
-void frog_evolve() {
-	next_evo = frog_evo;
-
-	switch (frog_evo) {
-		case EVO_EGG:
-			if (frog_min >= 1 || frog_hour >= 1) {
-				next_evo = EVO_BABY;
+	// update fullness
+	if (age - last_fullness_decrease >= TIME_TO_FULLNESS_DECREASE) {
+		d = (age - last_fullness_decrease) / TIME_TO_FULLNESS_DECREASE;
+		last_fullness_decrease = age;
+		if (d > fullness) {
+			if (fullness > 0) {
+				empty_fullness_time = age - ((d - fullness) * TIME_TO_FULLNESS_DECREASE);
 			}
-			break;
-
-		case EVO_BABY:
-			if (frog_hour >= 1) {
-				next_evo = EVO_CHILD;
-			}
-			break;
-
-		case EVO_CHILD:
-			if (frog_hour >= 24) {
-				if (fruit_eaten && !fly_eaten) {
-					next_evo = EVO_TEEN_APPLE;
-				} else if (fly_eaten && !fruit_eaten) {
-					next_evo = EVO_TEEN_TAIL;
-				} else {
-					next_evo = EVO_TEEN;
-				}
-			}
-			break;
-
-		case EVO_TEEN_APPLE:
-			if (frog_hour >= 24) {
-				next_evo = EVO_APPLE;
-			}
-			break;
-
-		case EVO_TEEN_TAIL:
-			if (frog_hour >= 24) {
-				next_evo = EVO_AXO;
-			}
-			break;
-
-		case EVO_TEEN:
-			if (frog_hour >= 24) {
-				next_evo = EVO_ADULT;
-			}
-			break;
-	}
-
-	if (next_evo != frog_evo) {
-		save_item(DATA_FROG_EVO, next_evo);
-		frog_sec = 0;
-		frog_min = 0;
-		save_item(DATA_FROG_MIN, frog_min);
-		frog_hour = 0;
-		save_item(DATA_FROG_HOUR, frog_hour);
-		frog_state = FROG_EVOLVING;
-		frog_anim_loops = 9;
-	}
-}
-
-void move_frog(uint8_t x, uint8_t y) {
-	if (frog_state != FROG_SLEEP && frog_evo != EVO_EGG) {
-		frog_x = x;
-		frog_y = y;
-	}
-}
-
-void set_goal(uint8_t x, uint8_t y) {
-	if (frog_state != FROG_SLEEP && frog_evo != EVO_EGG) {
-		frog_goal_x = x;
-		frog_goal_y = y;
-	}
-}
-
-void set_random_goal() {
-	uint8_t x = 24 + rand() / 2; // 24 to 148
-	uint8_t y = 56 + rand() / 5; // 56 to 104
-	set_goal(x, y);
-}
-
-void frog_emote() {
-	if (full <= 4 || clean <= 4 || energy <= 4 || happy <= 4) {
-		set_state(FROG_SAD);
-	} else if (happy >= 12) {
-		set_state(FROG_HAPPY);
-	} else {
-		set_state(FROG_STAND);
-	}
-	frog_anim_loops = 3;
-	show_emote = TRUE;
-}
-
-void animate_frog(uint8_t wandering) {
-	if (frog_evo != EVO_EGG && frog_state <= FROG_WALK_RIGHT && (frog_x != frog_goal_x || frog_y != frog_goal_y)) {
-		frog_move_counter += 1;
-		if (frog_move_counter > frog_move_speed) {
-			frog_move_counter = 0;
-			if (frog_goal_x > frog_x) {
-				if (frog_state != FROG_WALK_RIGHT) {
-					set_state(FROG_WALK_RIGHT);
-				}
-				if (frog_goal_x >= frog_x + 2) {
-					frog_x += 2;
-				} else {
-					frog_x += (frog_goal_x - frog_x);
-				}
-			} else if (frog_goal_x < frog_x) {
-				if (frog_state != FROG_WALK_LEFT) {
-					set_state(FROG_WALK_LEFT);
-				}
-				if (frog_goal_x <= frog_x - 2) {
-					frog_x -= 2;
-				} else {
-					frog_x -= (frog_x - frog_goal_x);
-				}
-			}
-			if (frog_goal_y > frog_y) {
-				frog_y += 1;
-			} else if (frog_goal_y < frog_y) {
-				frog_y -= 1;
+			fullness = 0;
+		} else {
+			fullness -= d;
+			if (fullness == 0) {
+				empty_fullness_time = age;
 			}
 		}
-		if (frog_x == frog_goal_x && frog_y == frog_goal_y) {
-			frog_emote();
+	}
+
+	// update happiness
+	if (age - last_happiness_decrease >= TIME_TO_HAPPINESS_DECREASE) {
+		d = (age - last_happiness_decrease) / TIME_TO_HAPPINESS_DECREASE;
+		last_happiness_decrease = age;
+		if (d > happiness) {
+			if (happiness > 0) {
+				empty_happiness_time = age - ((d - happiness) * TIME_TO_HAPPINESS_DECREASE);
+			}
+			happiness = 0;
+		} else {
+			happiness -= d;
+			if (happiness == 0) {
+				empty_happiness_time = age;
+			}
 		}
 	}
 
-	frog_anim_counter += 1;
-	if (frog_anim_counter > frog_anim_speed) {
-		frog_anim_counter = 0;
-		frog_anim_frame += 1;
-
-		if (frog_anim_frame >= 2) {
-			frog_anim_frame = 0;
-
-			if (frog_anim_loops > 0) {
-				frog_anim_loops -= 1;
-
-				if (frog_anim_loops == 0) {
-					if (frog_state == FROG_EVOLVING) {
-						BGP_REG = DMG_PALETTE(DMG_WHITE, DMG_LITE_GRAY, DMG_DARK_GRAY, DMG_BLACK);
-						SHOW_SPRITES;
-						frog_evo = next_evo;
-						frog_rejoice_big();
-
-					} else if (frog_state == FROG_WASH && washes >= 4) {
-						if (clean < 12 - 6) {
-							clean += 6;
-							frog_rejoice_small();
-						} else {
-							clean = 12;
-							frog_rejoice_big();
-						}
-
-					} else if (frog_state != FROG_STAND) {
-						set_state(FROG_STAND);
-					}
-				}
+	// update cleanliness
+	if (age - last_cleanliness_decrease >= TIME_TO_CLEANLINESS_DECREASE) {
+		d = (age - last_cleanliness_decrease) / TIME_TO_CLEANLINESS_DECREASE;
+		last_cleanliness_decrease = age;
+		if (d > cleanliness) {
+			if (cleanliness > 0) {
+				empty_cleanliness_time = age - ((d - cleanliness) * TIME_TO_CLEANLINESS_DECREASE);
+			}
+			cleanliness = 0;
+		} else {
+			cleanliness -= d;
+			if (cleanliness == 0) {
+				empty_cleanliness_time = age;
 			}
 		}
+	}
 
-		if (frog_state == FROG_TICKLED && frog_anim_frame == 0) {
-			if (tickles >= 4) {
-				if (happy < 12 - 3) {
-					happy += 3;
-					frog_rejoice_small();
-				} else {
-					happy = 12;
-					frog_rejoice_big();
-				}
-			} else {
-				set_state(FROG_STAND);
-			}
-			tickles = 0;
-		}
+	// check for care mistakes
+	if (age - empty_fullness_time >= TIME_TO_CARE_MISTAKE) {
+		care_mistake();
+	}
+	if (age - empty_happiness_time >= TIME_TO_CARE_MISTAKE) {
+		care_mistake();
+	}
+	if (age - empty_cleanliness_time >= TIME_TO_CARE_MISTAKE) {
+		care_mistake();
+	}
 
-		if (frog_state == FROG_WASH) {
-			washes += 1;
+	// update sickness counter
+	if (state == STATE_SICK && age - last_sickness_increase >= TIME_TO_SICKNESS_INCREASE) {
+		d = (age - last_sickness_increase) / TIME_TO_SICKNESS_INCREASE;
+		last_sickness_increase = age;
+		sickness_counter += d;
+		if (sickness_counter >= MAX_SICKNESS) {
+			die_of_sickness();
 		}
+	}
 
-		if (frog_eating_fruit) {
-			frog_eating_fruit += 1;
-		}
-		if (frog_eating_fruit == 2 || frog_eating_fruit == 5 || frog_eating_fruit == 8) {
-			set_state(FROG_EAT);
-		} else if (frog_eating_fruit == 4 || frog_eating_fruit == 7) {
-			set_state(FROG_HAPPY);
-			frog_anim_frame = 1;
-		} else if (frog_eating_fruit >= 10) {
-			frog_eating_fruit = 0;
-			if (full < 12 - 6) {
-				full += 6;
-				frog_rejoice_small();
-			} else {
-				full = 12;
-				frog_rejoice_big();
-			}
-		}
-
-		if (frog_eating_fly) {
-			frog_eating_fly += 1;
-		}
-		if (frog_eating_fly == 2) {
-			set_state(FROG_EAT);
-		} else if (frog_eating_fly >= 8) {
-			frog_eating_fly = 0;
-			if (full < 12 - 2) {
-				full += 2;
-				frog_rejoice_small();
-			} else {
-				full = 12;
-				frog_rejoice_big();
-			}
-		}
-
-		if (frog_evo != EVO_EGG && wandering && !frog_anim_loops && frog_state == FROG_STAND && frog_x == frog_goal_x && frog_y == frog_goal_y) {
-			if (rand() < 10) {
-				set_random_goal();
-			} else {
-				frog_anim_loops = 3;
+	// update friendship points
+	if (friendship_level < MAX_FRIENDSHIP) {
+		if (age - last_friendship_increase >= TIME_TO_FRIENDSHIP_INCREASE) {
+			d = (age - last_friendship_increase) / TIME_TO_FRIENDSHIP_INCREASE;
+			friendship_points += d;
+			if (friendship_points >= POINTS_PER_FRIENDSHIP_LEVEL) {
+				friendship_points = 0;
+				friendship_level_up();
 			}
 		}
 	}
 }
 
-void update_frog(uint8_t time_speed) {
-	frog_sec += 1;
+void reset_frog() {
+	frog_x = 100;
+	frog_y = 100;
 
-	if (frog_sec >= 60) {
-		frog_sec = 0;
-		frog_min += 1;
-		save_item(DATA_FROG_MIN, frog_min);
-		reset_clock();
-		if (frog_min >= 60) {
-			frog_min = 0;
-			frog_hour += 1;
-			save_item(DATA_FROG_HOUR, frog_hour);
-		}
+	frog_anim = new_animation(32, 2, 0);
+	emote_anim = new_animation(32, 2, 0);
+	emote_anim.ticks = 24;
 
-		if (frog_state != FROG_EVOLVING && frog_state <= FROG_WALK_RIGHT) {
-			frog_evolve();
-		}
+	stage = STAGE_NORM;
+	face = FACE_HAPPY;
+	emote = EMOTE_LOVE;
 
-		if (frog_evo == EVO_EGG) {
-			return;
-		}
+	fullness = 8;
+	happiness = 4;
 
-		happy_timer += 1;
-		save_item(DATA_HAPPY_TIMER, happy_timer);
-		if (happy_timer >= time_speed * HAPPY_TIME_TO_DECREASE) {
-			happy_timer = 0;
-			if (happy > 0) {
-				happy -= 1;
-				save_item(DATA_HAPPY, happy);
-			}
-		}
-
-		full_timer += 1;
-		save_item(DATA_FULL_TIMER, full_timer);
-		if (full_timer >= time_speed * FULL_TIME_TO_DECREASE) {
-			full_timer = 0;
-			if (full > 0) {
-				full -= 1;
-				save_item(DATA_FULL, full);
-			}
-		}
-
-		clean_timer += 1;
-		save_item(DATA_CLEAN_TIMER, clean_timer);
-		if (clean_timer >= time_speed * CLEAN_TIME_TO_DECREASE) {
-			clean_timer = 0;
-			if (clean > 0) {
-				clean -= 1;
-				save_item(DATA_CLEAN, clean);
-			}
-		}
-
-		energy_timer += 1;
-		save_item(DATA_ENERGY_TIMER, energy_timer);
-		if (frog_state == FROG_SLEEP && energy_timer >= time_speed * ENERGY_TIME_TO_INCREASE) {
-			energy_timer = 0;
-			if (energy < 12) {
-				energy += 1;
-				save_item(DATA_ENERGY, energy);
-			}
-		} else if (frog_state != FROG_SLEEP && energy_timer >= time_speed * ENERGY_TIME_TO_DECREASE) {
-			energy_timer = 0;
-			if (energy > 0) {
-				energy -= 1;
-				save_item(DATA_ENERGY, energy);
-			}
-		}
-	}
+	set_frog_sprite_data(stage, face);
+	set_emote_sprite_data(emote);
 }
 
-void update_frog_after_break(uint8_t time_speed, uint16_t *days, uint8_t *hours, uint8_t *minutes, uint8_t *seconds) {
-	uint16_t missed_minutes = *minutes + (*hours * 60);
-	uint16_t total_hours = frog_hour + *hours;
+void draw_frog(uint8_t *last_sprite) {
+	update_animation(&frog_anim);
+	update_animation(&emote_anim);
 
-	frog_sec = *seconds;
+	draw_frog_sprite(frog_x, frog_y, frog_anim.frame, last_sprite);
 
-	frog_min += *minutes;
-	if (frog_min >= 60) {
-		frog_min -= 60;
-		total_hours += 1;
+	if (emote != EMOTE_NONE) {
+		draw_emote_sprite(frog_x + 32, frog_y, emote_anim.frame, last_sprite);
 	}
-
-	if (*days < 10) {
-		missed_minutes += *days * 1440;
-		total_hours += *days * 24;
-	} else {
-		missed_minutes += 1440;
-		total_hours += 240;
-	}
-
-	if (total_hours < 255) {
-		frog_hour = (uint8_t) total_hours;
-	} else {
-		frog_hour = 255;
-	}
-
-	uint8_t full_rate = time_speed * FULL_TIME_TO_DECREASE;
-	uint8_t full_decrease = missed_minutes / full_rate;
-	full_timer = missed_minutes % full_rate;
-	if (full_timer >= full_rate) {
-		full_timer -= full_rate;
-		full_decrease += 1;
-	}
-	if (full_decrease < full) {
-		full -= full_decrease;
-	} else {
-		full = 0;
-	}
-
-	uint8_t clean_rate = time_speed * CLEAN_TIME_TO_DECREASE;
-	uint8_t clean_decrease = missed_minutes / clean_rate;
-	clean_timer = missed_minutes % clean_rate;
-	if (clean_timer >= clean_rate) {
-		clean_timer -= clean_rate;
-		clean_decrease += 1;
-	}
-	if (clean_decrease < clean) {
-		clean -= clean_decrease;
-	} else {
-		clean = 0;
-	}
-
-	uint8_t energy_rate = time_speed * ENERGY_TIME_TO_DECREASE;
-	uint8_t energy_decrease = missed_minutes / energy_rate;
-	energy_timer = missed_minutes % energy_rate;
-	if (energy_timer >= energy_rate) {
-		energy_timer -= energy_rate;
-		energy_decrease += 1;
-	}
-	if (energy_decrease < energy) {
-		energy -= energy_decrease;
-	} else {
-		energy = 0;
-	}
-
-	uint8_t happy_rate = time_speed * HAPPY_TIME_TO_DECREASE;
-	uint8_t happy_decrease = missed_minutes / happy_rate;
-	happy_timer = missed_minutes % happy_rate;
-	if (happy_timer >= happy_rate) {
-		happy_timer -= happy_rate;
-		happy_decrease += 1;
-	}
-	if (happy_decrease < happy) {
-		happy -= happy_decrease;
-	} else {
-		happy = 0;
-	}
-
-	// if too long, frog is dead
-	// figure out if it would have evolved, how many times, and which ones
-}
-
-void load_frog_data() {
-	frog_evo = load_item(DATA_FROG_EVO, frog_evo);
-	frog_min = load_item(DATA_FROG_MIN, frog_min);
-	frog_hour = load_item(DATA_FROG_HOUR, frog_hour);
-
-	happy = load_item(DATA_HAPPY, happy);
-	full = load_item(DATA_FULL, full);
-	clean = load_item(DATA_CLEAN, clean);
-	energy = load_item(DATA_ENERGY, energy);
-
-	happy_timer = load_item(DATA_HAPPY_TIMER, happy_timer);
-	full_timer = load_item(DATA_FULL_TIMER, full_timer);
-	clean_timer = load_item(DATA_CLEAN_TIMER, clean_timer);
-	energy_timer = load_item(DATA_ENERGY_TIMER, energy_timer);
-
-	fruit_eaten = load_item(DATA_FRUIT_EATEN, fruit_eaten);
-	fly_eaten = load_item(DATA_FLY_EATEN, fly_eaten);
 }

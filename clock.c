@@ -1,6 +1,11 @@
 #include <gbdk/platform.h>
 
-void read_clock(uint16_t *days, uint8_t *hours, uint8_t *minutes, uint8_t *seconds) {
+uint16_t days = 0;
+uint8_t hours = 0;
+uint8_t minutes = 0;
+uint8_t seconds = 0;
+
+void read_clock() {
 	/* MBC3 RTC: https://gbdev.io/pandocs/MBC3.html */
 	/* Thanks to CasualPokePlayer and NanoCodeBug for help with this! */
 
@@ -13,37 +18,34 @@ void read_clock(uint16_t *days, uint8_t *hours, uint8_t *minutes, uint8_t *secon
 	volatile uint8_t * const rtc_register = (volatile uint8_t * const)0xA000;
 
 	SWITCH_RAM(0x8);
-	*seconds = *rtc_register;
-	*rtc_register = 0;
-
+	seconds = *rtc_register;
 	SWITCH_RAM(0x9);
-	*minutes = *rtc_register;
-	*rtc_register = 0;
-
+	minutes = *rtc_register;
 	SWITCH_RAM(0xA);
-	*hours = *rtc_register;
-	*rtc_register = 0;
-
+	hours = *rtc_register;
 	SWITCH_RAM(0xB);
-	*days = *rtc_register;
-	*rtc_register = 0;
+	days = *rtc_register;
 
 	SWITCH_RAM(0xC);
 	// bit 0 is the most significant bit of the day register
 	// day is a total of 9 bits or 511 days
 	if (*rtc_register & 0x01) {
-		*days |= 0x0100;
+		days |= 0x0100;
 	}
 	// day overflow bit set
 	if (*rtc_register & 0b10000000) {
-		*days += 512;
+		days += 512;
 	}
-	*rtc_register = 0;
 
 	DISABLE_RAM;
 }
 
 void reset_clock() {
+	days = 0;
+	hours = 0;
+	minutes = 0;
+	seconds = 0;
+
 	ENABLE_RAM;
 
 	volatile uint8_t * const latch_clock = (volatile uint8_t * const)0x6000;

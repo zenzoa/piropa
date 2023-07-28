@@ -27,11 +27,11 @@ const uint8_t emote_sleep_tiles[32] = {
 };
 
 const metasprite_t emote_sleep_metasprite0[] = {
-	METASPR_ITEM(-4, -4, 0, 0), METASPR_TERM
+	METASPR_ITEM(0, 0, 0, 0), METASPR_TERM
 };
 
 const metasprite_t emote_sleep_metasprite1[] = {
-	METASPR_ITEM(-4, -4, 1, 0), METASPR_TERM
+	METASPR_ITEM(0, 0, 1, 0), METASPR_TERM
 };
 
 const metasprite_t* const emote_sleep_metasprites[2] = {

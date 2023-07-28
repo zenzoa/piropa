@@ -15,8 +15,8 @@
 #define emote_sleep_PALETTE_COUNT 1
 #define emote_sleep_COLORS_PER_PALETTE 4
 #define emote_sleep_TOTAL_COLORS 4
-#define emote_sleep_PIVOT_X 4
-#define emote_sleep_PIVOT_Y 4
+#define emote_sleep_PIVOT_X 0
+#define emote_sleep_PIVOT_Y 0
 #define emote_sleep_PIVOT_W 8
 #define emote_sleep_PIVOT_H 8
 

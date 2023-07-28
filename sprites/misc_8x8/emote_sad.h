@@ -15,8 +15,8 @@
 #define emote_sad_PALETTE_COUNT 1
 #define emote_sad_COLORS_PER_PALETTE 4
 #define emote_sad_TOTAL_COLORS 4
-#define emote_sad_PIVOT_X 4
-#define emote_sad_PIVOT_Y 4
+#define emote_sad_PIVOT_X 0
+#define emote_sad_PIVOT_Y 0
 #define emote_sad_PIVOT_W 8
 #define emote_sad_PIVOT_H 8
 

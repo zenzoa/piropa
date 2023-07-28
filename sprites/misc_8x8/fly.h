@@ -15,8 +15,8 @@
 #define fly_PALETTE_COUNT 1
 #define fly_COLORS_PER_PALETTE 4
 #define fly_TOTAL_COLORS 4
-#define fly_PIVOT_X 4
-#define fly_PIVOT_Y 4
+#define fly_PIVOT_X 0
+#define fly_PIVOT_Y 0
 #define fly_PIVOT_W 8
 #define fly_PIVOT_H 8
 
