@@ -37,6 +37,7 @@ void main() {
 	} else {
 		reset_clock();
 		save_data();
+		update_hud_clock();
 	}
 
 	setup_hud();
@@ -48,16 +49,17 @@ void main() {
 		hide_sprites_range(last_sprite, MAX_HARDWARE_SPRITES);
 
 		frames += 1;
-		if (frames >= 60) {
+		if (frames >= 30) {
 			frames = 0;
 			read_clock();
 			update_hud_clock();
-			if (minutes != last_stat_check_min && seconds >= last_stat_check_sec) {
-				last_stat_check_min = minutes;
-				update_stats(1);
-				draw_hud();
-				save_data();
-			}
+			draw_hud();
+			// if (minutes != last_stat_check_min && seconds >= last_stat_check_sec) {
+			// 	last_stat_check_min = minutes;
+			// 	update_stats(1);
+			// 	draw_hud();
+			// 	save_data();
+			// }
 		}
 
 		wait_vbl_done(); // wait for next frame

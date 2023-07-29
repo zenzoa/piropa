@@ -75,7 +75,7 @@ void setup_hud() {
 
 
 void update_hud_clock() {
-	hud_minutes = minutes;
+	hud_minutes = seconds;
 	// uint8_t seconds_overflow = 0;
 	// uint8_t minutes_overflow = 0;
 
