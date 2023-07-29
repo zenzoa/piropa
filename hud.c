@@ -18,12 +18,12 @@
 uint8_t clock_vram = HUD_VRAM;
 
 uint8_t hud_hours_0 = 7;
-uint8_t hud_minutes_0 = 37;
+uint8_t hud_minutes_0 = 30;
 uint8_t hud_seconds_0 = 0;
 
-uint8_t hud_hours = 7;
-uint8_t hud_minutes = 37;
-uint8_t hud_seconds = 0;
+uint8_t hud_hours;
+uint8_t hud_minutes;
+uint8_t hud_seconds;
 
 void draw_stats() {
 	SWITCH_ROM(BANK(frog_bank));
@@ -42,57 +42,52 @@ void draw_stats() {
 }
 
 void draw_time() {
-	// uint8_t display_hours = hud_hours;
-	// if (display_hours > 12) {
-	// 	display_hours -= 12;
-	// 	set_bkg_tile_xy(12, 1, PM_VRAM);
-	// } else {
-	// 	set_bkg_tile_xy(12, 1, AM_VRAM);
-	// }
+	uint8_t display_hours = hud_hours;
+	if (display_hours > 12) {
+		display_hours -= 12;
+		set_bkg_tile_xy(12, 1, PM_VRAM);
+	} else {
+		set_bkg_tile_xy(12, 1, AM_VRAM);
+	}
 
-	// if (display_hours >= 10) {
-	// 	set_bkg_tile_xy(7, 1, clock_vram + 1);
-	// 	set_bkg_tile_xy(8, 1, clock_vram + (display_hours - 10));
-	// } else {
-	// 	set_bkg_tile_xy(8, 1, clock_vram + display_hours);
-	// }
-	set_bkg_tile_xy(7, 1, clock_vram + (minutes / 10));
-	set_bkg_tile_xy(8, 1, clock_vram + (minutes % 10));
+	set_bkg_tile_xy(7, 1, clock_vram + (hud_hours / 10));
+	set_bkg_tile_xy(8, 1, clock_vram + (hud_hours % 10));
 
 	set_bkg_tile_xy(9, 1, COLON_VRAM);
 
-	set_bkg_tile_xy(10, 1, clock_vram + (seconds / 10));
-	set_bkg_tile_xy(11, 1, clock_vram + (seconds % 10));
+	set_bkg_tile_xy(10, 1, clock_vram + (hud_minutes / 10));
+	set_bkg_tile_xy(11, 1, clock_vram + (hud_minutes % 10));
 }
 
 void draw_hud() {
 	draw_time();
-	// draw_stats();
+	draw_stats();
+}
+
+void update_hud_clock() {
+	hud_seconds = hud_seconds_0 + seconds;
+	uint8_t seconds_overflow = 0;
+	if (hud_seconds >= 60) {
+		hud_seconds -= 60;
+		seconds_overflow = 1;
+	}
+
+	hud_minutes = hud_minutes_0 + minutes + seconds_overflow;
+	uint8_t minutes_overflow = 0;
+	if (hud_minutes >= 60) {
+		hud_minutes -= 60;
+		minutes_overflow = 1;
+	}
+
+	hud_hours = hud_hours_0 + hours + minutes_overflow;
+	if (hud_hours > 24) {
+		hud_hours = 1;
+	}
 }
 
 void setup_hud() {
 	SWITCH_ROM(BANK(hud));
 	set_bkg_data(HUD_VRAM, 17, hud_tiles);
+	update_hud_clock();
 	draw_hud();
-}
-
-
-void update_hud_clock() {
-	// uint8_t seconds_overflow = 0;
-	// uint8_t minutes_overflow = 0;
-
-	// hud_seconds = hud_seconds_0 + seconds;
-	// if (hud_seconds >= 60) {
-	// 	hud_seconds -= 60;
-	// 	seconds_overflow = 1;
-	// }
-	// hud_minutes = hud_minutes_0 + minutes + seconds_overflow;
-	// if (hud_minutes >= 60) {
-	// 	hud_minutes -= 60;
-	// 	minutes_overflow = 1;
-	// }
-	// hud_hours = hud_hours_0 + hours + minutes_overflow;
-	// if (hud_hours > 24) {
-	// 	hud_hours = 1;
-	// }
 }

@@ -4,6 +4,7 @@
 #include <gbdk/metasprites.h>
 #include <rand.h>
 
+#include "clock.h"
 #include "animation.h"
 #include "frog_sprites.h"
 #include "emote_sprites.h"
@@ -114,9 +115,10 @@ void friendship_level_up() {
 	state = STATE_FRIENDSHIP;
 }
 
-void update_stats(uint16_t time_diff) {
+void update_stats() {
 	// update age
-	age += time_diff;
+	uint16_t temp_days = (days <= 44) ? days : 44;
+	age = (temp_days * 1440) + (hours * 60) + minutes;
 
 	uint8_t d;
 
