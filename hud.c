@@ -42,29 +42,32 @@ void draw_stats() {
 }
 
 void draw_time() {
-	uint8_t display_hours = hud_hours;
-	if (display_hours > 12) {
-		display_hours -= 12;
-		set_bkg_tile_xy(12, 1, PM_VRAM);
-	} else {
-		set_bkg_tile_xy(12, 1, AM_VRAM);
-	}
+	// uint8_t display_hours = hud_hours;
+	// if (display_hours > 12) {
+	// 	display_hours -= 12;
+	// 	set_bkg_tile_xy(12, 1, PM_VRAM);
+	// } else {
+	// 	set_bkg_tile_xy(12, 1, AM_VRAM);
+	// }
 
-	if (display_hours >= 10) {
-		set_bkg_tile_xy(7, 1, clock_vram + 1);
-		set_bkg_tile_xy(8, 1, clock_vram + (display_hours - 10));
-	} else {
-		set_bkg_tile_xy(8, 1, clock_vram + display_hours);
-	}
+	// if (display_hours >= 10) {
+	// 	set_bkg_tile_xy(7, 1, clock_vram + 1);
+	// 	set_bkg_tile_xy(8, 1, clock_vram + (display_hours - 10));
+	// } else {
+	// 	set_bkg_tile_xy(8, 1, clock_vram + display_hours);
+	// }
+	set_bkg_tile_xy(7, 1, clock_vram + (minutes / 10));
+	set_bkg_tile_xy(8, 1, clock_vram + (minutes % 10));
 
 	set_bkg_tile_xy(9, 1, COLON_VRAM);
 
-	set_bkg_tile_xy(10, 1, clock_vram + (hud_minutes / 10));
-	set_bkg_tile_xy(11, 1, clock_vram + (hud_minutes % 10));
+	set_bkg_tile_xy(10, 1, clock_vram + (seconds / 10));
+	set_bkg_tile_xy(11, 1, clock_vram + (seconds % 10));
 }
+
 void draw_hud() {
 	draw_time();
-	draw_stats();
+	// draw_stats();
 }
 
 void setup_hud() {
@@ -75,7 +78,6 @@ void setup_hud() {
 
 
 void update_hud_clock() {
-	hud_minutes = seconds;
 	// uint8_t seconds_overflow = 0;
 	// uint8_t minutes_overflow = 0;
 
