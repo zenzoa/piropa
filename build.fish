@@ -38,8 +38,8 @@ if test $sprites
 	aseprite -b sprites/misc_8x8.aseprite --save-as sprites/misc_8x8/{slice}.png
 	aseprite -b sprites/misc_16x8.aseprite --save-as sprites/misc_16x8/{slice}.png
 
+	aseprite -b sprites/bg_bits.aseprite --save-as sprites/backgrounds/{slice}.png
 	aseprite -b --all-layers sprites/backgrounds.aseprite --save-as sprites/backgrounds/{layer}.png
-	aseprite -b --all-layers sprites/bg_bits.aseprite --save-as sprites/backgrounds/{layer}.png
 
 	set_color $text_color; echo ">> convert png files to gbdk assets..."; set_color normal
 
