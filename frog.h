@@ -1,5 +1,8 @@
 BANKREF_EXTERN(frog_bank)
 
+extern uint8_t frog_x;
+extern uint8_t frog_y;
+
 extern uint16_t age;
 extern uint8_t stage;
 extern uint8_t personality;
@@ -30,5 +33,5 @@ extern uint8_t vegetarian;
 extern uint8_t carnivore;
 
 extern void update_stats();
-extern void reset_frog();
+extern void setup_frog();
 extern void draw_frog(uint8_t *last_sprite);

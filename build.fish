@@ -34,6 +34,7 @@ if test $sprites
 	set_color $text_color; echo ">> exporting aseprite slices as png files..."; set_color normal
 
 	aseprite -b sprites/frogs.aseprite --save-as sprites/frogs/{slice}.png
+	aseprite -b sprites/hand.aseprite --save-as sprites/hand/{slice}.png
 	aseprite -b sprites/misc_8x8.aseprite --save-as sprites/misc_8x8/{slice}.png
 	aseprite -b sprites/misc_16x8.aseprite --save-as sprites/misc_16x8/{slice}.png
 
@@ -46,6 +47,10 @@ if test $sprites
 
 	for file in sprites/frogs/*
 		png2asset $file $sprite_args -sw 32 -sh 24
+	end
+
+	for file in sprites/hand/*
+		png2asset $file $sprite_args -sw 24 -sh 16
 	end
 
 	for file in sprites/misc_8x8/*

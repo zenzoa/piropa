@@ -207,7 +207,7 @@ void update_stats() {
 	}
 }
 
-void reset_frog() {
+void setup_frog() {
 	frog_x = 100;
 	frog_y = 100;
 
