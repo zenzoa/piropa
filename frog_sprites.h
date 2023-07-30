@@ -20,8 +20,9 @@
 #define FACE_SCARED 4
 #define FACE_ANGRY 5
 #define FACE_EAT 6
-#define FACE_WALK 7
-#define FACE_SLEEP 8
+#define FACE_WALK_LEFT 7
+#define FACE_WALK_RIGHT 8
+#define FACE_SLEEP 9
 
 extern void swap_frog_vram();
 extern void set_frog_sprite_data(uint8_t stage, uint8_t face);

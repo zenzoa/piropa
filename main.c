@@ -1,5 +1,6 @@
 #include <gbdk/platform.h>
 #include <gbdk/metasprites.h>
+#include <rand.h>
 
 #include "clock.h"
 #include "save.h"
@@ -81,7 +82,6 @@ void draw_sprites() {
 
 	SWITCH_ROM(BANK(frog_bank));
 	draw_frog(&last_sprite);
-	local_frog_x = frog_x;
 
 	hide_sprites_range(last_sprite, MAX_HARDWARE_SPRITES);
 }
@@ -92,6 +92,8 @@ void main() {
 	SHOW_SPRITES;
 	SPRITES_8x8;
 	OBP0_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_WHITE, DMG_LITE_GRAY, DMG_BLACK);
+
+	initrand(DIV_REG);
 
 	SWITCH_ROM(BANK(field));
 	set_bkg_data(0, field_TILE_COUNT, field_tiles);
@@ -115,6 +117,10 @@ void main() {
 	setup_hud();
 
 	while(1) {
+		SWITCH_ROM(BANK(frog_bank));
+		update_frog();
+		local_frog_x = frog_x;
+
 		handle_input();
 
 		draw_sprites();

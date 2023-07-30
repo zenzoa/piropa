@@ -35,3 +35,4 @@ extern uint8_t carnivore;
 extern void update_stats();
 extern void setup_frog();
 extern void draw_frog(uint8_t *last_sprite);
+extern void update_frog();

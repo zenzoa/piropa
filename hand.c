@@ -16,7 +16,7 @@ uint16_t hand_y_frac;
 uint8_t hand_offset;
 
 void setup_hand() {
-	hand_x = 50;
+	hand_x = 80;
 	hand_y = 50;
 	hand_x_frac = hand_x << 8;
 	hand_y_frac = hand_y << 8;

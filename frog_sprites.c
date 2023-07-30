@@ -83,11 +83,13 @@
 #define FACE_SCARED 4
 #define FACE_ANGRY 5
 #define FACE_EAT 6
-#define FACE_WALK 7
-#define FACE_SLEEP 8
+#define FACE_WALK_LEFT 7
+#define FACE_WALK_RIGHT 8
+#define FACE_SLEEP 9
 
 uint8_t frog_sprite_bank;
 metasprite_t** frog_metasprites;
+uint8_t frog_flipped = FALSE;
 
 #define FROG_VRAM_1 0x0
 #define FROG_VRAM_2 0x18
@@ -103,6 +105,7 @@ void swap_frog_vram() {
 
 void set_frog_sprite_data(uint8_t stage, uint8_t face) {
 	uint8_t saved_bank = _current_bank;
+	frog_flipped = FALSE;
 
 	switch(stage) {
 		case STAGE_NORM:
@@ -149,11 +152,18 @@ void set_frog_sprite_data(uint8_t stage, uint8_t face) {
 					set_sprite_data(frog_vram, norm_eat_TILE_COUNT, norm_eat_tiles);
 					frog_metasprites = norm_eat_metasprites;
 					break;
-				case FACE_WALK:
+				case FACE_WALK_LEFT:
 					frog_sprite_bank = BANK(norm_walk);
 					SWITCH_ROM(frog_sprite_bank);
 					set_sprite_data(frog_vram, norm_walk_TILE_COUNT, norm_walk_tiles);
 					frog_metasprites = norm_walk_metasprites;
+					break;
+				case FACE_WALK_RIGHT:
+					frog_sprite_bank = BANK(norm_walk);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, norm_walk_TILE_COUNT, norm_walk_tiles);
+					frog_metasprites = norm_walk_metasprites;
+					frog_flipped = TRUE;
 					break;
 				case FACE_SLEEP:
 					frog_sprite_bank = BANK(norm_sleep);
@@ -172,7 +182,11 @@ void draw_frog_sprite(uint8_t x, uint8_t y, uint8_t frame, uint8_t *last_sprite)
 	uint8_t saved_bank = _current_bank;
 
 	SWITCH_ROM(frog_sprite_bank);
-	*last_sprite += move_metasprite(frog_metasprites[frame], frog_vram, *last_sprite, x, y);
+	if (frog_flipped) {
+		*last_sprite += move_metasprite_vflip(frog_metasprites[frame], frog_vram, *last_sprite, x + 32, y);
+	} else {
+		*last_sprite += move_metasprite(frog_metasprites[frame], frog_vram, *last_sprite, x, y);
+	}
 
 	SWITCH_ROM(saved_bank);
 }

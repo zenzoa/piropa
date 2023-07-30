@@ -207,25 +207,6 @@ void update_stats() {
 	}
 }
 
-void setup_frog() {
-	frog_x = 100;
-	frog_y = 100;
-
-	frog_anim = new_animation(32, 2, 0);
-	emote_anim = new_animation(32, 2, 0);
-	emote_anim.ticks = 24;
-
-	stage = STAGE_NORM;
-	face = FACE_HAPPY;
-	emote = EMOTE_LOVE;
-
-	fullness = 8;
-	happiness = 4;
-
-	set_frog_sprite_data(stage, face);
-	set_emote_sprite_data(emote);
-}
-
 void draw_frog(uint8_t *last_sprite) {
 	update_animation(&frog_anim);
 	update_animation(&emote_anim);
@@ -234,5 +215,142 @@ void draw_frog(uint8_t *last_sprite) {
 
 	if (emote != EMOTE_NONE) {
 		draw_emote_sprite(frog_x + 32, frog_y, emote_anim.frame, last_sprite);
+	}
+}
+
+void random_goal() {
+	uint8_t zone_x = (rand() < 128);
+	uint8_t zone_y = rand();
+
+	if (zone_x == 0 && frog_x > 56) {
+		if (zone_y < 85) {
+			goal_x = 56;
+			goal_y = 68;
+		} else if (zone_y < 170) {
+			goal_x = 24;
+			goal_y = 112;
+		} else {
+			goal_x = 24;
+			goal_y = 128;
+		}
+	} else if (zone_x == 0 || (zone_x == 1 && frog_x > 72)) {
+		if (zone_y < 85) {
+			goal_x = 72;
+			goal_y = 68;
+		} else if (zone_y < 170) {
+			goal_x = 72;
+			goal_y = 96;
+		} else {
+			goal_x = 64;
+			goal_y = 128;
+		}
+	} else {
+		if (zone_y < 85) {
+			goal_x = 128;
+			goal_y = 68;
+		} else if (zone_y < 170) {
+			goal_x = 128;
+			goal_y = 96;
+		} else {
+			goal_x = 128;
+			goal_y = 128;
+		}
+	}
+
+	if (goal_x < frog_x) {
+		face = FACE_WALK_LEFT;
+	} else {
+		face = FACE_WALK_RIGHT;
+	}
+}
+
+void move_toward_goal() {
+	uint8_t move_x = FALSE;
+	uint8_t move_y = FALSE;
+	if (goal_x != frog_x && goal_y != frog_y) {
+		if (rand() < 128) {
+			move_x = TRUE;
+		} else {
+			move_y = TRUE;
+		}
+	} else if (goal_x != frog_x) {
+		move_x = TRUE;
+	} else if (goal_y != frog_y) {
+		move_y = TRUE;
+	}
+
+	if (move_x) {
+		if (goal_x + 1 == frog_x || goal_x - 1 == frog_x) {
+			frog_x = goal_x;
+		} else if (goal_x < frog_x) {
+			frog_x -= 2;
+		} else if (goal_x > frog_x) {
+			frog_x += 2;
+		}
+	}
+
+	if (move_y) {
+		if (goal_y + 1 == frog_y || goal_y - 1 == frog_y) {
+			frog_y = goal_y;
+		} else if (goal_y < frog_y) {
+			frog_y -= 2;
+		} else if (goal_y > frog_y) {
+			frog_y += 2;
+		}
+	}
+}
+
+void set_state(uint8_t new_state) {
+	switch(new_state) {
+		case STATE_STAND:
+			face = FACE_NEUTRAL;
+			emote = EMOTE_NONE;
+			frog_anim = new_animation(32, 2, 0);
+			// emote_anim.ticks = 24;
+			break;
+		case STATE_WALK:
+			face = FACE_WALK_LEFT;
+			emote = EMOTE_NONE;
+			frog_anim = new_animation(24, 2, 0);
+			random_goal();
+			break;
+	}
+	swap_frog_vram();
+	set_frog_sprite_data(stage, face);
+	state = new_state;
+}
+
+void setup_frog() {
+	frog_x = 72;
+	frog_y = 68;
+
+	goal_x = frog_x;
+	goal_y = frog_y;
+
+	stage = STAGE_NORM;
+	set_state(STATE_STAND);
+
+	fullness = 8;
+	happiness = 4;
+
+	set_frog_sprite_data(stage, face);
+	set_emote_sprite_data(emote);
+}
+
+void update_frog() {
+	switch(state) {
+		case STATE_STAND:
+			if (frog_anim.frame == 0 && frog_anim.ticks == 0 && rand() < 25) {
+				set_state(STATE_WALK);
+			}
+			break;
+		case STATE_WALK:
+			if (frog_anim.ticks == 6 || frog_anim.ticks == 18) {
+				move_toward_goal();
+				if (frog_x == goal_x && frog_y == goal_y) {
+					set_state(STATE_STAND);
+				}
+			}
+			break;
 	}
 }
