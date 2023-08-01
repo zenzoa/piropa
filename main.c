@@ -17,14 +17,10 @@ uint8_t frames = 0;
 uint8_t last_update_minutes = 0;
 uint8_t last_update_seconds = 0;
 
-uint8_t local_frog_x;
-uint8_t local_frog_y;
-
 void draw_sprites() {
 	last_sprite = 0;
 
-	SWITCH_ROM(BANK(hand_bank));
-	draw_hand(&last_sprite, local_frog_x);
+	draw_hand(&last_sprite);
 
 	SWITCH_ROM(BANK(frog_bank));
 	draw_frog(&last_sprite);
@@ -46,7 +42,6 @@ void main() {
 	SWITCH_ROM(BANK(frog_bank));
 	setup_frog();
 
-	SWITCH_ROM(BANK(hand_bank));
 	setup_hand();
 
 	if (load_data()) {
@@ -63,7 +58,7 @@ void main() {
 	while(1) {
 		SWITCH_ROM(BANK(frog_bank));
 		update_frog();
-		local_frog_x = frog_x;
+		update_hand();
 
 		handle_input();
 

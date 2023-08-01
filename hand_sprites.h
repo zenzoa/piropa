@@ -1,4 +1,5 @@
 #define HAND_DEFAULT 0
+#define HAND_OPEN 1
 
 extern void swap_hand_vram();
 extern void set_hand_sprite_data(uint8_t hand_state);

@@ -7,7 +7,6 @@ uint8_t a_button_pressed = FALSE;
 uint8_t b_button_pressed = FALSE;
 
 void handle_dpad() {
-	SWITCH_ROM(BANK(hand_bank));
 	if (joypad_value & J_LEFT) {
 		if (joypad_value & J_UP) {
 			move_hand_by_frac(-181, -181);

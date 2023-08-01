@@ -32,7 +32,6 @@ void setup_field() {
 }
 
 void update_field() {
-	SWITCH_ROM(BANK(hand_bank));
 	if (hand_x + 16 >= 112 && hand_x < 136 && hand_y + 16 >= 72 && hand_y < 88) {
 		set_basket(TRUE);
 	} else {

@@ -2,8 +2,10 @@
 #include <gbdk/metasprites.h>
 
 #include "sprites/hand/hand_default.h"
+#include "sprites/hand/hand_open.h"
 
 #define HAND_DEFAULT 0
+#define HAND_OPEN 1
 
 uint8_t hand_sprite_bank;
 metasprite_t** hand_metasprites;
@@ -30,6 +32,13 @@ void set_hand_sprite_data(uint8_t hand_state) {
 			SWITCH_ROM(hand_sprite_bank);
 			set_sprite_data(hand_vram, hand_default_TILE_COUNT, hand_default_tiles);
 			hand_metasprites = hand_default_metasprites;
+			break;
+
+		case HAND_OPEN:
+			hand_sprite_bank = BANK(hand_open);
+			SWITCH_ROM(hand_sprite_bank);
+			set_sprite_data(hand_vram, hand_open_TILE_COUNT, hand_open_tiles);
+			hand_metasprites = hand_open_metasprites;
 			break;
 
 	}
