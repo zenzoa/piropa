@@ -79,6 +79,6 @@ void main(void) {
 			}
 		}
 
-		wait_vbl_done(); // wait for next frame
+		vsync(); // wait for next frame
 	}
 }

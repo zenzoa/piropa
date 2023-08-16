@@ -68,7 +68,7 @@ void draw_hand_sprite(uint8_t x, uint8_t y, uint8_t frame, uint8_t *last_sprite)
 	uint8_t saved_bank = _current_bank;
 
 	SWITCH_ROM(hand_sprite_bank);
-	*last_sprite += move_metasprite(hand_metasprites[frame], hand_vram, *last_sprite, x, y);
+	*last_sprite += move_metasprite_ex(hand_metasprites[frame], hand_vram, 0, *last_sprite, x, y);
 
 	SWITCH_ROM(saved_bank);
 }

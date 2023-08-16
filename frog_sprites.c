@@ -183,9 +183,9 @@ void draw_frog_sprite(uint8_t x, uint8_t y, uint8_t frame, uint8_t *last_sprite)
 
 	SWITCH_ROM(frog_sprite_bank);
 	if (frog_flipped) {
-		*last_sprite += move_metasprite_vflip(frog_metasprites[frame], frog_vram, *last_sprite, x + 32, y);
+		*last_sprite += move_metasprite_flipx(frog_metasprites[frame], frog_vram, 0, *last_sprite, x + 32, y);
 	} else {
-		*last_sprite += move_metasprite(frog_metasprites[frame], frog_vram, *last_sprite, x, y);
+		*last_sprite += move_metasprite_ex(frog_metasprites[frame], frog_vram, 0, *last_sprite, x, y);
 	}
 
 	SWITCH_ROM(saved_bank);
