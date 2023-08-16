@@ -98,24 +98,24 @@ uint8_t prev_state;
 animation_t frog_anim;
 animation_t emote_anim;
 
-void care_mistake() {
+void care_mistake(void) {
 	care_mistakes++;
 }
 
-void die_of_sickness() {
+void die_of_sickness(void) {
 	state = STATE_DEAD;
 }
 
-void die_of_old_age() {
+void die_of_old_age(void) {
 	state = STATE_DEAD;
 }
 
-void friendship_level_up() {
+void friendship_level_up(void) {
 	friendship_level++;
 	state = STATE_FRIENDSHIP;
 }
 
-void update_stats() {
+void update_stats(void) {
 	// update age
 	uint16_t temp_days = (days <= 44) ? days : 44;
 	age = (temp_days * 1440) + (hours * 60) + minutes;
@@ -218,7 +218,7 @@ void draw_frog(uint8_t *last_sprite) {
 	}
 }
 
-void random_goal() {
+void random_goal(void) {
 	uint8_t zone_x = (rand() < 128);
 	uint8_t zone_y = rand();
 
@@ -264,7 +264,7 @@ void random_goal() {
 	}
 }
 
-void move_toward_goal() {
+void move_toward_goal(void) {
 	uint8_t move_x = FALSE;
 	uint8_t move_y = FALSE;
 	if (goal_x != frog_x && goal_y != frog_y) {
@@ -320,7 +320,7 @@ void set_state(uint8_t new_state) {
 	state = new_state;
 }
 
-void setup_frog() {
+void setup_frog(void) {
 	frog_x = 72;
 	frog_y = 68;
 
@@ -337,7 +337,7 @@ void setup_frog() {
 	set_emote_sprite_data(emote);
 }
 
-void update_frog() {
+void update_frog(void) {
 	switch(state) {
 		case STATE_STAND:
 			if (frog_anim.frame == 0 && frog_anim.ticks == 0 && rand() < 25) {

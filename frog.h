@@ -32,7 +32,7 @@ extern uint8_t friendship_level;
 extern uint8_t vegetarian;
 extern uint8_t carnivore;
 
-extern void update_stats();
-extern void setup_frog();
+extern void update_stats(void);
+extern void setup_frog(void);
 extern void draw_frog(uint8_t *last_sprite);
-extern void update_frog();
+extern void update_frog(void);

@@ -27,11 +27,13 @@ const uint8_t emote_sad_tiles[32] = {
 };
 
 const metasprite_t emote_sad_metasprite0[] = {
-	METASPR_ITEM(0, 0, 0, 0), METASPR_TERM
+	METASPR_ITEM(0, 0, 0, S_PAL(0)),
+	METASPR_TERM
 };
 
 const metasprite_t emote_sad_metasprite1[] = {
-	METASPR_ITEM(0, 0, 1, 0), METASPR_TERM
+	METASPR_ITEM(0, 0, 1, S_PAL(0)),
+	METASPR_TERM
 };
 
 const metasprite_t* const emote_sad_metasprites[2] = {

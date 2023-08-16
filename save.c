@@ -4,7 +4,7 @@
 #include "hud.h"
 
 typedef struct save_slot_t {
-	uint16_t signature;
+	uint16_t save_flag;
 
 	uint8_t hud_hours_0;
 	uint8_t hud_minutes_0;
@@ -42,11 +42,13 @@ typedef struct save_slot_t {
 
 save_slot_t AT(0xA000) save_slot;
 
-void save_data() {
+const uint16_t SAVE_FLAG_VALUE = 0xACAB;
+
+void save_data(void) {
 	ENABLE_RAM;
 	SWITCH_RAM(0);
 
-	save_slot.signature = 0xACAB;
+	save_slot.save_flag = SAVE_FLAG_VALUE;
 	save_slot.hud_hours_0 = hud_hours_0;
 	save_slot.hud_minutes_0 = hud_minutes_0;
 	save_slot.hud_seconds_0 = hud_seconds_0;
@@ -85,11 +87,13 @@ void save_data() {
 	DISABLE_RAM;
 }
 
-uint8_t load_data() {
+uint8_t load_data(void) {
+	uint8_t was_load_successful = FALSE;
+
 	ENABLE_RAM;
 	SWITCH_RAM(0);
 
-	if (save_slot.signature == 0xACAB) {
+	if (save_slot.save_flag == SAVE_FLAG_VALUE) {
 
 		hud_hours_0 = save_slot.hud_hours_0;
 		hud_minutes_0 = save_slot.hud_minutes_0;
@@ -126,13 +130,11 @@ uint8_t load_data() {
 		vegetarian = save_slot.vegetarian;
 		carnivore = save_slot.carnivore;
 
-		DISABLE_RAM;
-		return TRUE;
+		was_load_successful = TRUE;
 
-	} else {
-
-		DISABLE_RAM;
-		return FALSE;
 	}
+
+	DISABLE_RAM;
+	return was_load_successful;
 
 }

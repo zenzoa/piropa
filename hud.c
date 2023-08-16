@@ -25,7 +25,7 @@ uint8_t hud_hours;
 uint8_t hud_minutes;
 uint8_t hud_seconds;
 
-void draw_stats() {
+void draw_stats(void) {
 	SWITCH_ROM(BANK(frog_bank));
 
 	uint8_t i = 1;
@@ -41,7 +41,7 @@ void draw_stats() {
 	}
 }
 
-void draw_time() {
+void draw_time(void) {
 	uint8_t display_hours = hud_hours;
 	if (display_hours > 12) {
 		display_hours -= 12;
@@ -59,12 +59,12 @@ void draw_time() {
 	set_bkg_tile_xy(11, 1, clock_vram + (hud_minutes % 10));
 }
 
-void draw_hud() {
+void draw_hud(void) {
 	draw_time();
 	draw_stats();
 }
 
-void update_hud_clock() {
+void update_hud_clock(void) {
 	hud_seconds = hud_seconds_0 + seconds;
 	uint8_t seconds_overflow = 0;
 	if (hud_seconds >= 60) {
@@ -85,7 +85,7 @@ void update_hud_clock() {
 	}
 }
 
-void setup_hud() {
+void setup_hud(void) {
 	SWITCH_ROM(BANK(hud));
 	set_bkg_data(HUD_VRAM, 17, hud_tiles);
 	update_hud_clock();

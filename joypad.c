@@ -6,7 +6,7 @@ uint8_t joypad_value;
 uint8_t a_button_pressed = FALSE;
 uint8_t b_button_pressed = FALSE;
 
-void handle_dpad() {
+void handle_dpad(void) {
 	if (joypad_value & J_LEFT) {
 		if (joypad_value & J_UP) {
 			move_hand_by_frac(-181, -181);
@@ -30,16 +30,26 @@ void handle_dpad() {
 	}
 }
 
-void handle_a_button() {
+void handle_a_button(void) {
 	if (joypad_value & J_A && !a_button_pressed) {
 		a_button_pressed = TRUE;
-		// some stuff
+
+		if (is_hand_over_frog()) {
+			if (is_hand_empty() || hand_state == HAND_PET2) {
+				set_hand_state(HAND_PET1);
+
+			} else if (hand_state == HAND_PET1) {
+				set_hand_state(HAND_PET2);
+
+			}
+		}
+
 	} else if (!(joypad_value & J_A)) {
 		a_button_pressed = FALSE;
 	}
 }
 
-void handle_b_button() {
+void handle_b_button(void) {
 	if (joypad_value & J_B && !b_button_pressed) {
 		b_button_pressed = TRUE;
 		// some stuff
@@ -48,7 +58,7 @@ void handle_b_button() {
 	}
 }
 
-void handle_input() {
+void handle_input(void) {
 	joypad_value = joypad();
 	handle_dpad();
 	handle_a_button();

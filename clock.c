@@ -5,7 +5,7 @@ uint8_t hours = 0;
 uint8_t minutes = 0;
 uint8_t seconds = 0;
 
-void read_clock() {
+void read_clock(void) {
 	/* MBC3 RTC: https://gbdev.io/pandocs/MBC3.html */
 	/* Thanks to CasualPokePlayer and NanoCodeBug for help with this! */
 
@@ -40,7 +40,7 @@ void read_clock() {
 	DISABLE_RAM;
 }
 
-void reset_clock() {
+void reset_clock(void) {
 	days = 0;
 	hours = 0;
 	minutes = 0;

@@ -95,7 +95,7 @@ uint8_t frog_flipped = FALSE;
 #define FROG_VRAM_2 0x18
 uint8_t frog_vram = FROG_VRAM_1;
 
-void swap_frog_vram() {
+void swap_frog_vram(void) {
 	if (frog_vram == FROG_VRAM_1) {
 		frog_vram = FROG_VRAM_2;
 	} else {

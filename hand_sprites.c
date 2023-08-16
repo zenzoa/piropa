@@ -3,9 +3,13 @@
 
 #include "sprites/hand/hand_default.h"
 #include "sprites/hand/hand_open.h"
+#include "sprites/hand/hand_pet1.h"
+#include "sprites/hand/hand_pet2.h"
 
 #define HAND_DEFAULT 0
 #define HAND_OPEN 1
+#define HAND_PET1 2
+#define HAND_PET2 3
 
 uint8_t hand_sprite_bank;
 metasprite_t** hand_metasprites;
@@ -14,7 +18,7 @@ metasprite_t** hand_metasprites;
 #define HAND_VRAM_2 0x70
 uint8_t hand_vram = HAND_VRAM_1;
 
-void swap_hand_vram() {
+void swap_hand_vram(void) {
 	if (hand_vram == HAND_VRAM_1) {
 		hand_vram = HAND_VRAM_2;
 	} else {
@@ -39,6 +43,20 @@ void set_hand_sprite_data(uint8_t hand_state) {
 			SWITCH_ROM(hand_sprite_bank);
 			set_sprite_data(hand_vram, hand_open_TILE_COUNT, hand_open_tiles);
 			hand_metasprites = hand_open_metasprites;
+			break;
+
+		case HAND_PET1:
+			hand_sprite_bank = BANK(hand_pet1);
+			SWITCH_ROM(hand_sprite_bank);
+			set_sprite_data(hand_vram, hand_pet1_TILE_COUNT, hand_pet1_tiles);
+			hand_metasprites = hand_pet1_metasprites;
+			break;
+
+		case HAND_PET2:
+			hand_sprite_bank = BANK(hand_pet2);
+			SWITCH_ROM(hand_sprite_bank);
+			set_sprite_data(hand_vram, hand_pet2_TILE_COUNT, hand_pet2_tiles);
+			hand_metasprites = hand_pet2_metasprites;
 			break;
 
 	}

@@ -17,7 +17,7 @@ uint8_t frames = 0;
 uint8_t last_update_minutes = 0;
 uint8_t last_update_seconds = 0;
 
-void draw_sprites() {
+void draw_sprites(void) {
 	last_sprite = 0;
 
 	draw_hand(&last_sprite);
@@ -28,7 +28,7 @@ void draw_sprites() {
 	hide_sprites_range(last_sprite, MAX_HARDWARE_SPRITES);
 }
 
-void main() {
+void main(void) {
 	DISPLAY_ON;
 	SHOW_BKG;
 	SHOW_SPRITES;

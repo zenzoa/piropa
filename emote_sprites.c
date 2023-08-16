@@ -25,7 +25,7 @@ metasprite_t** emote_metasprites;
 #define EMOTE_VRAM_2 0x32
 uint8_t emote_vram = EMOTE_VRAM_1;
 
-void swap_emote_vram() {
+void swap_emote_vram(void) {
 	if (emote_vram == EMOTE_VRAM_1) {
 		emote_vram = EMOTE_VRAM_2;
 	} else {

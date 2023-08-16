@@ -1,2 +1,2 @@
-extern void setup_field();
-extern void update_field();
+extern void setup_field(void);
+extern void update_field(void);

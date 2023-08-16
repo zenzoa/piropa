@@ -1,1 +1,1 @@
-extern void handle_input();
+extern void handle_input(void);

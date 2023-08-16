@@ -27,11 +27,13 @@ const uint8_t fly_tiles[32] = {
 };
 
 const metasprite_t fly_metasprite0[] = {
-	METASPR_ITEM(0, 0, 0, 0), METASPR_TERM
+	METASPR_ITEM(0, 0, 0, S_PAL(0)),
+	METASPR_TERM
 };
 
 const metasprite_t fly_metasprite1[] = {
-	METASPR_ITEM(0, 0, 1, 0), METASPR_TERM
+	METASPR_ITEM(0, 0, 1, S_PAL(0)),
+	METASPR_TERM
 };
 
 const metasprite_t* const fly_metasprites[2] = {

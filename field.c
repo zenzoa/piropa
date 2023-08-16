@@ -21,7 +21,7 @@ void set_basket(uint8_t is_open) {
 	}
 }
 
-void setup_field() {
+void setup_field(void) {
 	SWITCH_ROM(BANK(field));
 	set_bkg_data(0, field_TILE_COUNT, field_tiles);
 	set_bkg_tiles(0, 0, 20, 18, field_map);
@@ -31,7 +31,7 @@ void setup_field() {
 	set_bkg_tiles(13, 7, 3, 1, basket_closed_tile_map);
 }
 
-void update_field() {
+void update_field(void) {
 	if (hand_x + 16 >= 112 && hand_x < 136 && hand_y + 16 >= 72 && hand_y < 88) {
 		set_basket(TRUE);
 	} else {
