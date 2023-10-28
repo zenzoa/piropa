@@ -4,7 +4,11 @@
 #include <gbdk/metasprites.h>
 #include <rand.h>
 
-#include "clock.h"
+#include <stdio.h>
+#include <gbdk/emu_debug.h>
+
+#include "scene.h"
+#include "field.h"
 #include "animation.h"
 #include "frog_sprites.h"
 #include "emote_sprites.h"
@@ -19,248 +23,334 @@ uint8_t frog_y;
 uint8_t goal_x;
 uint8_t goal_y;
 
-uint8_t fullness;
-uint16_t last_fullness_decrease; // age (in mins)
-#define TIME_TO_FULLNESS_DECREASE 1 //60
-#define MAX_FULLNESS 12
+uint8_t life_stage;
+#define EGG 0
+#define TADPOLE 1
+#define FROGLET 2
+#define TEEN 3
+#define ADULT 4
+#define DEAD_BAD 5
+#define DEAD_GOOD 6
 
-uint8_t happiness;
-uint16_t last_happiness_decrease; // age (in mins)
-#define TIME_TO_HAPPINESS_DECREASE 1 //60
-#define MAX_HAPPINESS 12
+uint8_t mood;
+#define MOOD_NEUTRAL 0
+#define MOOD_HAPPY 1
+#define MOOD_HUNGRY 2
+#define MOOD_TIRED 3
+#define MOOD_LONELY 4
+#define MOOD_SICK 5
 
-uint8_t cleanliness;
-uint16_t last_cleanliness_decrease; // age (in mins)
-#define TIME_TO_CLEANLINESS_DECREASE 720
-#define MAX_CLEANLINESS 12
+uint8_t action;
+#define ACTION_STAND 0
+#define ACTION_EMOTE 1
+#define ACTION_WALK 2
+#define ACTION_EAT 3
+#define ACTION_REFUSE 4
+#define ACTION_ENJOY 5
+#define ACTION_YAWN 6
+#define ACTION_SLEEP 7
+#define ACTION_WAKE 8
+#define ACTION_WASH 9
+#define ACTION_CLEAN 10
+#define ACTION_PET 11
+#define ACTION_LOVE 12
+#define ACTION_MEDICATE 13
+#define ACTION_POOP 14
 
-uint8_t care_mistakes;
-uint16_t empty_fullness_time; // age (in mins)
-uint16_t empty_happiness_time; // age (in mins)
-uint16_t empty_cleanliness_time; // age (in mins)
-#define TIME_TO_CARE_MISTAKE 60
+uint8_t stomach;
+uint8_t bowels;
+uint8_t weight;
+uint8_t hygiene;
+uint8_t energy;
+uint8_t love;
+uint8_t medicine;
+uint8_t health;
+uint8_t sickness;
 
-uint8_t sickness_counter;
-uint16_t last_sickness_increase; // age (in mins)
-#define TIME_TO_SICKNESS_INCREASE 60
-#define MAX_SICKNESS 12
-
-uint8_t friendship_points;
-uint16_t last_friendship_increase; // age (in mins)
-#define TIME_TO_FRIENDSHIP_INCREASE 60
-#define FRIENDSHIP_POINTS_PER_LEVEL 6
-
-uint8_t friendship_level;
-#define POINTS_PER_FRIENDSHIP_LEVEL 6
-#define MAX_FRIENDSHIP 10
-
-uint8_t vegetarian;
-uint8_t carnivore;
-
-uint16_t age; // in minutes
-#define AGE_TADPOLE 1
-#define AGE_POLLIWOG 61
-#define AGE_FROGLET 1501
-#define AGE_ADULT 4381
-#define AGE_SPECIAL_ADULT 8701
-#define AGE_DEATH 20160
-#define AGE_SPECIAL_DEATH 30240
+uint8_t poops;
+uint8_t poops_x[6];
+uint8_t poops_y[6];
+#define MAX_POOPS 6
 
 uint8_t stage;
-uint8_t face;
+uint8_t anim;
 uint8_t emote;
-
-uint8_t personality;
-#define PERSONALITY_NORMAL 0
-#define PERSONALITY_SHY 1
-#define PERSONALITY_FRIENDLY 2
-#define PERSONALITY_ANGRY 3
-
-uint8_t state;
-uint8_t prev_state;
-#define STATE_STAND 0
-#define STATE_WALK 1
-#define STATE_SLEEP 2
-#define STATE_RETREAT 3
-#define STATE_EAT 4
-#define STATE_BATH 5
-#define STATE_PET 6
-#define STATE_HEAL 7
-#define STATE_HAPPY 8
-#define STATE_HUNGRY 9
-#define STATE_DIRTY 10
-#define STATE_SAD 11
-#define STATE_SICK 12
-#define STATE_GROW 13
-#define STATE_FRIENDSHIP 14
-#define STATE_DEAD 15
 
 animation_t frog_anim;
 animation_t emote_anim;
+uint8_t anim_complete = 0;
 
-void care_mistake(void) {
-	care_mistakes++;
+void die_badly(void) {
+	life_stage = DEAD_BAD;
 }
 
-void die_of_sickness(void) {
-	state = STATE_DEAD;
+void die_well(void) {
+	life_stage = DEAD_GOOD;
 }
 
-void die_of_old_age(void) {
-	state = STATE_DEAD;
+void place_poop(void) {
+	for (uint8_t i = 0; i < MAX_POOPS; i++) {
+		if (poops_x[i] == 0 && poops_y[i] == 0) {
+			poops_x[i] = frog_x / 8;
+			poops_y[i] = frog_y / 8;
+			if (current_scene == FIELD) {
+				update_poops(poops_x, poops_y, MAX_POOPS);
+			}
+			break;
+		}
+	}
 }
 
-void friendship_level_up(void) {
-	friendship_level++;
-	state = STATE_FRIENDSHIP;
+void clean_poop(uint8_t x, uint8_t y) {
+	for (uint8_t i = 0; i < MAX_POOPS; i++) {
+		if (poops_x[i] == x && poops_y[i] == y) {
+			poops_x[i] = 0;
+			poops_y[i] = 0;
+			if (poops > 0) {
+				poops -= 1;
+			}
+			update_poops(poops_x, poops_y, MAX_POOPS);
+			break;
+		}
+	}
+}
+
+void update_stomach(void) {
+	if (stomach > 0) {
+		stomach -= 1;
+		bowels += 1;
+	}
+	if (stomach == 0) {
+		if (weight > 0) {
+			weight -= 1;
+		}
+	} else if (stomach > 9) {
+		weight += 1;
+		stomach = 9;
+	}
+}
+
+void update_bowels(void) {
+	if (bowels > 3) {
+		if (poops < MAX_POOPS) {
+			poops += 1;
+			place_poop();
+		}
+		bowels = 0;
+	}
+}
+
+void update_weight(void) {
+	if (weight == 0) {
+		die_badly();
+	} else if (life_stage == TADPOLE && (weight < 5 || weight > 10)) {
+		if (health > 0) {
+			health -= 1;
+		}
+	} else if (life_stage == FROGLET && (weight < 10 || weight > 20)) {
+		if (health > 0) {
+			health -= 1;
+		}
+	} else if (life_stage == TEEN && (weight < 20 || weight > 40)) {
+		if (health > 0) {
+			health -= 1;
+		}
+	} else if (life_stage == ADULT && (weight < 40 || weight > 80)) {
+		if (health > 0) {
+			health -= 1;
+		}
+	}
+	if (weight > 99) {
+		weight = 99;
+	}
+}
+
+void update_hygiene(void) {
+	for (uint8_t i = 0; i < poops; i++) {
+		if (hygiene > 0) {
+			hygiene -= 1;
+		}
+	}
+	if (hygiene == 0) {
+		if (health > 0) {
+			health -= 1;
+		}
+	} else if (hygiene > 9) {
+		hygiene = 9;
+	}
+}
+
+void update_energy(void) {
+	if (time_of_day == DAY) {
+		if (energy > 0) {
+			energy -= 1;
+		}
+	} else {
+		energy += 2;
+	}
+	if (energy == 0) {
+		if (health > 0) {
+			health -= 1;
+		}
+	} else if (energy > 9) {
+		energy = 9;
+	}
+}
+
+void update_love(void) {
+	if (time_of_day == DAY && love > 0) {
+		love -= 1;
+	}
+	if (love > 9) {
+		love = 9;
+	}
+}
+
+void update_medicine(void) {
+	if (medicine > 0) {
+		medicine -= 1;
+		health += 1;
+	} else if (medicine > 9) {
+		if (health > 0) {
+			health -= 3;
+		}
+		medicine = 9;
+	}
+}
+
+void update_health(void) {
+	if (health == 0) {
+		sickness += 1;
+	}
+}
+
+void update_sickness(void) {
+	if (sickness > 3) {
+		die_badly();
+	}
+}
+
+void update_mood(void) {
+	if (sickness > 0) {
+		mood = MOOD_SICK;
+		EMU_printf("MOOD: SICK");
+	} else if (stomach <= energy && stomach <= love && stomach < 3) {
+		mood = MOOD_HUNGRY;
+		EMU_printf("MOOD: HUNGRY");
+	} else if (energy <= stomach && energy <= love && energy < 3) {
+		mood = MOOD_TIRED;
+		EMU_printf("MOOD: TIRED");
+	} else if (love <= energy && love <= stomach && love < 3) {
+		mood = MOOD_LONELY;
+		EMU_printf("MOOD: LONELY");
+	} else if (stomach > 5 && energy > 5 && love > 5) {
+		mood = MOOD_HAPPY;
+		EMU_printf("MOOD: HAPPY");
+	} else {
+		mood = MOOD_NEUTRAL;
+		EMU_printf("MOOD: NEUTRAL");
+	}
 }
 
 void update_stats(void) {
-	// update age
-	uint16_t temp_days = (days <= 44) ? days : 44;
-	age = (temp_days * 1440) + (hours * 60) + minutes;
+	update_stomach();
+	update_weight();
+	update_hygiene();
+	update_energy();
+	update_love();
+	update_medicine();
+	update_health();
+	update_sickness();
 
-	uint8_t d;
+	EMU_printf("");
+	EMU_printf("stomach: %hd", stomach);
+	EMU_printf("weight: %hd", weight);
+	EMU_printf("hygiene: %hd", hygiene);
+	EMU_printf("energy: %hd", energy);
+	EMU_printf("love: %hd", love);
+	EMU_printf("medicine: %hd", medicine);
+	EMU_printf("health: %hd", health);
+	EMU_printf("sickness: %hd", sickness);
 
-	// update fullness
-	if (age - last_fullness_decrease >= TIME_TO_FULLNESS_DECREASE) {
-		d = (age - last_fullness_decrease) / TIME_TO_FULLNESS_DECREASE;
-		last_fullness_decrease = age;
-		if (d > fullness) {
-			if (fullness > 0) {
-				empty_fullness_time = age - ((d - fullness) * TIME_TO_FULLNESS_DECREASE);
-			}
-			fullness = 0;
-		} else {
-			fullness -= d;
-			if (fullness == 0) {
-				empty_fullness_time = age;
-			}
-		}
-	}
+	update_mood();
+}
 
-	// update happiness
-	if (age - last_happiness_decrease >= TIME_TO_HAPPINESS_DECREASE) {
-		d = (age - last_happiness_decrease) / TIME_TO_HAPPINESS_DECREASE;
-		last_happiness_decrease = age;
-		if (d > happiness) {
-			if (happiness > 0) {
-				empty_happiness_time = age - ((d - happiness) * TIME_TO_HAPPINESS_DECREASE);
-			}
-			happiness = 0;
-		} else {
-			happiness -= d;
-			if (happiness == 0) {
-				empty_happiness_time = age;
-			}
-		}
-	}
+void feed_fly(void) {
+	stomach += 1;
+}
 
-	// update cleanliness
-	if (age - last_cleanliness_decrease >= TIME_TO_CLEANLINESS_DECREASE) {
-		d = (age - last_cleanliness_decrease) / TIME_TO_CLEANLINESS_DECREASE;
-		last_cleanliness_decrease = age;
-		if (d > cleanliness) {
-			if (cleanliness > 0) {
-				empty_cleanliness_time = age - ((d - cleanliness) * TIME_TO_CLEANLINESS_DECREASE);
-			}
-			cleanliness = 0;
-		} else {
-			cleanliness -= d;
-			if (cleanliness == 0) {
-				empty_cleanliness_time = age;
-			}
-		}
-	}
+void feed_dragonfly(void) {
+	stomach += 3;
+}
 
-	// check for care mistakes
-	if (age - empty_fullness_time >= TIME_TO_CARE_MISTAKE) {
-		care_mistake();
-	}
-	if (age - empty_happiness_time >= TIME_TO_CARE_MISTAKE) {
-		care_mistake();
-	}
-	if (age - empty_cleanliness_time >= TIME_TO_CARE_MISTAKE) {
-		care_mistake();
-	}
+void feed_butterfly(void) {
+	stomach += 1;
+	love += 3;
+}
 
-	// update sickness counter
-	if (state == STATE_SICK && age - last_sickness_increase >= TIME_TO_SICKNESS_INCREASE) {
-		d = (age - last_sickness_increase) / TIME_TO_SICKNESS_INCREASE;
-		last_sickness_increase = age;
-		sickness_counter += d;
-		if (sickness_counter >= MAX_SICKNESS) {
-			die_of_sickness();
-		}
-	}
+void feed_firefly(void) {
+	stomach += 1;
+	energy += 3;
+}
 
-	// update friendship points
-	if (friendship_level < MAX_FRIENDSHIP) {
-		if (age - last_friendship_increase >= TIME_TO_FRIENDSHIP_INCREASE) {
-			d = (age - last_friendship_increase) / TIME_TO_FRIENDSHIP_INCREASE;
-			friendship_points += d;
-			if (friendship_points >= POINTS_PER_FRIENDSHIP_LEVEL) {
-				friendship_points = 0;
-				friendship_level_up();
-			}
-		}
+void wash(void) {
+	hygiene += 3;
+}
+
+void pet(void) {
+	love += 1;
+}
+
+void medicate(void) {
+	medicine += 3;
+	sickness = 0;
+	if (love > 0) {
+		love -= 1;
 	}
 }
 
 void draw_frog(uint8_t *last_sprite) {
-	update_animation(&frog_anim);
+	anim_complete = update_animation(&frog_anim);
 	update_animation(&emote_anim);
 
 	draw_frog_sprite(frog_x, frog_y, frog_anim.frame, last_sprite);
 
 	if (emote != EMOTE_NONE) {
-		draw_emote_sprite(frog_x + 32, frog_y, emote_anim.frame, last_sprite);
+		draw_emote_sprite(frog_x + 12, frog_y - 8, emote_anim.frame, last_sprite);
 	}
+
+	// if (hygiene == 0) {
+	// 	draw_dirt_sprite();
+	// }
 }
 
 void random_goal(void) {
-	uint8_t zone_x = (rand() < 128);
-	uint8_t zone_y = rand();
+	uint8_t zone = rand();
 
-	if (zone_x == 0 && frog_x > 56) {
-		if (zone_y < 85) {
-			goal_x = 56;
-			goal_y = 68;
-		} else if (zone_y < 170) {
-			goal_x = 24;
-			goal_y = 112;
-		} else {
-			goal_x = 24;
-			goal_y = 128;
-		}
-	} else if (zone_x == 0 || (zone_x == 1 && frog_x > 72)) {
-		if (zone_y < 85) {
-			goal_x = 72;
-			goal_y = 68;
-		} else if (zone_y < 170) {
-			goal_x = 72;
-			goal_y = 96;
-		} else {
-			goal_x = 64;
-			goal_y = 128;
-		}
+	if (zone < 32) {
+		goal_x = 32;
+		goal_y = 86;
+	} else if (zone < 64) {
+		goal_x = 66;
+		goal_y = 82;
+	} else if (zone < 96) {
+		goal_x = 124;
+		goal_y = 86;
+	} else if (zone < 128) {
+		goal_x = 40;
+		goal_y = 102;
+	} else if (zone < 160) {
+		goal_x = 104;
+		goal_y = 102;
+	} else if (zone < 192) {
+		goal_x = 24;
+		goal_y = 124;
+	} else if (zone < 224) {
+		goal_x = 80;
+		goal_y = 108;
 	} else {
-		if (zone_y < 85) {
-			goal_x = 128;
-			goal_y = 68;
-		} else if (zone_y < 170) {
-			goal_x = 128;
-			goal_y = 96;
-		} else {
-			goal_x = 128;
-			goal_y = 128;
-		}
-	}
-
-	if (goal_x < frog_x) {
-		face = FACE_WALK_LEFT;
-	} else {
-		face = FACE_WALK_RIGHT;
+		goal_x = 120;
+		goal_y = 124;
 	}
 }
 
@@ -280,7 +370,7 @@ void move_toward_goal(void) {
 	}
 
 	if (move_x) {
-		if (goal_x + 1 == frog_x || goal_x - 1 == frog_x) {
+		if (goal_x == frog_x + 1 || goal_x == frog_x - 1) {
 			frog_x = goal_x;
 		} else if (goal_x < frog_x) {
 			frog_x -= 2;
@@ -290,7 +380,7 @@ void move_toward_goal(void) {
 	}
 
 	if (move_y) {
-		if (goal_y + 1 == frog_y || goal_y - 1 == frog_y) {
+		if (goal_y == frog_y + 1 || goal_y == frog_y - 1) {
 			frog_y = goal_y;
 		} else if (goal_y < frog_y) {
 			frog_y -= 2;
@@ -300,57 +390,316 @@ void move_toward_goal(void) {
 	}
 }
 
-void set_state(uint8_t new_state) {
-	switch(new_state) {
-		case STATE_STAND:
-			face = FACE_NEUTRAL;
+void start_action(uint8_t new_action) {
+	switch(new_action) {
+		case ACTION_STAND:
+			emote = EMOTE_NONE;
+			switch(mood) {
+				case MOOD_NEUTRAL:
+					anim = ANIM_NEUTRAL;
+					break;
+				case MOOD_HAPPY:
+					anim = ANIM_HAPPY;
+					break;
+				case MOOD_HUNGRY:
+					anim = ANIM_SAD;
+					break;
+				case MOOD_TIRED:
+					anim = ANIM_SAD;
+					break;
+				case MOOD_LONELY:
+					anim = ANIM_SAD;
+					break;
+				case MOOD_SICK:
+					anim = ANIM_SAD;
+					emote = EMOTE_SKULL;
+					emote_anim = new_animation(32, 2, 0);
+					break;
+			}
+			frog_anim = new_animation(32, 2, 0);
+			break;
+
+		case ACTION_EMOTE:
+			switch(mood) {
+				case MOOD_NEUTRAL:
+					anim = ANIM_NEUTRAL;
+					emote = EMOTE_NONE;
+					break;
+				case MOOD_HAPPY:
+					anim = ANIM_LAUGH;
+					emote = EMOTE_SUN;
+					break;
+				case MOOD_HUNGRY:
+					anim = ANIM_ANGRY;
+					emote = EMOTE_ANGRY;
+					break;
+				case MOOD_TIRED:
+					anim = ANIM_YAWN;
+					emote = EMOTE_BUBBLES;
+					break;
+				case MOOD_LONELY:
+					anim = ANIM_STRESSED;
+					emote = EMOTE_HEARTBREAK;
+					break;
+				case MOOD_SICK:
+					anim = ANIM_STRESSED;
+					emote = EMOTE_SKULL;
+					break;
+			}
+			frog_anim = new_animation(32, 2, 3);
+			emote_anim = new_animation(32, 2, 3);
+			break;
+
+		case ACTION_WALK:
+			random_goal();
+			if (goal_x < frog_x) {
+				anim = ANIM_WALK_LEFT;
+			} else {
+				anim = ANIM_WALK_RIGHT;
+			}
+			frog_anim = new_animation(24, 2, 0);
+			emote = EMOTE_NONE;
+			break;
+
+		case ACTION_EAT:
+			anim = ANIM_EAT;
+			emote = EMOTE_NONE;
+			frog_anim = new_animation(24, 3, 3);
+			break;
+
+		case ACTION_REFUSE:
+			anim = ANIM_SAD;
+			emote = EMOTE_SAD;
+			frog_anim = new_animation(32, 2, 3);
+			emote_anim = new_animation(32, 2, 3);
+			break;
+
+		case ACTION_ENJOY:
+			anim = ANIM_LAUGH;
+			emote = EMOTE_SUN;
+			frog_anim = new_animation(32, 2, 3);
+			emote_anim = new_animation(32, 2, 3);
+			break;
+
+		case ACTION_YAWN:
+			anim = ANIM_YAWN;
+			emote = EMOTE_BUBBLES;
+			frog_anim = new_animation(48, 2, 1);
+			emote_anim = new_animation(48, 2, 1);
+			break;
+
+		case ACTION_SLEEP:
+			anim = ANIM_SLEEP;
+			emote = EMOTE_SLEEP;
+			frog_anim = new_animation(32, 2, 0);
+			emote_anim = new_animation(32, 2, 0);
+			break;
+
+		case ACTION_WAKE:
+			anim = ANIM_YAWN;
+			emote = EMOTE_BUBBLES;
+			frog_anim = new_animation(48, 2, 1);
+			emote_anim = new_animation(48, 2, 1);
+			break;
+
+		case ACTION_WASH:
+			anim = ANIM_HAPPY;
 			emote = EMOTE_NONE;
 			frog_anim = new_animation(32, 2, 0);
-			// emote_anim.ticks = 24;
 			break;
-		case STATE_WALK:
-			face = FACE_WALK_LEFT;
+
+		case ACTION_CLEAN:
+			anim = ANIM_LAUGH;
+			emote = EMOTE_SPARKLE;
+			frog_anim = new_animation(32, 2, 3);
+			emote_anim = new_animation(32, 2, 3);
+			break;
+
+		case ACTION_PET:
+			anim = ANIM_HAPPY;
 			emote = EMOTE_NONE;
-			frog_anim = new_animation(24, 2, 0);
-			random_goal();
+			frog_anim = new_animation(32, 2, 0);
+			break;
+
+		case ACTION_LOVE:
+			anim = ANIM_LAUGH;
+			emote = EMOTE_HEART;
+			frog_anim = new_animation(32, 2, 3);
+			break;
+
+		case ACTION_MEDICATE:
+			anim = ANIM_STRESSED;
+			emote = EMOTE_NONE;
+			frog_anim = new_animation(32, 2, 3);
+			break;
+
+		case ACTION_POOP:
+			anim = ANIM_HAPPY;
+			emote = EMOTE_NONE;
+			frog_anim = new_animation(64, 2, 1);
 			break;
 	}
+
 	swap_frog_vram();
-	set_frog_sprite_data(stage, face);
-	state = new_state;
+	set_frog_sprite_data(stage, anim);
+
+	if (medicine > 0) {
+		emote = EMOTE_HEAL;
+	}
+	if (emote != EMOTE_NONE) {
+		swap_emote_vram();
+		set_emote_sprite_data(emote);
+	}
+
+	action = new_action;
+	anim_complete = 0;
+
+	EMU_printf("");
+	EMU_printf("ACTION: %d", action);
 }
 
 void setup_frog(void) {
-	frog_x = 72;
-	frog_y = 68;
+	frog_x = 66;
+	frog_y = 82;
 
 	goal_x = frog_x;
 	goal_y = frog_y;
 
+	life_stage = ADULT;
+
+	stomach = 9;
+	bowels = 0;
+	weight = 5;
+	hygiene = 9;
+	energy = 9;
+	love = 0;
+	medicine = 0;
+	health = 9;
+	poops = 0;
+	update_mood();
+
 	stage = STAGE_NORM;
-	set_state(STATE_STAND);
+	start_action(ACTION_STAND);
 
-	fullness = 8;
-	happiness = 4;
-
-	set_frog_sprite_data(stage, face);
+	set_frog_sprite_data(stage, anim);
 	set_emote_sprite_data(emote);
 }
 
 void update_frog(void) {
-	switch(state) {
-		case STATE_STAND:
-			if (frog_anim.frame == 0 && frog_anim.ticks == 0 && rand() < 25) {
-				set_state(STATE_WALK);
-			}
+	switch(life_stage) {
+		case EGG:
+			// once old enough, evolve into next stage
 			break;
-		case STATE_WALK:
-			if (frog_anim.ticks == 6 || frog_anim.ticks == 18) {
-				move_toward_goal();
-				if (frog_x == goal_x && frog_y == goal_y) {
-					set_state(STATE_STAND);
-				}
-			}
+		case DEAD_BAD:
 			break;
+		case DEAD_GOOD:
+			break;
+		default:
+			switch(action) {
+				case ACTION_STAND:
+					// if it's nighttime -> ACTION_YAWN
+					if (frog_anim.frame == 0 && frog_anim.ticks == 0) {
+						uint8_t n = rand();
+						if (n < 25) {
+							start_action(ACTION_WALK);
+						} else if (n < 50) {
+							start_action(ACTION_EMOTE);
+						}
+					}
+					break;
+
+				case ACTION_EMOTE:
+					if (anim_complete) {
+						start_action(ACTION_STAND);
+					}
+					break;
+
+				case ACTION_WALK:
+					if (frog_anim.ticks == 6 || frog_anim.ticks == 18) {
+						EMU_printf("");
+						EMU_printf("move toward goal %d %d to %d %d", frog_x, frog_y, goal_x, goal_y);
+						move_toward_goal();
+						if (frog_x == goal_x && frog_y == goal_y) {
+							EMU_printf("");
+							EMU_printf("REACH GOAL");
+							start_action(ACTION_STAND);
+						}
+					}
+					break;
+
+				case ACTION_EAT:
+					if (anim_complete) {
+						start_action(ACTION_STAND);
+					}
+					break;
+
+				case ACTION_REFUSE:
+					if (anim_complete) {
+						start_action(ACTION_STAND);
+					}
+					break;
+
+				case ACTION_ENJOY:
+					if (anim_complete) {
+						start_action(ACTION_STAND);
+					}
+					break;
+
+				case ACTION_YAWN:
+					if (anim_complete) {
+						start_action(ACTION_SLEEP);
+					}
+					break;
+
+				case ACTION_SLEEP:
+					// if it's daytime
+					if (anim_complete) {
+						start_action(ACTION_WAKE);
+					}
+					break;
+
+				case ACTION_WAKE:
+					if (anim_complete) {
+						start_action(ACTION_STAND);
+					}
+					break;
+
+				case ACTION_WASH:
+					if (anim_complete) {
+						start_action(ACTION_CLEAN);
+					}
+					break;
+
+				case ACTION_CLEAN:
+					if (anim_complete) {
+						start_action(ACTION_STAND);
+					}
+					break;
+
+				case ACTION_PET:
+					if (anim_complete) {
+						start_action(ACTION_STAND);
+					}
+					break;
+
+				case ACTION_LOVE:
+					if (anim_complete) {
+						start_action(ACTION_STAND);
+					}
+					break;
+
+				case ACTION_MEDICATE:
+					if (anim_complete) {
+						start_action(ACTION_STAND);
+					}
+					break;
+
+				case ACTION_POOP:
+					if (anim_complete) {
+						start_action(ACTION_STAND);
+					}
+					break;
+
+			}
 	}
 }

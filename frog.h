@@ -3,34 +3,25 @@ BANKREF_EXTERN(frog_bank)
 extern uint8_t frog_x;
 extern uint8_t frog_y;
 
-extern uint16_t age;
+extern uint8_t life_stage;
+extern uint8_t mood;
+extern uint8_t action;
+
+extern uint8_t stomach;
+extern uint8_t bowels;
+extern uint8_t weight;
+extern uint8_t hygiene;
+extern uint8_t energy;
+extern uint8_t love;
+extern uint8_t medicine;
+extern uint8_t health;
+extern uint8_t sickness;
+
+extern uint8_t poops;
+
 extern uint8_t stage;
-extern uint8_t personality;
-
-extern uint8_t fullness;
-extern uint16_t last_fullness_decrease;
-
-extern uint8_t happiness;
-extern uint16_t last_happiness_decrease;
-
-extern uint8_t cleanliness;
-extern uint16_t last_cleanliness_decrease;
-
-extern uint8_t care_mistakes;
-extern uint16_t empty_fullness_time;
-extern uint16_t empty_happiness_time;
-extern uint16_t empty_cleanliness_time;
-
-extern uint8_t sickness_counter;
-extern uint16_t last_sickness_increase;
-
-extern uint8_t friendship_points;
-extern uint16_t last_friendship_increase;
-
-extern uint8_t friendship_level;
-
-extern uint8_t vegetarian;
-extern uint8_t carnivore;
+extern uint8_t anim;
+extern uint8_t emote;
 
 extern void update_stats(void);
 extern void setup_frog(void);

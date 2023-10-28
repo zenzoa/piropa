@@ -1,6 +1,10 @@
 #include <gbdk/platform.h>
 #include <gbdk/metasprites.h>
 #include <rand.h>
+#include <time.h>
+
+#include <stdio.h>
+#include <gbdk/emu_debug.h>
 
 #include "clock.h"
 #include "save.h"
@@ -9,13 +13,16 @@
 #include "hand.h"
 #include "hud.h"
 #include "joypad.h"
-#include "field.h"
+#include "scene.h"
 
 uint8_t last_sprite;
 
 uint8_t frames = 0;
 uint8_t last_update_minutes = 0;
 uint8_t last_update_seconds = 0;
+
+time_t last_time = 0;
+time_t current_time = 0;
 
 void draw_sprites(void) {
 	last_sprite = 0;
@@ -37,23 +44,16 @@ void main(void) {
 
 	initrand(DIV_REG);
 
-	setup_field();
+	setup_scene(FIELD);
 
 	SWITCH_ROM(BANK(frog_bank));
 	setup_frog();
 
 	setup_hand();
 
-	if (load_data()) {
-		read_clock();
-		update_stats();
-		last_update_minutes = minutes;
-		last_update_seconds = seconds;
-	} else {
-		reset_clock();
-	}
-
 	setup_hud();
+
+	last_time = clock() / CLOCKS_PER_SEC;
 
 	while(1) {
 		SWITCH_ROM(BANK(frog_bank));
@@ -62,21 +62,15 @@ void main(void) {
 
 		handle_input();
 
-		update_field();
+		update_scene();
 
 		draw_sprites();
 
-		frames += 1;
-		if (frames >= 60) {
-			frames = 0;
-			read_clock();
-			update_hud_clock();
-			draw_hud();
-			if (minutes != last_update_minutes && seconds >= last_update_seconds) {
-				last_update_minutes = minutes;
-				update_stats();
-				save_data();
-			}
+		current_time = clock() / CLOCKS_PER_SEC;
+		if (current_time >= last_time + 60) {
+			last_time = clock() / CLOCKS_PER_SEC;
+			SWITCH_ROM(BANK(frog_bank));
+			update_stats();
 		}
 
 		vsync(); // wait for next frame

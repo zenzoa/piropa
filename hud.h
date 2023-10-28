@@ -1,7 +1,16 @@
-extern uint8_t hud_hours_0;
-extern uint8_t hud_minutes_0;
-extern uint8_t hud_seconds_0;
-
 extern void setup_hud(void);
 extern void draw_hud(void);
-extern void update_hud_clock(void);
+
+extern void drop_all(uint8_t except);
+
+extern uint8_t is_hand_over_medicine(void);
+extern void hold_medicine(void);
+
+extern uint8_t is_hand_over_soap(void);
+extern void hold_soap(void);
+
+extern uint8_t is_hand_over_broom(void);
+extern void hold_broom(void);
+
+extern uint8_t is_hand_over_moon(void);
+extern void hold_moon(void);

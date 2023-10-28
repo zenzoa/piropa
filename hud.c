@@ -1,93 +1,108 @@
 #include <gbdk/platform.h>
 
-#include "clock.h"
-#include "frog.h"
+#include "hand.h"
 
 #include "sprites/backgrounds/hud.h"
 
-#define HUD_VRAM 0xe0
-#define COLON_VRAM 0xea
-#define AM_VRAM 0xeb
-#define PM_VRAM 0xec
+#define HUD_VRAM 0xd0
 
-#define FULLNESS_EMPTY_VRAM 0xed
-#define FULLNESS_FULL_VRAM 0xee
-#define HAPPINESS_EMPTY_VRAM 0xef
-#define HAPPINESS_FULL_VRAM 0xf0
+const unsigned char medicine_tile_map[4] = { 0xd0, 0xd1, 0xda, 0xdb };
+const unsigned char medicine_empty_tile_map[4] = { 0xe4, 0xe5, 0xee, 0xef };
 
-uint8_t clock_vram = HUD_VRAM;
+const unsigned char soap_tile_map[4] = { 0xd2, 0xd3, 0xdc, 0xdd };
+const unsigned char soap_empty_tile_map[4] = { 0xe6, 0xe7, 0xf0, 0xf1 };
 
-uint8_t hud_hours_0 = 7;
-uint8_t hud_minutes_0 = 30;
-uint8_t hud_seconds_0 = 0;
+const unsigned char stats_tile_map[4] = { 0xd4, 0xd5, 0xde, 0xdf };
+const unsigned char stats_empty_tile_map[4] = { 0xe8, 0xe9, 0xf2, 0xf3 };
 
-uint8_t hud_hours;
-uint8_t hud_minutes;
-uint8_t hud_seconds;
+const unsigned char broom_tile_map[4] = { 0xd6, 0xd7, 0xe0, 0xe1 };
+const unsigned char broom_empty_tile_map[4] = { 0xea, 0xeb, 0xf4, 0xf5 };
 
-void draw_stats(void) {
-	SWITCH_ROM(BANK(frog_bank));
+const unsigned char moon_tile_map[4] = { 0xd8, 0xd9, 0xe2, 0xe3 };
+const unsigned char moon_empty_tile_map[4] = { 0xec, 0xed, 0xf6, 0xf7 };
 
-	uint8_t i = 1;
-	uint8_t tile = 0;
-	while (i <= 5) {
-		tile = (fullness >= i * 2) ? FULLNESS_FULL_VRAM : FULLNESS_EMPTY_VRAM;
-		set_bkg_tile_xy(i, 1, tile);
-
-		tile = (happiness >= i * 2) ? HAPPINESS_FULL_VRAM : HAPPINESS_EMPTY_VRAM;
-		set_bkg_tile_xy(19 - i, 1, tile);
-
-		i++;
-	}
-}
-
-void draw_time(void) {
-	uint8_t display_hours = hud_hours;
-	if (display_hours > 12) {
-		display_hours -= 12;
-		set_bkg_tile_xy(12, 1, PM_VRAM);
-	} else {
-		set_bkg_tile_xy(12, 1, AM_VRAM);
-	}
-
-	set_bkg_tile_xy(7, 1, clock_vram + (hud_hours / 10));
-	set_bkg_tile_xy(8, 1, clock_vram + (hud_hours % 10));
-
-	set_bkg_tile_xy(9, 1, COLON_VRAM);
-
-	set_bkg_tile_xy(10, 1, clock_vram + (hud_minutes / 10));
-	set_bkg_tile_xy(11, 1, clock_vram + (hud_minutes % 10));
-}
+uint8_t medicine_is_held = 0;
+uint8_t soap_is_held = 0;
+uint8_t broom_is_held = 0;
+uint8_t moon_is_held = 0;
 
 void draw_hud(void) {
-	draw_time();
-	draw_stats();
-}
-
-void update_hud_clock(void) {
-	hud_seconds = hud_seconds_0 + seconds;
-	uint8_t seconds_overflow = 0;
-	if (hud_seconds >= 60) {
-		hud_seconds -= 60;
-		seconds_overflow = 1;
-	}
-
-	hud_minutes = hud_minutes_0 + minutes + seconds_overflow;
-	uint8_t minutes_overflow = 0;
-	if (hud_minutes >= 60) {
-		hud_minutes -= 60;
-		minutes_overflow = 1;
-	}
-
-	hud_hours = hud_hours_0 + hours + minutes_overflow;
-	if (hud_hours > 24) {
-		hud_hours = 1;
-	}
+	set_bkg_tiles(0x01, 0x01, 2, 2, medicine_tile_map);
+	set_bkg_tiles(0x05, 0x01, 2, 2, soap_tile_map);
+	set_bkg_tiles(0x09, 0x01, 2, 2, stats_tile_map);
+	set_bkg_tiles(0x0d, 0x01, 2, 2, broom_tile_map);
+	set_bkg_tiles(0x11, 0x01, 2, 2, moon_tile_map);
 }
 
 void setup_hud(void) {
 	SWITCH_ROM(BANK(hud));
-	set_bkg_data(HUD_VRAM, 17, hud_tiles);
-	update_hud_clock();
+	set_bkg_data(HUD_VRAM, 40, hud_tiles);
 	draw_hud();
+}
+
+void drop_all(uint8_t except) {
+	if (except != 1) {
+		medicine_is_held = 0;
+		set_bkg_tiles(0x01, 0x01, 2, 2, medicine_tile_map);
+	}
+	if (except != 2) {
+		soap_is_held = 0;
+		set_bkg_tiles(0x05, 0x01, 2, 2, soap_tile_map);
+	}
+	if (except != 3) {
+		broom_is_held = 0;
+		set_bkg_tiles(0x0d, 0x01, 2, 2, broom_tile_map);
+	}
+	if (except != 4) {
+		moon_is_held = 0;
+		set_bkg_tiles(0x11, 0x01, 2, 2, moon_tile_map);
+	}
+}
+
+uint8_t is_hand_over_medicine(void) {
+	return (hand_x < 36 && hand_y < 48);
+}
+
+void hold_medicine(void) {
+	if (!medicine_is_held) {
+		drop_all(1);
+		medicine_is_held = 1;
+		set_bkg_tiles(0x01, 0x01, 2, 2, medicine_empty_tile_map);
+	}
+}
+
+uint8_t is_hand_over_soap(void) {
+	return (hand_x >= 36 && hand_x < 68 && hand_y < 48);
+}
+
+void hold_soap(void) {
+	if (!soap_is_held) {
+		drop_all(2);
+		soap_is_held = 1;
+		set_bkg_tiles(0x05, 0x01, 2, 2, soap_empty_tile_map);
+	}
+}
+
+uint8_t is_hand_over_broom(void) {
+	return (hand_x >= 100 && hand_x < 132 && hand_y < 48);
+}
+
+void hold_broom(void) {
+	if (!broom_is_held) {
+		drop_all(3);
+		broom_is_held = 1;
+		set_bkg_tiles(0x0d, 0x01, 2, 2, broom_empty_tile_map);
+	}
+}
+
+uint8_t is_hand_over_moon(void) {
+	return (hand_x >= 132 && hand_y < 48);
+}
+
+void hold_moon(void) {
+	if (!moon_is_held) {
+		drop_all(4);
+		moon_is_held = 1;
+		set_bkg_tiles(0x11, 0x01, 2, 2, moon_empty_tile_map);
+	}
 }

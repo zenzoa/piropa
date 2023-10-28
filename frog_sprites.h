@@ -13,16 +13,17 @@
 #define STAGE_DEAD_BAD 12
 #define STAGE_DEAD_GOOD 13
 
-#define FACE_NEUTRAL 0
-#define FACE_HAPPY 1
-#define FACE_OVERJOYED 2
-#define FACE_SAD 3
-#define FACE_SCARED 4
-#define FACE_ANGRY 5
-#define FACE_EAT 6
-#define FACE_WALK_LEFT 7
-#define FACE_WALK_RIGHT 8
-#define FACE_SLEEP 9
+#define ANIM_NEUTRAL 0
+#define ANIM_HAPPY 1
+#define ANIM_LAUGH 2
+#define ANIM_SAD 3
+#define ANIM_STRESSED 4
+#define ANIM_ANGRY 5
+#define ANIM_EAT 6
+#define ANIM_YAWN 7
+#define ANIM_WALK_LEFT 8
+#define ANIM_WALK_RIGHT 9
+#define ANIM_SLEEP 10
 
 extern void swap_frog_vram(void);
 extern void set_frog_sprite_data(uint8_t stage, uint8_t face);

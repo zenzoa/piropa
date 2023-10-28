@@ -2,20 +2,28 @@
 #include <gbdk/metasprites.h>
 
 #include "sprites/hand/hand_default.h"
-#include "sprites/hand/hand_open.h"
+#include "sprites/hand/hand_point.h"
 #include "sprites/hand/hand_pet1.h"
 #include "sprites/hand/hand_pet2.h"
+#include "sprites/hand/hand_medicine.h"
+#include "sprites/hand/hand_soap.h"
+#include "sprites/hand/hand_broom.h"
+#include "sprites/hand/hand_moon.h"
 
 #define HAND_DEFAULT 0
-#define HAND_OPEN 1
+#define HAND_POINT 1
 #define HAND_PET1 2
 #define HAND_PET2 3
+#define HAND_MEDICINE 4
+#define HAND_SOAP 5
+#define HAND_BROOM 6
+#define HAND_MOON 7
 
 uint8_t hand_sprite_bank;
 metasprite_t** hand_metasprites;
 
-#define HAND_VRAM_1 0x40
-#define HAND_VRAM_2 0x70
+#define HAND_VRAM_1 0x50
+#define HAND_VRAM_2 0x80
 uint8_t hand_vram = HAND_VRAM_1;
 
 void swap_hand_vram(void) {
@@ -38,11 +46,11 @@ void set_hand_sprite_data(uint8_t hand_state) {
 			hand_metasprites = hand_default_metasprites;
 			break;
 
-		case HAND_OPEN:
-			hand_sprite_bank = BANK(hand_open);
+		case HAND_POINT:
+			hand_sprite_bank = BANK(hand_point);
 			SWITCH_ROM(hand_sprite_bank);
-			set_sprite_data(hand_vram, hand_open_TILE_COUNT, hand_open_tiles);
-			hand_metasprites = hand_open_metasprites;
+			set_sprite_data(hand_vram, hand_point_TILE_COUNT, hand_point_tiles);
+			hand_metasprites = hand_point_metasprites;
 			break;
 
 		case HAND_PET1:
@@ -57,6 +65,34 @@ void set_hand_sprite_data(uint8_t hand_state) {
 			SWITCH_ROM(hand_sprite_bank);
 			set_sprite_data(hand_vram, hand_pet2_TILE_COUNT, hand_pet2_tiles);
 			hand_metasprites = hand_pet2_metasprites;
+			break;
+
+		case HAND_MEDICINE:
+			hand_sprite_bank = BANK(hand_medicine);
+			SWITCH_ROM(hand_sprite_bank);
+			set_sprite_data(hand_vram, hand_medicine_TILE_COUNT, hand_medicine_tiles);
+			hand_metasprites = hand_medicine_metasprites;
+			break;
+
+		case HAND_SOAP:
+			hand_sprite_bank = BANK(hand_soap);
+			SWITCH_ROM(hand_sprite_bank);
+			set_sprite_data(hand_vram, hand_soap_TILE_COUNT, hand_soap_tiles);
+			hand_metasprites = hand_soap_metasprites;
+			break;
+
+		case HAND_BROOM:
+			hand_sprite_bank = BANK(hand_broom);
+			SWITCH_ROM(hand_sprite_bank);
+			set_sprite_data(hand_vram, hand_broom_TILE_COUNT, hand_broom_tiles);
+			hand_metasprites = hand_broom_metasprites;
+			break;
+
+		case HAND_MOON:
+			hand_sprite_bank = BANK(hand_moon);
+			SWITCH_ROM(hand_sprite_bank);
+			set_sprite_data(hand_vram, hand_moon_TILE_COUNT, hand_moon_tiles);
+			hand_metasprites = hand_moon_metasprites;
 			break;
 
 	}

@@ -1,7 +1,11 @@
 #define HAND_DEFAULT 0
-#define HAND_OPEN 1
+#define HAND_POINT 1
 #define HAND_PET1 2
 #define HAND_PET2 3
+#define HAND_MEDICINE 4
+#define HAND_SOAP 5
+#define HAND_BROOM 6
+#define HAND_MOON 7
 
 extern uint8_t hand_state;
 extern uint8_t hand_x;

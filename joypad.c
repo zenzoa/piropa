@@ -1,6 +1,7 @@
 #include <gbdk/platform.h>
 
 #include "hand.h"
+#include "hud.h"
 
 uint8_t joypad_value;
 uint8_t a_button_pressed = FALSE;
@@ -42,6 +43,22 @@ void handle_a_button(void) {
 				set_hand_state(HAND_PET2);
 
 			}
+
+		} else if (is_hand_over_medicine()) {
+			hold_medicine();
+			set_hand_state(HAND_MEDICINE);
+
+		} else if (is_hand_over_soap()) {
+			hold_soap();
+			set_hand_state(HAND_SOAP);
+
+		} else if (is_hand_over_broom()) {
+			hold_broom();
+			set_hand_state(HAND_BROOM);
+
+		} else if (is_hand_over_moon()) {
+			hold_moon();
+			set_hand_state(HAND_MOON);
 		}
 
 	} else if (!(joypad_value & J_A)) {
@@ -52,7 +69,9 @@ void handle_a_button(void) {
 void handle_b_button(void) {
 	if (joypad_value & J_B && !b_button_pressed) {
 		b_button_pressed = TRUE;
-		// some stuff
+		drop_all(0);
+		set_hand_state(HAND_DEFAULT);
+
 	} else if (!(joypad_value & J_B)) {
 		b_button_pressed = FALSE;
 	}

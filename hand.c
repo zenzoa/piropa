@@ -6,9 +6,13 @@
 
 uint8_t hand_state;
 #define HAND_DEFAULT 0
-#define HAND_OPEN 1
+#define HAND_POINT 1
 #define HAND_PET1 2
 #define HAND_PET2 3
+#define HAND_MEDICINE 4
+#define HAND_SOAP 5
+#define HAND_BROOM 6
+#define HAND_MOON 7
 
 uint8_t hand_x;
 uint8_t hand_y;
@@ -27,12 +31,12 @@ void move_hand_by_frac(int16_t dx_frac, int16_t dy_frac) {
 }
 
 uint8_t is_hand_empty(void) {
-	return (hand_state == HAND_DEFAULT || hand_state == HAND_OPEN);
+	return (hand_state == HAND_DEFAULT || hand_state == HAND_POINT);
 }
 
 uint8_t is_hand_over_frog(void) {
 	SWITCH_ROM(BANK(frog_bank));
-	return (hand_x + 16 >= frog_x && hand_x < frog_x + 32 && hand_y + 16 >= frog_y && hand_y < frog_y + 24);
+	return (hand_x + 8 >= frog_x && hand_x < frog_x + 32 && hand_y + 8 >= frog_y && hand_y < frog_y + 24);
 }
 
 void set_hand_state(uint8_t new_state) {
@@ -40,7 +44,9 @@ void set_hand_state(uint8_t new_state) {
 	swap_hand_vram();
 	set_hand_sprite_data(new_state);
 
-	// if (new_state = )
+	if (new_state == HAND_PET1 || new_state == HAND_PET2) {
+		hand_timeout = 32;
+	}
 }
 
 void setup_hand(void) {
@@ -69,31 +75,34 @@ void draw_hand(uint8_t *last_sprite) {
 
 void update_hand(void) {
 	if (hand_timeout > 0) {
-		hand_timeout -= 0;
+		hand_timeout -= 1;
 	}
 
 	switch(hand_state) {
 
 		case HAND_DEFAULT:
 			if (is_hand_over_frog()) {
-				set_hand_state(HAND_OPEN);
+				set_hand_state(HAND_POINT);
 			}
 			break;
 
-		case HAND_OPEN:
+		case HAND_POINT:
 			if (!is_hand_over_frog()) {
 				set_hand_state(HAND_DEFAULT);
 			}
+			break;
 
 		case HAND_PET1:
 			if (!is_hand_over_frog() || hand_timeout == 0) {
 				set_hand_state(HAND_DEFAULT);
 			}
+			break;
 
 		case HAND_PET2:
 			if (!is_hand_over_frog() || hand_timeout == 0) {
 				set_hand_state(HAND_DEFAULT);
 			}
+			break;
 
 	}
 }
