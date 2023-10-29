@@ -80,6 +80,8 @@ animation_t frog_anim;
 animation_t emote_anim;
 uint8_t anim_complete = 0;
 
+uint8_t pet_loops = 0;
+
 void die_badly(void) {
 	life_stage = DEAD_BAD;
 }
@@ -112,6 +114,28 @@ void clean_poop(uint8_t x, uint8_t y) {
 			update_poops(poops_x, poops_y, MAX_POOPS);
 			break;
 		}
+	}
+}
+
+void update_mood(void) {
+	if (sickness > 0) {
+		mood = MOOD_SICK;
+		EMU_printf("MOOD: SICK");
+	} else if (stomach <= energy && stomach <= love && stomach < 3) {
+		mood = MOOD_HUNGRY;
+		EMU_printf("MOOD: HUNGRY");
+	} else if (energy <= stomach && energy <= love && energy < 3) {
+		mood = MOOD_TIRED;
+		EMU_printf("MOOD: TIRED");
+	} else if (love <= energy && love <= stomach && love < 3) {
+		mood = MOOD_LONELY;
+		EMU_printf("MOOD: LONELY");
+	} else if (stomach > 5 && energy > 5 && love > 5) {
+		mood = MOOD_HAPPY;
+		EMU_printf("MOOD: HAPPY");
+	} else {
+		mood = MOOD_NEUTRAL;
+		EMU_printf("MOOD: NEUTRAL");
 	}
 }
 
@@ -230,28 +254,6 @@ void update_sickness(void) {
 	}
 }
 
-void update_mood(void) {
-	if (sickness > 0) {
-		mood = MOOD_SICK;
-		EMU_printf("MOOD: SICK");
-	} else if (stomach <= energy && stomach <= love && stomach < 3) {
-		mood = MOOD_HUNGRY;
-		EMU_printf("MOOD: HUNGRY");
-	} else if (energy <= stomach && energy <= love && energy < 3) {
-		mood = MOOD_TIRED;
-		EMU_printf("MOOD: TIRED");
-	} else if (love <= energy && love <= stomach && love < 3) {
-		mood = MOOD_LONELY;
-		EMU_printf("MOOD: LONELY");
-	} else if (stomach > 5 && energy > 5 && love > 5) {
-		mood = MOOD_HAPPY;
-		EMU_printf("MOOD: HAPPY");
-	} else {
-		mood = MOOD_NEUTRAL;
-		EMU_printf("MOOD: NEUTRAL");
-	}
-}
-
 void update_stats(void) {
 	update_stomach();
 	update_weight();
@@ -299,6 +301,7 @@ void wash(void) {
 
 void pet(void) {
 	love += 1;
+	update_mood();
 }
 
 void medicate(void) {
@@ -518,7 +521,8 @@ void start_action(uint8_t new_action) {
 		case ACTION_PET:
 			anim = ANIM_HAPPY;
 			emote = EMOTE_NONE;
-			frog_anim = new_animation(32, 2, 0);
+			frog_anim = new_animation(32, 2, 2);
+			pet_loops = 0;
 			break;
 
 		case ACTION_LOVE:
@@ -678,7 +682,13 @@ void update_frog(void) {
 
 				case ACTION_PET:
 					if (anim_complete) {
-						start_action(ACTION_STAND);
+						pet_loops += frog_anim.loop;
+						if (pet_loops >= 3) {
+							pet();
+							start_action(ACTION_ENJOY);
+						} else {
+							start_action(ACTION_STAND);
+						}
 					}
 					break;
 
@@ -701,5 +711,14 @@ void update_frog(void) {
 					break;
 
 			}
+	}
+}
+
+void pet_frog(void) {
+	if (action == ACTION_STAND || action == ACTION_EMOTE || action == ACTION_WALK) {
+		start_action(ACTION_PET);
+	} else if (action == ACTION_PET) {
+		pet_loops += frog_anim.loop;
+		frog_anim.loop = 0;
 	}
 }

@@ -27,3 +27,5 @@ extern void update_stats(void);
 extern void setup_frog(void);
 extern void draw_frog(uint8_t *last_sprite);
 extern void update_frog(void);
+
+extern void pet_frog(void);

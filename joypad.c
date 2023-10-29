@@ -1,7 +1,8 @@
 #include <gbdk/platform.h>
 
-#include "hand.h"
 #include "hud.h"
+#include "hand.h"
+#include "frog.h"
 
 uint8_t joypad_value;
 uint8_t a_button_pressed = FALSE;
@@ -36,12 +37,11 @@ void handle_a_button(void) {
 		a_button_pressed = TRUE;
 
 		if (is_hand_over_frog()) {
+			pet_frog();
 			if (is_hand_empty() || hand_state == HAND_PET2) {
 				set_hand_state(HAND_PET1);
-
 			} else if (hand_state == HAND_PET1) {
 				set_hand_state(HAND_PET2);
-
 			}
 
 		} else if (is_hand_over_medicine()) {
