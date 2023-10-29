@@ -10,9 +10,12 @@ uint8_t hand_state;
 #define HAND_PET1 2
 #define HAND_PET2 3
 #define HAND_MEDICINE 4
-#define HAND_SOAP 5
-#define HAND_BROOM 6
-#define HAND_MOON 7
+#define HAND_MEDICINE_USE 5
+#define HAND_SOAP 6
+#define HAND_SOAP_USE 7
+#define HAND_BROOM 8
+#define HAND_BROOM_USE 9
+#define HAND_MOON 10
 
 uint8_t hand_x;
 uint8_t hand_y;
@@ -22,6 +25,9 @@ uint16_t hand_y_frac;
 uint8_t hand_offset;
 
 uint8_t hand_timeout = 0;
+
+uint8_t meds_anim_counter = 0;
+uint8_t meds_frame = 0;
 
 void move_hand_by_frac(int16_t dx_frac, int16_t dy_frac) {
 	hand_x_frac += dx_frac;
@@ -101,6 +107,24 @@ void update_hand(void) {
 		case HAND_PET2:
 			if (!is_hand_over_frog() || hand_timeout == 0) {
 				set_hand_state(HAND_DEFAULT);
+			}
+			break;
+
+		case HAND_MEDICINE_USE:
+			meds_anim_counter += 1;
+			if (meds_anim_counter > 2) {
+				meds_anim_counter = 0;
+				meds_frame += 1;
+				if (meds_frame < 3) {
+					hand_x += 1;
+				} else if (meds_frame < 9) {
+					hand_x -= 1;
+				} else if (meds_frame < 12) {
+					hand_x += 1;
+				} else {
+					meds_frame = 0;
+					set_hand_state(HAND_MEDICINE);
+				}
 			}
 			break;
 

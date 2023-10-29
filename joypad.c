@@ -37,11 +37,15 @@ void handle_a_button(void) {
 		a_button_pressed = TRUE;
 
 		if (is_hand_over_frog()) {
-			pet_frog();
 			if (is_hand_empty() || hand_state == HAND_PET2) {
+				start_pet();
 				set_hand_state(HAND_PET1);
 			} else if (hand_state == HAND_PET1) {
+				start_pet();
 				set_hand_state(HAND_PET2);
+			} else if (hand_state == HAND_MEDICINE) {
+				start_medicate();
+				set_hand_state(HAND_MEDICINE_USE);
 			}
 
 		} else if (is_hand_over_medicine()) {

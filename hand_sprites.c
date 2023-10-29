@@ -6,6 +6,7 @@
 #include "sprites/hand/hand_pet1.h"
 #include "sprites/hand/hand_pet2.h"
 #include "sprites/hand/hand_medicine.h"
+#include "sprites/hand/hand_medicine_use.h"
 #include "sprites/hand/hand_soap.h"
 #include "sprites/hand/hand_broom.h"
 #include "sprites/hand/hand_moon.h"
@@ -15,9 +16,12 @@
 #define HAND_PET1 2
 #define HAND_PET2 3
 #define HAND_MEDICINE 4
-#define HAND_SOAP 5
-#define HAND_BROOM 6
-#define HAND_MOON 7
+#define HAND_MEDICINE_USE 5
+#define HAND_SOAP 6
+#define HAND_SOAP_USE 7
+#define HAND_BROOM 8
+#define HAND_BROOM_USE 9
+#define HAND_MOON 10
 
 uint8_t hand_sprite_bank;
 metasprite_t** hand_metasprites;
@@ -72,6 +76,13 @@ void set_hand_sprite_data(uint8_t hand_state) {
 			SWITCH_ROM(hand_sprite_bank);
 			set_sprite_data(hand_vram, hand_medicine_TILE_COUNT, hand_medicine_tiles);
 			hand_metasprites = hand_medicine_metasprites;
+			break;
+
+		case HAND_MEDICINE_USE:
+			hand_sprite_bank = BANK(hand_medicine_use);
+			SWITCH_ROM(hand_sprite_bank);
+			set_sprite_data(hand_vram, hand_medicine_use_TILE_COUNT, hand_medicine_use_tiles);
+			hand_metasprites = hand_medicine_use_metasprites;
 			break;
 
 		case HAND_SOAP:

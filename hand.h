@@ -3,9 +3,12 @@
 #define HAND_PET1 2
 #define HAND_PET2 3
 #define HAND_MEDICINE 4
-#define HAND_SOAP 5
-#define HAND_BROOM 6
-#define HAND_MOON 7
+#define HAND_MEDICINE_USE 5
+#define HAND_SOAP 6
+#define HAND_SOAP_USE 7
+#define HAND_BROOM 8
+#define HAND_BROOM_USE 9
+#define HAND_MOON 10
 
 extern uint8_t hand_state;
 extern uint8_t hand_x;
