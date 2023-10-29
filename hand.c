@@ -26,8 +26,9 @@ uint8_t hand_offset;
 
 uint8_t hand_timeout = 0;
 
-uint8_t meds_anim_counter = 0;
-uint8_t meds_frame = 0;
+uint8_t wiggle_anim_counter = 0;
+uint8_t wiggle_frame = 0;
+uint8_t wiggle_loops = 0;
 
 void move_hand_by_frac(int16_t dx_frac, int16_t dy_frac) {
 	hand_x_frac += dx_frac;
@@ -52,6 +53,8 @@ void set_hand_state(uint8_t new_state) {
 
 	if (new_state == HAND_PET1 || new_state == HAND_PET2) {
 		hand_timeout = 32;
+	} else if (new_state == HAND_SOAP_USE) {
+		wiggle_loops = 0;
 	}
 }
 
@@ -77,6 +80,25 @@ void draw_hand(uint8_t *last_sprite) {
 	}
 
 	draw_hand_sprite(hand_x - hand_offset, hand_y, hand_offset, last_sprite);
+}
+
+uint8_t update_wiggle(void) {
+	wiggle_anim_counter += 1;
+	if (wiggle_anim_counter > 2) {
+		wiggle_anim_counter = 0;
+		wiggle_frame += 1;
+		if (wiggle_frame < 3) {
+			hand_x += 1;
+		} else if (wiggle_frame < 9) {
+			hand_x -= 1;
+		} else if (wiggle_frame < 12) {
+			hand_x += 1;
+		} else {
+			wiggle_frame = 0;
+			return 1;
+		}
+	}
+	return 0;
 }
 
 void update_hand(void) {
@@ -111,19 +133,17 @@ void update_hand(void) {
 			break;
 
 		case HAND_MEDICINE_USE:
-			meds_anim_counter += 1;
-			if (meds_anim_counter > 2) {
-				meds_anim_counter = 0;
-				meds_frame += 1;
-				if (meds_frame < 3) {
-					hand_x += 1;
-				} else if (meds_frame < 9) {
-					hand_x -= 1;
-				} else if (meds_frame < 12) {
-					hand_x += 1;
-				} else {
-					meds_frame = 0;
-					set_hand_state(HAND_MEDICINE);
+			if (update_wiggle()) {
+				set_hand_state(HAND_MEDICINE);
+			}
+			break;
+
+		case HAND_SOAP_USE:
+			if (update_wiggle()) {
+				wiggle_loops += 1;
+				if (wiggle_loops >= 2) {
+					wiggle_loops = 0;
+					set_hand_state(HAND_SOAP);
 				}
 			}
 			break;

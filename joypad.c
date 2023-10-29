@@ -46,6 +46,9 @@ void handle_a_button(void) {
 			} else if (hand_state == HAND_MEDICINE) {
 				start_medicate();
 				set_hand_state(HAND_MEDICINE_USE);
+			} else if (hand_state == HAND_SOAP || hand_state == HAND_SOAP_USE) {
+				start_wash();
+				set_hand_state(HAND_SOAP_USE);
 			}
 
 		} else if (is_hand_over_medicine()) {

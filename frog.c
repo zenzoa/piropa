@@ -79,6 +79,7 @@ animation_t emote_anim;
 uint8_t anim_complete = 0;
 
 uint8_t pet_loops = 0;
+uint8_t wash_loops = 0;
 
 void start_action(uint8_t new_action);
 
@@ -299,9 +300,33 @@ void end_feed_firefly(void) {
 	update_mood();
 }
 
+void start_wash(void) {
+	if (action == ACTION_STAND || action == ACTION_EMOTE || action == ACTION_WALK) {
+		start_action(ACTION_WASH);
+	} else if (action == ACTION_WASH) {
+		wash_loops += frog_anim.loop;
+		frog_anim.loop = 0;
+	}
+}
+
 void end_wash(void) {
-	hygiene += 3;
-	update_mood();
+	wash_loops += frog_anim.loop;
+	if (wash_loops >= 3) {
+		hygiene += 3;
+		update_mood();
+		start_action(ACTION_CLEAN);
+	} else {
+		start_action(ACTION_STAND);
+	}
+}
+
+void start_pet(void) {
+	if (action == ACTION_STAND || action == ACTION_EMOTE || action == ACTION_WALK) {
+		start_action(ACTION_PET);
+	} else if (action == ACTION_PET) {
+		pet_loops += frog_anim.loop;
+		frog_anim.loop = 0;
+	}
 }
 
 void end_pet(void) {
@@ -313,6 +338,10 @@ void end_pet(void) {
 	} else {
 		start_action(ACTION_STAND);
 	}
+}
+
+void start_medicate(void) {
+	start_action(ACTION_MEDICATE);
 }
 
 void end_medicate(void) {
@@ -332,7 +361,9 @@ void draw_frog(uint8_t *last_sprite) {
 		draw_emote_sprite(frog_x + 12, frog_y - 8, emote_anim.frame, last_sprite);
 	}
 
-	if (hygiene == 0) {
+	if (action == ACTION_WASH) {
+		draw_bath_sprite(frog_x, frog_y, frog_anim.frame, last_sprite);
+	} else if (hygiene == 0) {
 		draw_dirt_sprite(frog_x, frog_y, last_sprite);
 	}
 
@@ -520,7 +551,8 @@ void start_action(uint8_t new_action) {
 		case ACTION_WASH:
 			anim = ANIM_HAPPY;
 			emote = EMOTE_NONE;
-			frog_anim = new_animation(32, 2, 0);
+			frog_anim = new_animation(32, 2, 2);
+			wash_loops = 0;
 			break;
 
 		case ACTION_CLEAN:
@@ -588,9 +620,9 @@ void setup_frog(void) {
 	stomach = 9;
 	bowels = 0;
 	weight = 5;
-	hygiene = 9;
+	hygiene = 0;
 	energy = 9;
-	love = 0;
+	love = 5;
 	medicine = 0;
 	health = 9;
 	poops = 0;
@@ -601,7 +633,8 @@ void setup_frog(void) {
 
 	set_frog_sprite_data(stage, anim);
 	set_emote_sprite_data(emote);
-	setup_dirt_sprite();
+
+	setup_emote_sprites();
 }
 
 void update_frog(void) {
@@ -685,7 +718,7 @@ void update_frog(void) {
 
 				case ACTION_WASH:
 					if (anim_complete) {
-						start_action(ACTION_CLEAN);
+						end_wash();
 					}
 					break;
 
@@ -722,17 +755,4 @@ void update_frog(void) {
 
 			}
 	}
-}
-
-void start_pet(void) {
-	if (action == ACTION_STAND || action == ACTION_EMOTE || action == ACTION_WALK) {
-		start_action(ACTION_PET);
-	} else if (action == ACTION_PET) {
-		pet_loops += frog_anim.loop;
-		frog_anim.loop = 0;
-	}
-}
-
-void start_medicate(void) {
-	start_action(ACTION_MEDICATE);
 }

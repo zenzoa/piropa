@@ -13,6 +13,7 @@
 #include "sprites/misc_8x8/emote_heal.h"
 
 #include "sprites/misc_16x8/dirt.h"
+#include "sprites/misc_16x8/bath.h"
 
 #define EMOTE_NONE 0
 #define EMOTE_SUN 1
@@ -36,6 +37,10 @@ uint8_t emote_vram = EMOTE_VRAM_1;
 #define DIRT_VRAM 0xc0
 uint8_t dirt_anim_counter = 0;
 uint8_t dirt_frame = 0;
+
+#define BATH_VRAM 0xc4
+uint8_t bath_anim_counter = 0;
+uint8_t bath_frame = 0;
 
 void swap_emote_vram(void) {
 	if (emote_vram == EMOTE_VRAM_1) {
@@ -134,11 +139,14 @@ void draw_emote_sprite(uint8_t x, uint8_t y, uint8_t frame, uint8_t *last_sprite
 	SWITCH_ROM(saved_bank);
 }
 
-void setup_dirt_sprite(void) {
+void setup_emote_sprites(void) {
 	uint8_t saved_bank = _current_bank;
 
 	SWITCH_ROM(BANK(dirt));
 	set_sprite_data(DIRT_VRAM, dirt_TILE_COUNT, dirt_tiles);
+
+	SWITCH_ROM(BANK(bath));
+	set_sprite_data(BATH_VRAM, bath_TILE_COUNT, bath_tiles);
 
 	SWITCH_ROM(saved_bank);
 }
@@ -154,6 +162,22 @@ void draw_dirt_sprite(uint8_t x, uint8_t y, uint8_t *last_sprite) {
 
 	SWITCH_ROM(BANK(dirt));
 	*last_sprite += move_metasprite_ex(dirt_metasprites[dirt_frame], DIRT_VRAM, 0, *last_sprite, x + 8, y + 18);
+
+	SWITCH_ROM(saved_bank);
+}
+
+void draw_bath_sprite(uint8_t x, uint8_t y, uint8_t frame, uint8_t *last_sprite) {
+	uint8_t saved_bank = _current_bank;
+
+	bath_anim_counter += 1;
+	if (bath_anim_counter > 24) {
+		bath_anim_counter = 0;
+		bath_frame = !bath_frame;
+	}
+
+	SWITCH_ROM(BANK(bath));
+	*last_sprite += move_metasprite_ex(bath_metasprites[bath_frame], BATH_VRAM, 0, *last_sprite, x + 8, y + frame);
+	*last_sprite += move_metasprite_ex(bath_metasprites[!bath_frame], BATH_VRAM, 0, *last_sprite, x + 8, y + 18);
 
 	SWITCH_ROM(saved_bank);
 }

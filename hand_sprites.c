@@ -8,6 +8,7 @@
 #include "sprites/hand/hand_medicine.h"
 #include "sprites/hand/hand_medicine_use.h"
 #include "sprites/hand/hand_soap.h"
+#include "sprites/hand/hand_soap_use.h"
 #include "sprites/hand/hand_broom.h"
 #include "sprites/hand/hand_moon.h"
 
@@ -90,6 +91,13 @@ void set_hand_sprite_data(uint8_t hand_state) {
 			SWITCH_ROM(hand_sprite_bank);
 			set_sprite_data(hand_vram, hand_soap_TILE_COUNT, hand_soap_tiles);
 			hand_metasprites = hand_soap_metasprites;
+			break;
+
+		case HAND_SOAP_USE:
+			hand_sprite_bank = BANK(hand_soap_use);
+			SWITCH_ROM(hand_sprite_bank);
+			set_sprite_data(hand_vram, hand_soap_use_TILE_COUNT, hand_soap_use_tiles);
+			hand_metasprites = hand_soap_use_metasprites;
 			break;
 
 		case HAND_BROOM:
