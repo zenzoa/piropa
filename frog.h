@@ -31,3 +31,4 @@ extern void update_frog(void);
 extern void start_pet(void);
 extern void start_medicate(void);
 extern void start_wash(void);
+extern void start_sleep(void);

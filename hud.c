@@ -1,6 +1,8 @@
 #include <gbdk/platform.h>
 
 #include "hand.h"
+#include "scene.h"
+#include "field.h"
 
 #include "sprites/backgrounds/hud.h"
 
@@ -31,12 +33,21 @@ void draw_hud(void) {
 	set_bkg_tiles(0x05, 0x01, 2, 2, soap_tile_map);
 	set_bkg_tiles(0x09, 0x01, 2, 2, stats_tile_map);
 	set_bkg_tiles(0x0d, 0x01, 2, 2, broom_tile_map);
-	set_bkg_tiles(0x11, 0x01, 2, 2, moon_tile_map);
+	if (moon_is_held) {
+		set_bkg_tiles(0x11, 0x01, 2, 2, moon_empty_tile_map);
+	} else {
+		set_bkg_tiles(0x11, 0x01, 2, 2, moon_tile_map);
+	}
 }
 
 void setup_hud(void) {
 	SWITCH_ROM(BANK(hud));
 	set_bkg_data(HUD_VRAM, 40, hud_tiles);
+
+	if (!is_night) {
+		moon_is_held = 0;
+	}
+
 	draw_hud();
 }
 
@@ -54,8 +65,12 @@ void drop_all(uint8_t except) {
 		set_bkg_tiles(0x0d, 0x01, 2, 2, broom_tile_map);
 	}
 	if (except != 4) {
-		moon_is_held = 0;
-		set_bkg_tiles(0x11, 0x01, 2, 2, moon_tile_map);
+		if (is_night && current_scene == FIELD) {
+			return_moon_to_sky();
+		} else if (!is_night) {
+			moon_is_held = 0;
+			set_bkg_tiles(0x11, 0x01, 2, 2, moon_tile_map);
+		}
 	}
 }
 
@@ -63,11 +78,14 @@ uint8_t is_hand_over_medicine(void) {
 	return (hand_x < 36 && hand_y < 48);
 }
 
-void hold_medicine(void) {
-	if (!medicine_is_held) {
+uint8_t hold_medicine(void) {
+	if (medicine_is_held) {
+		return FALSE;
+	} else {
 		drop_all(1);
 		medicine_is_held = 1;
 		set_bkg_tiles(0x01, 0x01, 2, 2, medicine_empty_tile_map);
+		return TRUE;
 	}
 }
 
@@ -75,11 +93,14 @@ uint8_t is_hand_over_soap(void) {
 	return (hand_x >= 36 && hand_x < 68 && hand_y < 48);
 }
 
-void hold_soap(void) {
-	if (!soap_is_held) {
+uint8_t hold_soap(void) {
+	if (soap_is_held) {
+		return FALSE;
+	} else {
 		drop_all(2);
 		soap_is_held = 1;
 		set_bkg_tiles(0x05, 0x01, 2, 2, soap_empty_tile_map);
+		return TRUE;
 	}
 }
 
@@ -87,11 +108,14 @@ uint8_t is_hand_over_broom(void) {
 	return (hand_x >= 100 && hand_x < 132 && hand_y < 48);
 }
 
-void hold_broom(void) {
-	if (!broom_is_held) {
+uint8_t hold_broom(void) {
+	if (broom_is_held) {
+		return FALSE;
+	} else {
 		drop_all(3);
 		broom_is_held = 1;
 		set_bkg_tiles(0x0d, 0x01, 2, 2, broom_empty_tile_map);
+		return TRUE;
 	}
 }
 
@@ -99,10 +123,13 @@ uint8_t is_hand_over_moon(void) {
 	return (hand_x >= 132 && hand_y < 48);
 }
 
-void hold_moon(void) {
-	if (!moon_is_held) {
+uint8_t hold_moon(void) {
+	if (moon_is_held) {
+		return FALSE;
+	} else {
 		drop_all(4);
 		moon_is_held = 1;
 		set_bkg_tiles(0x11, 0x01, 2, 2, moon_empty_tile_map);
+		return TRUE;
 	}
 }

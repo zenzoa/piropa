@@ -6,9 +6,8 @@ extern uint8_t current_scene;
 #define POND 4
 #define GARDEN 5
 
-extern uint8_t time_of_day;
-#define DAY 0
-#define NIGHT 1
+extern uint8_t is_night;
 
 extern void setup_scene(uint8_t new_scene);
 extern void update_scene(void);
+extern void start_transition_to_scene(uint8_t new_scene, uint8_t new_is_night);

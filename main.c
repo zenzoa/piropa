@@ -8,12 +8,11 @@
 
 #include "clock.h"
 #include "save.h"
-#include "animation.h"
 #include "frog.h"
 #include "hand.h"
-#include "hud.h"
 #include "joypad.h"
 #include "scene.h"
+#include "hud.h"
 
 uint8_t last_sprite;
 
@@ -50,8 +49,6 @@ void main(void) {
 	setup_frog();
 
 	setup_hand();
-
-	setup_hud();
 
 	last_time = clock() / CLOCKS_PER_SEC;
 

@@ -206,12 +206,12 @@ void update_hygiene(void) {
 }
 
 void update_energy(void) {
-	if (time_of_day == DAY) {
+	if (is_night) {
+		energy += 2;
+	} else {
 		if (energy > 0) {
 			energy -= 1;
 		}
-	} else {
-		energy += 2;
 	}
 	if (energy == 0) {
 		if (health > 0) {
@@ -223,7 +223,7 @@ void update_energy(void) {
 }
 
 void update_love(void) {
-	if (time_of_day == DAY && love > 0) {
+	if (love > 0 && !is_night) {
 		love -= 1;
 	}
 	if (love > 9) {
@@ -351,6 +351,12 @@ void end_medicate(void) {
 		love -= 1;
 	}
 	update_mood();
+}
+
+void start_sleep(void) {
+	frog_x = 76;
+	frog_y = 120;
+	start_action(ACTION_YAWN);
 }
 
 void draw_frog(uint8_t *last_sprite) {
@@ -530,22 +536,22 @@ void start_action(uint8_t new_action) {
 		case ACTION_YAWN:
 			anim = ANIM_YAWN;
 			emote = EMOTE_BUBBLES;
-			frog_anim = new_animation(48, 2, 1);
-			emote_anim = new_animation(48, 2, 1);
+			frog_anim = new_animation(64, 2, 1);
+			emote_anim = new_animation(64, 2, 1);
 			break;
 
 		case ACTION_SLEEP:
 			anim = ANIM_SLEEP;
 			emote = EMOTE_SLEEP;
-			frog_anim = new_animation(32, 2, 0);
-			emote_anim = new_animation(32, 2, 0);
+			frog_anim = new_animation(48, 2, 0);
+			emote_anim = new_animation(48, 2, 0);
 			break;
 
 		case ACTION_WAKE:
 			anim = ANIM_YAWN;
 			emote = EMOTE_BUBBLES;
-			frog_anim = new_animation(48, 2, 1);
-			emote_anim = new_animation(48, 2, 1);
+			frog_anim = new_animation(64, 2, 1);
+			emote_anim = new_animation(64, 2, 1);
 			break;
 
 		case ACTION_WASH:
@@ -618,9 +624,9 @@ void setup_frog(void) {
 	life_stage = ADULT;
 
 	stomach = 9;
-	bowels = 0;
+	bowels = 4;
 	weight = 5;
-	hygiene = 0;
+	hygiene = 9;
 	energy = 9;
 	love = 5;
 	medicine = 0;
@@ -642,14 +648,16 @@ void update_frog(void) {
 		case EGG:
 			// once old enough, evolve into next stage
 			break;
+
 		case DEAD_BAD:
 			break;
+
 		case DEAD_GOOD:
 			break;
+
 		default:
 			switch(action) {
 				case ACTION_STAND:
-					// if it's nighttime -> ACTION_YAWN
 					if (frog_anim.frame == 0 && frog_anim.ticks == 0) {
 						uint8_t n = rand();
 						if (n < 25) {
@@ -668,12 +676,12 @@ void update_frog(void) {
 
 				case ACTION_WALK:
 					if (frog_anim.ticks == 6 || frog_anim.ticks == 18) {
-						EMU_printf("");
-						EMU_printf("move toward goal %d %d to %d %d", frog_x, frog_y, goal_x, goal_y);
+						// EMU_printf("");
+						// EMU_printf("move toward goal %d %d to %d %d", frog_x, frog_y, goal_x, goal_y);
 						move_toward_goal();
 						if (frog_x == goal_x && frog_y == goal_y) {
-							EMU_printf("");
-							EMU_printf("REACH GOAL");
+							// EMU_printf("");
+							// EMU_printf("REACH GOAL");
 							start_action(ACTION_STAND);
 						}
 					}
@@ -704,8 +712,7 @@ void update_frog(void) {
 					break;
 
 				case ACTION_SLEEP:
-					// if it's daytime
-					if (anim_complete) {
+					if (!is_night) {
 						start_action(ACTION_WAKE);
 					}
 					break;
