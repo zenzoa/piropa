@@ -43,6 +43,7 @@ void main(void) {
 
 	initrand(DIV_REG);
 
+	setup_hud();
 	setup_scene(FIELD);
 
 	SWITCH_ROM(BANK(frog_bank));

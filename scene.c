@@ -31,7 +31,7 @@ void setup_scene(uint8_t new_scene) {
 			setup_field();
 			break;
 	}
-	setup_hud();
+	draw_hud();
 }
 
 void update_scene(void) {
@@ -56,7 +56,6 @@ void update_scene(void) {
 						SWITCH_ROM(BANK(frog_bank));
 						start_sleep();
 					}
-					set_hand_state(HAND_DEFAULT);
 					break;
 				case 4:
 					BGP_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_BLACK, DMG_BLACK, DMG_BLACK);

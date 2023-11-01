@@ -66,9 +66,6 @@ uint8_t health;
 uint8_t sickness;
 
 uint8_t poops;
-uint8_t poops_x[6];
-uint8_t poops_y[6];
-#define MAX_POOPS 6
 
 uint8_t stage;
 uint8_t anim;
@@ -89,33 +86,6 @@ void die_badly(void) {
 
 void die_well(void) {
 	life_stage = DEAD_GOOD;
-}
-
-void place_poop(void) {
-	for (uint8_t i = 0; i < MAX_POOPS; i++) {
-		if (poops_x[i] == 0 && poops_y[i] == 0) {
-			poops_x[i] = frog_x / 8;
-			poops_y[i] = frog_y / 8;
-			if (current_scene == FIELD) {
-				update_poops(poops_x, poops_y, MAX_POOPS);
-			}
-			break;
-		}
-	}
-}
-
-void clean_poop(uint8_t x, uint8_t y) {
-	for (uint8_t i = 0; i < MAX_POOPS; i++) {
-		if (poops_x[i] == x && poops_y[i] == y) {
-			poops_x[i] = 0;
-			poops_y[i] = 0;
-			if (poops > 0) {
-				poops -= 1;
-			}
-			update_poops(poops_x, poops_y, MAX_POOPS);
-			break;
-		}
-	}
 }
 
 void update_mood(void) {
@@ -155,13 +125,15 @@ void update_stomach(void) {
 	}
 }
 
-void update_bowels(void) {
+uint8_t check_bowels(void) {
 	if (bowels > 3) {
 		if (poops < MAX_POOPS) {
-			poops += 1;
-			place_poop();
+			start_action(ACTION_POOP);
 		}
 		bowels = 0;
+		return TRUE;
+	} else {
+		return FALSE;
 	}
 }
 
@@ -266,14 +238,16 @@ void update_stats(void) {
 	update_sickness();
 
 	EMU_printf("");
-	EMU_printf("stomach: %hd", stomach);
-	EMU_printf("weight: %hd", weight);
-	EMU_printf("hygiene: %hd", hygiene);
-	EMU_printf("energy: %hd", energy);
-	EMU_printf("love: %hd", love);
-	EMU_printf("medicine: %hd", medicine);
-	EMU_printf("health: %hd", health);
-	EMU_printf("sickness: %hd", sickness);
+	EMU_printf("stomach: %d", stomach);
+	EMU_printf("bowels: %d", bowels);
+	EMU_printf("weight: %d", weight);
+	EMU_printf("hygiene: %d", hygiene);
+	EMU_printf("energy: %d", energy);
+	EMU_printf("love: %d", love);
+	EMU_printf("medicine: %d", medicine);
+	EMU_printf("health: %d", health);
+	EMU_printf("sickness: %d", sickness);
+	EMU_printf("poops: %d", poops);
 
 	update_mood();
 }
@@ -624,7 +598,7 @@ void setup_frog(void) {
 	life_stage = ADULT;
 
 	stomach = 9;
-	bowels = 4;
+	bowels = 0;
 	weight = 5;
 	hygiene = 9;
 	energy = 9;
@@ -659,11 +633,13 @@ void update_frog(void) {
 			switch(action) {
 				case ACTION_STAND:
 					if (frog_anim.frame == 0 && frog_anim.ticks == 0) {
-						uint8_t n = rand();
-						if (n < 25) {
-							start_action(ACTION_WALK);
-						} else if (n < 50) {
-							start_action(ACTION_EMOTE);
+						if (current_scene != FIELD || !check_bowels()) {
+							uint8_t n = rand();
+							if (n < 25 && current_scene == FIELD) {
+								start_action(ACTION_WALK);
+							} else if (n < 50) {
+								start_action(ACTION_EMOTE);
+							}
 						}
 					}
 					break;
@@ -756,6 +732,10 @@ void update_frog(void) {
 
 				case ACTION_POOP:
 					if (anim_complete) {
+						if (current_scene == FIELD) {
+							poops += 1;
+							add_poop(frog_x / 8, frog_y / 8);
+						}
 						start_action(ACTION_STAND);
 					}
 					break;

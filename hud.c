@@ -29,10 +29,28 @@ uint8_t broom_is_held = 0;
 uint8_t moon_is_held = 0;
 
 void draw_hud(void) {
-	set_bkg_tiles(0x01, 0x01, 2, 2, medicine_tile_map);
-	set_bkg_tiles(0x05, 0x01, 2, 2, soap_tile_map);
+	SWITCH_ROM(BANK(hud));
+
+	if (medicine_is_held) {
+		set_bkg_tiles(0x01, 0x01, 2, 2, medicine_empty_tile_map);
+	} else {
+		set_bkg_tiles(0x01, 0x01, 2, 2, medicine_tile_map);
+	}
+
+	if (soap_is_held) {
+		set_bkg_tiles(0x05, 0x01, 2, 2, soap_empty_tile_map);
+	} else {
+		set_bkg_tiles(0x05, 0x01, 2, 2, soap_tile_map);
+	}
+
 	set_bkg_tiles(0x09, 0x01, 2, 2, stats_tile_map);
-	set_bkg_tiles(0x0d, 0x01, 2, 2, broom_tile_map);
+
+	if (broom_is_held) {
+		set_bkg_tiles(0x0d, 0x01, 2, 2, broom_empty_tile_map);
+	} else {
+		set_bkg_tiles(0x0d, 0x01, 2, 2, broom_tile_map);
+	}
+
 	if (moon_is_held) {
 		set_bkg_tiles(0x11, 0x01, 2, 2, moon_empty_tile_map);
 	} else {
@@ -47,8 +65,6 @@ void setup_hud(void) {
 	if (!is_night) {
 		moon_is_held = 0;
 	}
-
-	draw_hud();
 }
 
 void drop_all(uint8_t except) {
@@ -65,11 +81,10 @@ void drop_all(uint8_t except) {
 		set_bkg_tiles(0x0d, 0x01, 2, 2, broom_tile_map);
 	}
 	if (except != 4) {
-		if (is_night && current_scene == FIELD) {
-			return_moon_to_sky();
-		} else if (!is_night) {
-			moon_is_held = 0;
-			set_bkg_tiles(0x11, 0x01, 2, 2, moon_tile_map);
+		moon_is_held = 0;
+		set_bkg_tiles(0x11, 0x01, 2, 2, moon_tile_map);
+		if (is_night && hand_state == HAND_MOON) {
+			start_transition_to_scene(FIELD, FALSE);
 		}
 	}
 }

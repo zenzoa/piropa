@@ -13,6 +13,7 @@
 extern uint8_t hand_state;
 extern uint8_t hand_x;
 extern uint8_t hand_y;
+extern uint8_t sweep_count;
 
 extern void move_hand_by_frac(int16_t dx_frac, int16_t dy_frac);
 extern uint8_t is_hand_empty(void);

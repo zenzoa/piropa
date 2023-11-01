@@ -3,6 +3,7 @@
 
 #include "hand_sprites.h"
 #include "frog.h"
+#include "field.h"
 
 uint8_t hand_state;
 #define HAND_DEFAULT 0
@@ -30,6 +31,8 @@ uint8_t wiggle_anim_counter = 0;
 uint8_t wiggle_frame = 0;
 uint8_t wiggle_loops = 0;
 
+uint8_t sweep_count = 0;
+
 void move_hand_by_frac(int16_t dx_frac, int16_t dy_frac) {
 	hand_x_frac += dx_frac;
 	hand_y_frac += dy_frac;
@@ -55,6 +58,10 @@ void set_hand_state(uint8_t new_state) {
 		hand_timeout = 32;
 	} else if (new_state == HAND_SOAP_USE) {
 		wiggle_loops = 0;
+	} else if (new_state == HAND_BROOM && sweep_count > 0) {
+		hand_timeout = 12;
+	} else if (new_state == HAND_BROOM_USE) {
+		hand_timeout = 12;
 	}
 }
 
@@ -145,6 +152,22 @@ void update_hand(void) {
 					wiggle_loops = 0;
 					set_hand_state(HAND_SOAP);
 				}
+			}
+			break;
+
+		case HAND_BROOM:
+			if (sweep_count > 0 && hand_timeout == 0) {
+				set_hand_state(HAND_BROOM_USE);
+			}
+			break;
+
+		case HAND_BROOM_USE:
+			if (hand_timeout == 0) {
+				sweep_count -= 1;
+				if (sweep_count == 0) {
+					clean_poop_at(hand_x / 8, hand_y / 8);
+				}
+				set_hand_state(HAND_BROOM);
 			}
 			break;
 

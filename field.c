@@ -1,6 +1,9 @@
 #include <gbdk/platform.h>
+#include <gbdk/emu_debug.h>
 
+#include "hud.h"
 #include "hand.h"
+#include "frog.h"
 #include "scene.h"
 
 #include "sprites/backgrounds/field.h"
@@ -35,6 +38,10 @@ uint8_t moon_in_sky = TRUE;
 uint8_t sky_anim_counter = 0;
 uint8_t basket_is_open = FALSE;
 
+#define MAX_POOPS 6
+uint8_t poops_x[MAX_POOPS];
+uint8_t poops_y[MAX_POOPS];
+
 void set_basket(uint8_t is_open) {
 	if (is_open != basket_is_open) {
 		if (is_open) {
@@ -46,11 +53,8 @@ void set_basket(uint8_t is_open) {
 	}
 }
 
-void update_poops(uint8_t poops_x[6], uint8_t poops_y[6], uint8_t max_poops) {
-	SWITCH_ROM(BANK(field));
-	set_bkg_tiles(0, 0, 20, 18, field_map);
-
-	for (uint8_t i = 0; i < max_poops; i++) {
+void draw_poops(void) {
+	for (uint8_t i = 0; i < MAX_POOPS; i++) {
 		if (poops_x[i] > 0 || poops_y[i] > 0) {
 			set_bkg_tile_xy(poops_x[i], poops_y[i], POO_VRAM);
 		}
@@ -91,6 +95,8 @@ void setup_field(void) {
 
 	SWITCH_ROM(BANK(poo));
 	set_bkg_data(POO_VRAM, poo_TILE_COUNT, poo_tiles);
+
+	draw_poops();
 }
 
 void update_field(void) {
@@ -145,5 +151,72 @@ void return_moon_to_sky(void) {
 		moon_in_sky = TRUE;
 		sky_anim_counter = 0;
 		set_bkg_tiles(9, 5, 2, 2, moon_1_tile_map);
+	}
+}
+
+uint8_t is_poop_at(uint8_t x, uint8_t y) {
+	for (uint8_t i = 0; i < MAX_POOPS; i++) {
+		if (poops_x[i] == x && poops_y[i] == y) {
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+
+void clean_poop_at(uint8_t x, uint8_t y) {
+	if (current_scene == FIELD) {
+		for (uint8_t i = 0; i < MAX_POOPS; i++) {
+			if ((poops_x[i] == x || poops_x[i] == x + 1 || poops_x[i] == x - 1) &&
+				(poops_y[i] == y || poops_y[i] == y + 1 || poops_y[i] == y - 1)
+				) {
+					SWITCH_ROM(BANK(frog_bank));
+					if (poops > 0) {
+						poops -= 1;
+					}
+
+					SWITCH_ROM(BANK(field));
+					uint8_t original_tile = field_map[poops_y[i] * 20 + poops_x[i]];
+					set_bkg_tile_xy(poops_x[i], poops_y[i], original_tile);
+
+					poops_x[i] = 0;
+					poops_y[i] = 0;
+			}
+		}
+	}
+}
+
+void add_poop(uint8_t x, uint8_t y) {
+	for (uint8_t i = 0; i < MAX_POOPS; i++) {
+		if (poops_x[i] == 0 && poops_y[i] == 0) {
+			if (!is_poop_at(x - 1, y + 1)) {
+				poops_x[i] = x - 1;
+				poops_y[i] = y + 1;
+			} else if (!is_poop_at(x + 2, y + 1)) {
+				poops_x[i] = x + 2;
+				poops_y[i] = y + 1;
+			} else if (!is_poop_at(x - 1, y)) {
+				poops_x[i] = x - 1;
+				poops_y[i] = y;
+			} else if (!is_poop_at(x + 2, y)) {
+				poops_x[i] = x + 2;
+				poops_y[i] = y;
+			} else if (!is_poop_at(x, y + 1)) {
+				poops_x[i] = x;
+				poops_y[i] = y + 1;
+			} else if (!is_poop_at(x + 1, y + 1)) {
+				poops_x[i] = x + 1;
+				poops_y[i] = y + 1;
+			} else if (!is_poop_at(x, y)) {
+				poops_x[i] = x;
+				poops_y[i] = y;
+			} else if (!is_poop_at(x + 1, y)) {
+				poops_x[i] = x + 1;
+				poops_y[i] = y;
+			}
+			EMU_printf("");
+			EMU_printf("POOP at %d %d", poops_x[i], poops_y[i]);
+			draw_poops();
+			break;
+		}
 	}
 }

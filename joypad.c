@@ -38,22 +38,7 @@ void handle_a_button(void) {
 	if (joypad_value & J_A && !a_button_pressed) {
 		a_button_pressed = TRUE;
 
-		if (is_hand_over_frog() && !is_night) {
-			if (is_hand_empty() || hand_state == HAND_PET2) {
-				start_pet();
-				set_hand_state(HAND_PET1);
-			} else if (hand_state == HAND_PET1) {
-				start_pet();
-				set_hand_state(HAND_PET2);
-			} else if (hand_state == HAND_MEDICINE) {
-				start_medicate();
-				set_hand_state(HAND_MEDICINE_USE);
-			} else if (hand_state == HAND_SOAP || hand_state == HAND_SOAP_USE) {
-				start_wash();
-				set_hand_state(HAND_SOAP_USE);
-			}
-
-		} else if (is_hand_over_medicine()) {
+		if (is_hand_over_medicine()) {
 			if (hold_medicine()) {
 				set_hand_state(HAND_MEDICINE);
 			} else {
@@ -80,8 +65,6 @@ void handle_a_button(void) {
 		} else if (is_hand_over_moon()) {
 			if (hold_moon()) {
 				set_hand_state(HAND_MOON);
-			} else if (is_night) {
-				start_transition_to_scene(FIELD, FALSE);
 			} else {
 				drop_all(0);
 				set_hand_state(HAND_DEFAULT);
@@ -93,11 +76,31 @@ void handle_a_button(void) {
 				set_hand_state(HAND_DEFAULT);
 			} else if (!is_night) {
 				start_transition_to_scene(FIELD, TRUE);
+				set_hand_state(HAND_DEFAULT);
 			}
 
 		} else if (is_night && current_scene == FIELD && hand_x >= 72 && hand_x < 96 && hand_y >= 48 && hand_y < 68) {
 			grab_moon_from_sky();
 			set_hand_state(HAND_MOON);
+
+		} else if (hand_state == HAND_BROOM || hand_state == HAND_BROOM_USE) {
+			set_hand_state(HAND_BROOM_USE);
+			sweep_count = 2;
+
+		} else if (is_hand_over_frog() && !is_night) {
+			if (is_hand_empty() || hand_state == HAND_PET2) {
+				start_pet();
+				set_hand_state(HAND_PET1);
+			} else if (hand_state == HAND_PET1) {
+				start_pet();
+				set_hand_state(HAND_PET2);
+			} else if (hand_state == HAND_MEDICINE) {
+				start_medicate();
+				set_hand_state(HAND_MEDICINE_USE);
+			} else if (hand_state == HAND_SOAP || hand_state == HAND_SOAP_USE) {
+				start_wash();
+				set_hand_state(HAND_SOAP_USE);
+			}
 		}
 
 	} else if (!(joypad_value & J_A)) {

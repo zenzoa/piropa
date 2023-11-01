@@ -10,6 +10,7 @@
 #include "sprites/hand/hand_soap.h"
 #include "sprites/hand/hand_soap_use.h"
 #include "sprites/hand/hand_broom.h"
+#include "sprites/hand/hand_broom_use.h"
 #include "sprites/hand/hand_moon.h"
 
 #define HAND_DEFAULT 0
@@ -105,6 +106,13 @@ void set_hand_sprite_data(uint8_t hand_state) {
 			SWITCH_ROM(hand_sprite_bank);
 			set_sprite_data(hand_vram, hand_broom_TILE_COUNT, hand_broom_tiles);
 			hand_metasprites = hand_broom_metasprites;
+			break;
+
+		case HAND_BROOM_USE:
+			hand_sprite_bank = BANK(hand_broom_use);
+			SWITCH_ROM(hand_sprite_bank);
+			set_sprite_data(hand_vram, hand_broom_use_TILE_COUNT, hand_broom_use_tiles);
+			hand_metasprites = hand_broom_use_metasprites;
 			break;
 
 		case HAND_MOON:
