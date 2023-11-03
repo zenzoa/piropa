@@ -21,14 +21,15 @@ uint8_t frog_y;
 uint8_t goal_x;
 uint8_t goal_y;
 
+uint16_t age;
+
 uint8_t life_stage;
 #define EGG 0
 #define TADPOLE 1
 #define FROGLET 2
 #define TEEN 3
 #define ADULT 4
-#define DEAD_BAD 5
-#define DEAD_GOOD 6
+#define DEAD 5
 
 uint8_t mood;
 #define MOOD_NEUTRAL 0
@@ -67,6 +68,8 @@ uint8_t sickness;
 
 uint8_t poops;
 
+uint8_t night_timer = 0;
+
 uint8_t stage;
 uint8_t anim;
 uint8_t emote;
@@ -78,14 +81,21 @@ uint8_t anim_complete = 0;
 uint8_t pet_loops = 0;
 uint8_t wash_loops = 0;
 
+uint8_t is_evolving = FALSE;
+uint8_t evolution_counter = 0;
+uint8_t evolution_frame = 0;
+uint8_t next_stage;
+
 void start_action(uint8_t new_action);
+void set_stage(uint8_t new_stage);
+void start_evolution(uint8_t new_stage);
 
 void die_badly(void) {
-	life_stage = DEAD_BAD;
+	start_evolution(STAGE_DEAD_BAD);
 }
 
 void die_well(void) {
-	life_stage = DEAD_GOOD;
+	start_evolution(STAGE_DEAD_GOOD);
 }
 
 void update_mood(void) {
@@ -228,14 +238,25 @@ void update_sickness(void) {
 }
 
 void update_stats(void) {
-	update_stomach();
-	update_weight();
-	update_hygiene();
+	age += 1;
+	if (life_stage == EGG || life_stage == DEAD) { return; }
+
+	if (is_night) {
+		night_timer += 1;
+	}
+
+	if (!is_night || night_timer >= 10) {
+		night_timer = 0;
+		update_stomach();
+		update_weight();
+		update_hygiene();
+		update_love();
+		update_medicine();
+		update_health();
+		update_sickness();
+	}
+
 	update_energy();
-	update_love();
-	update_medicine();
-	update_health();
-	update_sickness();
 
 	EMU_printf("");
 	EMU_printf("stomach: %d", stomach);
@@ -328,23 +349,49 @@ void end_medicate(void) {
 }
 
 void start_sleep(void) {
-	frog_x = 76;
-	frog_y = 120;
-	start_action(ACTION_YAWN);
+	if (life_stage != EGG && life_stage != DEAD) {
+		night_timer = 0;
+		frog_x = 76;
+		frog_y = 120;
+		start_action(ACTION_YAWN);
+	}
 }
 
 void draw_frog(uint8_t *last_sprite) {
 	anim_complete = update_animation(&frog_anim);
 	update_animation(&emote_anim);
 
-	if (emote != EMOTE_NONE) {
-		draw_emote_sprite(frog_x + 12, frog_y - 8, emote_anim.frame, last_sprite);
-	}
+	if (!is_evolving && life_stage != EGG && life_stage != DEAD) {
 
-	if (action == ACTION_WASH) {
-		draw_bath_sprite(frog_x, frog_y, frog_anim.frame, last_sprite);
-	} else if (hygiene == 0) {
-		draw_dirt_sprite(frog_x, frog_y, last_sprite);
+		if (emote != EMOTE_NONE) {
+			int8_t y_offset = -8;
+			if (life_stage == TADPOLE || stage == STAGE_DINO) {
+				y_offset -= 1;
+			} else if (life_stage == FROGLET) {
+				y_offset += 4;
+			} else if (life_stage == TEEN) {
+				y_offset += 2;
+			}
+			draw_emote_sprite(frog_x + 12, frog_y + y_offset, emote_anim.frame, last_sprite);
+		}
+
+		if (action == ACTION_WASH) {
+			int8_t y_offset = frog_anim.frame;
+			if (life_stage == TADPOLE || stage == STAGE_DINO) {
+				y_offset -= 4;
+			} else if (stage == STAGE_AXO) {
+				y_offset -= 2;
+			} else if (life_stage == FROGLET) {
+				y_offset += 4;
+			} else if (life_stage == TEEN) {
+				y_offset += 2;
+			}
+			draw_bath_sprite(frog_x, frog_y, y_offset, last_sprite);
+
+		} else if (hygiene == 0) {
+			draw_dirt_sprite(frog_x, frog_y, last_sprite);
+		}
+
 	}
 
 	draw_frog_sprite(frog_x, frog_y, frog_anim.frame, last_sprite);
@@ -417,6 +464,8 @@ void move_toward_goal(void) {
 }
 
 void start_action(uint8_t new_action) {
+	if (life_stage == EGG || life_stage == DEAD) { return; }
+
 	switch(new_action) {
 		case ACTION_STAND:
 			emote = EMOTE_NONE;
@@ -588,14 +637,184 @@ void start_action(uint8_t new_action) {
 	EMU_printf("ACTION: %d", action);
 }
 
+void set_stage(uint8_t new_stage) {
+	stage = new_stage;
+	age = 0;
+
+	EMU_printf("");
+	EMU_printf("STAGE: %d", stage);
+
+	switch(stage) {
+		case STAGE_EGG:
+			life_stage = EGG;
+			break;
+
+		case STAGE_TADPOLE:
+			life_stage = TADPOLE;
+			break;
+
+		case STAGE_FROGLET:
+			life_stage = FROGLET;
+			break;
+
+		case STAGE_TEEN_NORM:
+		case STAGE_TEEN_TAIL:
+		case STAGE_TEEN_BW:
+			life_stage = TEEN;
+			break;
+
+		case STAGE_NORM:
+		case STAGE_MUSH:
+		case STAGE_AXO:
+		case STAGE_DINO:
+		case STAGE_APPLE:
+		case STAGE_PANDA:
+			life_stage = ADULT;
+			break;
+
+		case STAGE_DEAD_GOOD:
+		case STAGE_DEAD_BAD:
+			life_stage = DEAD;
+			break;
+	}
+
+	if (life_stage == EGG || life_stage == DEAD) {
+		swap_frog_vram();
+		set_frog_sprite_data(stage, anim);
+		frog_anim = new_animation(32, 2, 0);
+		frog_x = 72;
+		frog_y = 78;
+
+	} else {
+		start_action(ACTION_ENJOY);
+	}
+}
+
+void start_evolution(uint8_t new_stage) {
+	is_evolving = TRUE;
+	evolution_counter = 0;
+	evolution_frame = 0;
+	next_stage = new_stage;
+}
+
+void update_evolution(void) {
+	evolution_counter += 1;
+	if (evolution_counter >= 8) {
+		evolution_counter = 0;
+		evolution_frame += 1;
+		switch(evolution_frame) {
+			case 1:
+				BGP_REG = DMG_PALETTE(DMG_LITE_GRAY, DMG_DARK_GRAY, DMG_BLACK, DMG_BLACK);
+				OBP0_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_LITE_GRAY, DMG_DARK_GRAY, DMG_BLACK);
+				break;
+			case 2:
+				BGP_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_BLACK, DMG_BLACK, DMG_BLACK);
+				OBP0_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_DARK_GRAY, DMG_BLACK, DMG_BLACK);
+				break;
+			case 3:
+				BGP_REG = DMG_PALETTE(DMG_BLACK, DMG_BLACK, DMG_BLACK, DMG_BLACK);
+				OBP0_REG = DMG_PALETTE(DMG_BLACK, DMG_BLACK, DMG_BLACK, DMG_BLACK);
+				break;
+			case 9:
+			case 15:
+				BGP_REG = DMG_PALETTE(DMG_BLACK, DMG_BLACK, DMG_BLACK, DMG_BLACK);
+				break;
+			case 4:
+			case 8:
+			case 10:
+			case 14:
+			case 16:
+			case 20:
+				BGP_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_DARK_GRAY, DMG_DARK_GRAY, DMG_DARK_GRAY);
+				break;
+			case 5:
+			case 7:
+			case 11:
+			case 13:
+			case 17:
+			case 19:
+				BGP_REG = DMG_PALETTE(DMG_LITE_GRAY, DMG_LITE_GRAY, DMG_LITE_GRAY, DMG_LITE_GRAY);
+				break;
+			case 6:
+			case 12:
+			case 18:
+				BGP_REG = DMG_PALETTE(DMG_WHITE, DMG_WHITE, DMG_WHITE, DMG_WHITE);
+				break;
+			case 21:
+				BGP_REG = DMG_PALETTE(DMG_BLACK, DMG_BLACK, DMG_BLACK, DMG_BLACK);
+				set_stage(next_stage);
+				break;
+			case 22:
+				BGP_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_BLACK, DMG_BLACK, DMG_BLACK);
+				OBP0_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_DARK_GRAY, DMG_BLACK, DMG_BLACK);
+				break;
+			case 23:
+				BGP_REG = DMG_PALETTE(DMG_LITE_GRAY, DMG_DARK_GRAY, DMG_BLACK, DMG_BLACK);
+				OBP0_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_LITE_GRAY, DMG_DARK_GRAY, DMG_BLACK);
+				break;
+			case 24:
+				BGP_REG = DMG_PALETTE(DMG_WHITE, DMG_LITE_GRAY, DMG_DARK_GRAY, DMG_BLACK);
+				OBP0_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_WHITE, DMG_LITE_GRAY, DMG_BLACK);
+				is_evolving = FALSE;
+				break;
+		}
+	}
+}
+
+void evolve(void) {
+	if (life_stage == EGG) {
+		start_evolution(STAGE_TADPOLE);
+
+	} else if (life_stage == TADPOLE) {
+		start_evolution(STAGE_FROGLET);
+
+	} else if (life_stage == FROGLET) {
+		uint8_t n = rand();
+		if (n < 85) {
+			start_evolution(STAGE_TEEN_NORM);
+		} else if (n < 170) {
+			start_evolution(STAGE_TEEN_TAIL);
+		} else {
+			start_evolution(STAGE_TEEN_BW);
+		}
+
+	} else if (life_stage == TEEN) {
+		uint8_t n = rand();
+		if (n < 42) {
+			start_evolution(STAGE_NORM);
+		} else if (n < 85) {
+			start_evolution(STAGE_MUSH);
+		} else if (n < 128) {
+			start_evolution(STAGE_AXO);
+		} else if (n < 170) {
+			start_evolution(STAGE_DINO);
+		} else if (n < 212) {
+			start_evolution(STAGE_APPLE);
+		} else {
+			start_evolution(STAGE_PANDA);
+		}
+
+	} else if (life_stage == ADULT) {
+		die_well();
+	}
+}
+
+uint8_t is_time_to_evolve(void) {
+	return (
+		(life_stage == EGG && age >= 1) ||
+		(life_stage == TADPOLE && age >= 2) ||
+		(life_stage == FROGLET && age >= 3) ||
+		(life_stage == TEEN && age >= 4) ||
+		(life_stage == ADULT && age >= 5)
+	);
+}
+
 void setup_frog(void) {
 	frog_x = 66;
 	frog_y = 82;
 
 	goal_x = frog_x;
 	goal_y = frog_y;
-
-	life_stage = ADULT;
 
 	stomach = 9;
 	bowels = 0;
@@ -608,138 +827,136 @@ void setup_frog(void) {
 	poops = 0;
 	update_mood();
 
-	stage = STAGE_NORM;
-	start_action(ACTION_STAND);
-
-	set_frog_sprite_data(stage, anim);
-	set_emote_sprite_data(emote);
-
 	setup_emote_sprites();
+
+	set_stage(STAGE_EGG);
 }
 
 void update_frog(void) {
-	switch(life_stage) {
-		case EGG:
-			// once old enough, evolve into next stage
-			break;
+	if (is_evolving) {
+		update_evolution();
 
-		case DEAD_BAD:
-			break;
+	} else {
+		switch(life_stage) {
+			case EGG:
+				if (is_time_to_evolve()) {
+					evolve();
+				}
+				break;
 
-		case DEAD_GOOD:
-			break;
+			case DEAD:
+				break;
 
-		default:
-			switch(action) {
-				case ACTION_STAND:
-					if (frog_anim.frame == 0 && frog_anim.ticks == 0) {
-						if (current_scene != FIELD || !check_bowels()) {
-							uint8_t n = rand();
-							if (n < 25 && current_scene == FIELD) {
-								start_action(ACTION_WALK);
-							} else if (n < 50) {
-								start_action(ACTION_EMOTE);
+			default:
+				switch(action) {
+					case ACTION_STAND:
+						if (frog_anim.frame == 0 && frog_anim.ticks == 0) {
+							if (is_time_to_evolve()) {
+								evolve();
+							} else if (current_scene != FIELD || !check_bowels()) {
+								uint8_t n = rand();
+								if (n < 25 && current_scene == FIELD) {
+									start_action(ACTION_WALK);
+								} else if (n < 50) {
+									start_action(ACTION_EMOTE);
+								}
 							}
 						}
-					}
-					break;
+						break;
 
-				case ACTION_EMOTE:
-					if (anim_complete) {
-						start_action(ACTION_STAND);
-					}
-					break;
-
-				case ACTION_WALK:
-					if (frog_anim.ticks == 6 || frog_anim.ticks == 18) {
-						// EMU_printf("");
-						// EMU_printf("move toward goal %d %d to %d %d", frog_x, frog_y, goal_x, goal_y);
-						move_toward_goal();
-						if (frog_x == goal_x && frog_y == goal_y) {
-							// EMU_printf("");
-							// EMU_printf("REACH GOAL");
+					case ACTION_EMOTE:
+						if (anim_complete) {
 							start_action(ACTION_STAND);
 						}
-					}
-					break;
+						break;
 
-				case ACTION_EAT:
-					if (anim_complete) {
-						start_action(ACTION_STAND);
-					}
-					break;
-
-				case ACTION_REFUSE:
-					if (anim_complete) {
-						start_action(ACTION_STAND);
-					}
-					break;
-
-				case ACTION_ENJOY:
-					if (anim_complete) {
-						start_action(ACTION_STAND);
-					}
-					break;
-
-				case ACTION_YAWN:
-					if (anim_complete) {
-						start_action(ACTION_SLEEP);
-					}
-					break;
-
-				case ACTION_SLEEP:
-					if (!is_night) {
-						start_action(ACTION_WAKE);
-					}
-					break;
-
-				case ACTION_WAKE:
-					if (anim_complete) {
-						start_action(ACTION_STAND);
-					}
-					break;
-
-				case ACTION_WASH:
-					if (anim_complete) {
-						end_wash();
-					}
-					break;
-
-				case ACTION_CLEAN:
-					if (anim_complete) {
-						start_action(ACTION_STAND);
-					}
-					break;
-
-				case ACTION_PET:
-					if (anim_complete) {
-						end_pet();
-					}
-					break;
-
-				case ACTION_LOVE:
-					if (anim_complete) {
-						start_action(ACTION_STAND);
-					}
-					break;
-
-				case ACTION_MEDICATE:
-					if (anim_complete) {
-						end_medicate();
-						start_action(ACTION_STAND);
-					}
-					break;
-
-				case ACTION_POOP:
-					if (anim_complete) {
-						if (current_scene == FIELD) {
-							poops += 1;
-							add_poop(frog_x / 8, frog_y / 8);
+					case ACTION_WALK:
+						if (frog_anim.ticks == 6 || frog_anim.ticks == 18) {
+							move_toward_goal();
+							if (frog_x == goal_x && frog_y == goal_y) {
+								start_action(ACTION_STAND);
+							}
 						}
-						start_action(ACTION_STAND);
-					}
-					break;
+						break;
 
-			}
+					case ACTION_EAT:
+						if (anim_complete) {
+							start_action(ACTION_STAND);
+						}
+						break;
+
+					case ACTION_REFUSE:
+						if (anim_complete) {
+							start_action(ACTION_STAND);
+						}
+						break;
+
+					case ACTION_ENJOY:
+						if (anim_complete) {
+							start_action(ACTION_STAND);
+						}
+						break;
+
+					case ACTION_YAWN:
+						if (anim_complete) {
+							start_action(ACTION_SLEEP);
+						}
+						break;
+
+					case ACTION_SLEEP:
+						if (!is_night) {
+							start_action(ACTION_WAKE);
+						}
+						break;
+
+					case ACTION_WAKE:
+						if (anim_complete) {
+							start_action(ACTION_STAND);
+						}
+						break;
+
+					case ACTION_WASH:
+						if (anim_complete) {
+							end_wash();
+						}
+						break;
+
+					case ACTION_CLEAN:
+						if (anim_complete) {
+							start_action(ACTION_STAND);
+						}
+						break;
+
+					case ACTION_PET:
+						if (anim_complete) {
+							end_pet();
+						}
+						break;
+
+					case ACTION_LOVE:
+						if (anim_complete) {
+							start_action(ACTION_STAND);
+						}
+						break;
+
+					case ACTION_MEDICATE:
+						if (anim_complete) {
+							end_medicate();
+							start_action(ACTION_STAND);
+						}
+						break;
+
+					case ACTION_POOP:
+						if (anim_complete) {
+							if (current_scene == FIELD) {
+								poops += 1;
+								add_poop(frog_x / 8, frog_y / 8);
+							}
+							start_action(ACTION_STAND);
+						}
+						break;
+
+				}
+		}
 	}
 }

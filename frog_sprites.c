@@ -1,6 +1,63 @@
 #include <gbdk/platform.h>
 #include <gbdk/metasprites.h>
 
+#include "sprites/frogs/egg.h"
+
+#include "sprites/frogs/tadpole_neutral.h"
+#include "sprites/frogs/tadpole_happy.h"
+#include "sprites/frogs/tadpole_laugh.h"
+#include "sprites/frogs/tadpole_sad.h"
+#include "sprites/frogs/tadpole_stressed.h"
+#include "sprites/frogs/tadpole_angry.h"
+#include "sprites/frogs/tadpole_yawn.h"
+#include "sprites/frogs/tadpole_eat.h"
+#include "sprites/frogs/tadpole_walk.h"
+#include "sprites/frogs/tadpole_sleep.h"
+
+#include "sprites/frogs/froglet_neutral.h"
+#include "sprites/frogs/froglet_happy.h"
+#include "sprites/frogs/froglet_laugh.h"
+#include "sprites/frogs/froglet_sad.h"
+#include "sprites/frogs/froglet_stressed.h"
+#include "sprites/frogs/froglet_angry.h"
+#include "sprites/frogs/froglet_yawn.h"
+#include "sprites/frogs/froglet_eat.h"
+#include "sprites/frogs/froglet_walk.h"
+#include "sprites/frogs/froglet_sleep.h"
+
+#include "sprites/frogs/teen_norm_neutral.h"
+#include "sprites/frogs/teen_norm_happy.h"
+#include "sprites/frogs/teen_norm_laugh.h"
+#include "sprites/frogs/teen_norm_sad.h"
+#include "sprites/frogs/teen_norm_stressed.h"
+#include "sprites/frogs/teen_norm_angry.h"
+#include "sprites/frogs/teen_norm_yawn.h"
+#include "sprites/frogs/teen_norm_eat.h"
+#include "sprites/frogs/teen_norm_walk.h"
+#include "sprites/frogs/teen_norm_sleep.h"
+
+#include "sprites/frogs/teen_tail_neutral.h"
+#include "sprites/frogs/teen_tail_happy.h"
+#include "sprites/frogs/teen_tail_laugh.h"
+#include "sprites/frogs/teen_tail_sad.h"
+#include "sprites/frogs/teen_tail_stressed.h"
+#include "sprites/frogs/teen_tail_angry.h"
+#include "sprites/frogs/teen_tail_yawn.h"
+#include "sprites/frogs/teen_tail_eat.h"
+#include "sprites/frogs/teen_tail_walk.h"
+#include "sprites/frogs/teen_tail_sleep.h"
+
+#include "sprites/frogs/teen_bw_neutral.h"
+#include "sprites/frogs/teen_bw_happy.h"
+#include "sprites/frogs/teen_bw_laugh.h"
+#include "sprites/frogs/teen_bw_sad.h"
+#include "sprites/frogs/teen_bw_stressed.h"
+#include "sprites/frogs/teen_bw_angry.h"
+#include "sprites/frogs/teen_bw_yawn.h"
+#include "sprites/frogs/teen_bw_eat.h"
+#include "sprites/frogs/teen_bw_walk.h"
+#include "sprites/frogs/teen_bw_sleep.h"
+
 #include "sprites/frogs/norm_neutral.h"
 #include "sprites/frogs/norm_happy.h"
 #include "sprites/frogs/norm_laugh.h"
@@ -71,8 +128,8 @@
 #include "sprites/frogs/dead_bad.h"
 
 #define STAGE_EGG 0
-#define STAGE_BABY 1
-#define STAGE_CHILD 2
+#define STAGE_TADPOLE 1
+#define STAGE_FROGLET 2
 #define STAGE_TEEN_NORM 3
 #define STAGE_TEEN_TAIL 4
 #define STAGE_TEEN_BW 5
@@ -118,6 +175,373 @@ void set_frog_sprite_data(uint8_t stage, uint8_t anim) {
 	frog_flipped = FALSE;
 
 	switch(stage) {
+		case STAGE_EGG:
+			frog_sprite_bank = BANK(egg);
+			SWITCH_ROM(frog_sprite_bank);
+			set_sprite_data(frog_vram, egg_TILE_COUNT, egg_tiles);
+			frog_metasprites = egg_metasprites;
+			break;
+
+		case STAGE_TADPOLE:
+			switch(anim) {
+				case ANIM_NEUTRAL:
+					frog_sprite_bank = BANK(tadpole_neutral);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, tadpole_neutral_TILE_COUNT, tadpole_neutral_tiles);
+					frog_metasprites = tadpole_neutral_metasprites;
+					break;
+				case ANIM_HAPPY:
+					frog_sprite_bank = BANK(tadpole_happy);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, tadpole_happy_TILE_COUNT, tadpole_happy_tiles);
+					frog_metasprites = tadpole_happy_metasprites;
+					break;
+				case ANIM_LAUGH:
+					frog_sprite_bank = BANK(tadpole_laugh);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, tadpole_laugh_TILE_COUNT, tadpole_laugh_tiles);
+					frog_metasprites = tadpole_laugh_metasprites;
+					break;
+				case ANIM_SAD:
+					frog_sprite_bank = BANK(tadpole_sad);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, tadpole_sad_TILE_COUNT, tadpole_sad_tiles);
+					frog_metasprites = tadpole_sad_metasprites;
+					break;
+				case ANIM_STRESSED:
+					frog_sprite_bank = BANK(tadpole_stressed);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, tadpole_stressed_TILE_COUNT, tadpole_stressed_tiles);
+					frog_metasprites = tadpole_stressed_metasprites;
+					break;
+				case ANIM_ANGRY:
+					frog_sprite_bank = BANK(tadpole_angry);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, tadpole_angry_TILE_COUNT, tadpole_angry_tiles);
+					frog_metasprites = tadpole_angry_metasprites;
+					break;
+				case ANIM_YAWN:
+					frog_sprite_bank = BANK(tadpole_yawn);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, tadpole_yawn_TILE_COUNT, tadpole_yawn_tiles);
+					frog_metasprites = tadpole_yawn_metasprites;
+					break;
+				case ANIM_EAT:
+					frog_sprite_bank = BANK(tadpole_eat);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, tadpole_eat_TILE_COUNT, tadpole_eat_tiles);
+					frog_metasprites = tadpole_eat_metasprites;
+					break;
+				case ANIM_WALK_LEFT:
+					frog_sprite_bank = BANK(tadpole_walk);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, tadpole_walk_TILE_COUNT, tadpole_walk_tiles);
+					frog_metasprites = tadpole_walk_metasprites;
+					break;
+				case ANIM_WALK_RIGHT:
+					frog_sprite_bank = BANK(tadpole_walk);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, tadpole_walk_TILE_COUNT, tadpole_walk_tiles);
+					frog_metasprites = tadpole_walk_metasprites;
+					frog_flipped = TRUE;
+					break;
+				case ANIM_SLEEP:
+					frog_sprite_bank = BANK(tadpole_sleep);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, tadpole_sleep_TILE_COUNT, tadpole_sleep_tiles);
+					frog_metasprites = tadpole_sleep_metasprites;
+					break;
+			}
+			break;
+
+		case STAGE_FROGLET:
+			switch(anim) {
+				case ANIM_NEUTRAL:
+					frog_sprite_bank = BANK(froglet_neutral);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, froglet_neutral_TILE_COUNT, froglet_neutral_tiles);
+					frog_metasprites = froglet_neutral_metasprites;
+					break;
+				case ANIM_HAPPY:
+					frog_sprite_bank = BANK(froglet_happy);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, froglet_happy_TILE_COUNT, froglet_happy_tiles);
+					frog_metasprites = froglet_happy_metasprites;
+					break;
+				case ANIM_LAUGH:
+					frog_sprite_bank = BANK(froglet_laugh);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, froglet_laugh_TILE_COUNT, froglet_laugh_tiles);
+					frog_metasprites = froglet_laugh_metasprites;
+					break;
+				case ANIM_SAD:
+					frog_sprite_bank = BANK(froglet_sad);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, froglet_sad_TILE_COUNT, froglet_sad_tiles);
+					frog_metasprites = froglet_sad_metasprites;
+					break;
+				case ANIM_STRESSED:
+					frog_sprite_bank = BANK(froglet_stressed);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, froglet_stressed_TILE_COUNT, froglet_stressed_tiles);
+					frog_metasprites = froglet_stressed_metasprites;
+					break;
+				case ANIM_ANGRY:
+					frog_sprite_bank = BANK(froglet_angry);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, froglet_angry_TILE_COUNT, froglet_angry_tiles);
+					frog_metasprites = froglet_angry_metasprites;
+					break;
+				case ANIM_YAWN:
+					frog_sprite_bank = BANK(froglet_yawn);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, froglet_yawn_TILE_COUNT, froglet_yawn_tiles);
+					frog_metasprites = froglet_yawn_metasprites;
+					break;
+				case ANIM_EAT:
+					frog_sprite_bank = BANK(froglet_eat);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, froglet_eat_TILE_COUNT, froglet_eat_tiles);
+					frog_metasprites = froglet_eat_metasprites;
+					break;
+				case ANIM_WALK_LEFT:
+					frog_sprite_bank = BANK(froglet_walk);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, froglet_walk_TILE_COUNT, froglet_walk_tiles);
+					frog_metasprites = froglet_walk_metasprites;
+					break;
+				case ANIM_WALK_RIGHT:
+					frog_sprite_bank = BANK(froglet_walk);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, froglet_walk_TILE_COUNT, froglet_walk_tiles);
+					frog_metasprites = froglet_walk_metasprites;
+					frog_flipped = TRUE;
+					break;
+				case ANIM_SLEEP:
+					frog_sprite_bank = BANK(froglet_sleep);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, froglet_sleep_TILE_COUNT, froglet_sleep_tiles);
+					frog_metasprites = froglet_sleep_metasprites;
+					break;
+			}
+			break;
+
+		case STAGE_TEEN_NORM:
+			switch(anim) {
+				case ANIM_NEUTRAL:
+					frog_sprite_bank = BANK(teen_norm_neutral);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, teen_norm_neutral_TILE_COUNT, teen_norm_neutral_tiles);
+					frog_metasprites = teen_norm_neutral_metasprites;
+					break;
+				case ANIM_HAPPY:
+					frog_sprite_bank = BANK(teen_norm_happy);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, teen_norm_happy_TILE_COUNT, teen_norm_happy_tiles);
+					frog_metasprites = teen_norm_happy_metasprites;
+					break;
+				case ANIM_LAUGH:
+					frog_sprite_bank = BANK(teen_norm_laugh);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, teen_norm_laugh_TILE_COUNT, teen_norm_laugh_tiles);
+					frog_metasprites = teen_norm_laugh_metasprites;
+					break;
+				case ANIM_SAD:
+					frog_sprite_bank = BANK(teen_norm_sad);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, teen_norm_sad_TILE_COUNT, teen_norm_sad_tiles);
+					frog_metasprites = teen_norm_sad_metasprites;
+					break;
+				case ANIM_STRESSED:
+					frog_sprite_bank = BANK(teen_norm_stressed);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, teen_norm_stressed_TILE_COUNT, teen_norm_stressed_tiles);
+					frog_metasprites = teen_norm_stressed_metasprites;
+					break;
+				case ANIM_ANGRY:
+					frog_sprite_bank = BANK(teen_norm_angry);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, teen_norm_angry_TILE_COUNT, teen_norm_angry_tiles);
+					frog_metasprites = teen_norm_angry_metasprites;
+					break;
+				case ANIM_YAWN:
+					frog_sprite_bank = BANK(teen_norm_yawn);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, teen_norm_yawn_TILE_COUNT, teen_norm_yawn_tiles);
+					frog_metasprites = teen_norm_yawn_metasprites;
+					break;
+				case ANIM_EAT:
+					frog_sprite_bank = BANK(teen_norm_eat);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, teen_norm_eat_TILE_COUNT, teen_norm_eat_tiles);
+					frog_metasprites = teen_norm_eat_metasprites;
+					break;
+				case ANIM_WALK_LEFT:
+					frog_sprite_bank = BANK(teen_norm_walk);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, teen_norm_walk_TILE_COUNT, teen_norm_walk_tiles);
+					frog_metasprites = teen_norm_walk_metasprites;
+					break;
+				case ANIM_WALK_RIGHT:
+					frog_sprite_bank = BANK(teen_norm_walk);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, teen_norm_walk_TILE_COUNT, teen_norm_walk_tiles);
+					frog_metasprites = teen_norm_walk_metasprites;
+					frog_flipped = TRUE;
+					break;
+				case ANIM_SLEEP:
+					frog_sprite_bank = BANK(teen_norm_sleep);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, teen_norm_sleep_TILE_COUNT, teen_norm_sleep_tiles);
+					frog_metasprites = teen_norm_sleep_metasprites;
+					break;
+			}
+			break;
+
+		case STAGE_TEEN_TAIL:
+			switch(anim) {
+				case ANIM_NEUTRAL:
+					frog_sprite_bank = BANK(teen_tail_neutral);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, teen_tail_neutral_TILE_COUNT, teen_tail_neutral_tiles);
+					frog_metasprites = teen_tail_neutral_metasprites;
+					break;
+				case ANIM_HAPPY:
+					frog_sprite_bank = BANK(teen_tail_happy);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, teen_tail_happy_TILE_COUNT, teen_tail_happy_tiles);
+					frog_metasprites = teen_tail_happy_metasprites;
+					break;
+				case ANIM_LAUGH:
+					frog_sprite_bank = BANK(teen_tail_laugh);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, teen_tail_laugh_TILE_COUNT, teen_tail_laugh_tiles);
+					frog_metasprites = teen_tail_laugh_metasprites;
+					break;
+				case ANIM_SAD:
+					frog_sprite_bank = BANK(teen_tail_sad);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, teen_tail_sad_TILE_COUNT, teen_tail_sad_tiles);
+					frog_metasprites = teen_tail_sad_metasprites;
+					break;
+				case ANIM_STRESSED:
+					frog_sprite_bank = BANK(teen_tail_stressed);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, teen_tail_stressed_TILE_COUNT, teen_tail_stressed_tiles);
+					frog_metasprites = teen_tail_stressed_metasprites;
+					break;
+				case ANIM_ANGRY:
+					frog_sprite_bank = BANK(teen_tail_angry);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, teen_tail_angry_TILE_COUNT, teen_tail_angry_tiles);
+					frog_metasprites = teen_tail_angry_metasprites;
+					break;
+				case ANIM_YAWN:
+					frog_sprite_bank = BANK(teen_tail_yawn);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, teen_tail_yawn_TILE_COUNT, teen_tail_yawn_tiles);
+					frog_metasprites = teen_tail_yawn_metasprites;
+					break;
+				case ANIM_EAT:
+					frog_sprite_bank = BANK(teen_tail_eat);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, teen_tail_eat_TILE_COUNT, teen_tail_eat_tiles);
+					frog_metasprites = teen_tail_eat_metasprites;
+					break;
+				case ANIM_WALK_LEFT:
+					frog_sprite_bank = BANK(teen_tail_walk);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, teen_tail_walk_TILE_COUNT, teen_tail_walk_tiles);
+					frog_metasprites = teen_tail_walk_metasprites;
+					break;
+				case ANIM_WALK_RIGHT:
+					frog_sprite_bank = BANK(teen_tail_walk);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, teen_tail_walk_TILE_COUNT, teen_tail_walk_tiles);
+					frog_metasprites = teen_tail_walk_metasprites;
+					frog_flipped = TRUE;
+					break;
+				case ANIM_SLEEP:
+					frog_sprite_bank = BANK(teen_tail_sleep);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, teen_tail_sleep_TILE_COUNT, teen_tail_sleep_tiles);
+					frog_metasprites = teen_tail_sleep_metasprites;
+					break;
+			}
+			break;
+
+		case STAGE_TEEN_BW:
+			switch(anim) {
+				case ANIM_NEUTRAL:
+					frog_sprite_bank = BANK(teen_bw_neutral);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, teen_bw_neutral_TILE_COUNT, teen_bw_neutral_tiles);
+					frog_metasprites = teen_bw_neutral_metasprites;
+					break;
+				case ANIM_HAPPY:
+					frog_sprite_bank = BANK(teen_bw_happy);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, teen_bw_happy_TILE_COUNT, teen_bw_happy_tiles);
+					frog_metasprites = teen_bw_happy_metasprites;
+					break;
+				case ANIM_LAUGH:
+					frog_sprite_bank = BANK(teen_bw_laugh);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, teen_bw_laugh_TILE_COUNT, teen_bw_laugh_tiles);
+					frog_metasprites = teen_bw_laugh_metasprites;
+					break;
+				case ANIM_SAD:
+					frog_sprite_bank = BANK(teen_bw_sad);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, teen_bw_sad_TILE_COUNT, teen_bw_sad_tiles);
+					frog_metasprites = teen_bw_sad_metasprites;
+					break;
+				case ANIM_STRESSED:
+					frog_sprite_bank = BANK(teen_bw_stressed);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, teen_bw_stressed_TILE_COUNT, teen_bw_stressed_tiles);
+					frog_metasprites = teen_bw_stressed_metasprites;
+					break;
+				case ANIM_ANGRY:
+					frog_sprite_bank = BANK(teen_bw_angry);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, teen_bw_angry_TILE_COUNT, teen_bw_angry_tiles);
+					frog_metasprites = teen_bw_angry_metasprites;
+					break;
+				case ANIM_YAWN:
+					frog_sprite_bank = BANK(teen_bw_yawn);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, teen_bw_yawn_TILE_COUNT, teen_bw_yawn_tiles);
+					frog_metasprites = teen_bw_yawn_metasprites;
+					break;
+				case ANIM_EAT:
+					frog_sprite_bank = BANK(teen_bw_eat);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, teen_bw_eat_TILE_COUNT, teen_bw_eat_tiles);
+					frog_metasprites = teen_bw_eat_metasprites;
+					break;
+				case ANIM_WALK_LEFT:
+					frog_sprite_bank = BANK(teen_bw_walk);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, teen_bw_walk_TILE_COUNT, teen_bw_walk_tiles);
+					frog_metasprites = teen_bw_walk_metasprites;
+					break;
+				case ANIM_WALK_RIGHT:
+					frog_sprite_bank = BANK(teen_bw_walk);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, teen_bw_walk_TILE_COUNT, teen_bw_walk_tiles);
+					frog_metasprites = teen_bw_walk_metasprites;
+					frog_flipped = TRUE;
+					break;
+				case ANIM_SLEEP:
+					frog_sprite_bank = BANK(teen_bw_sleep);
+					SWITCH_ROM(frog_sprite_bank);
+					set_sprite_data(frog_vram, teen_bw_sleep_TILE_COUNT, teen_bw_sleep_tiles);
+					frog_metasprites = teen_bw_sleep_metasprites;
+					break;
+			}
+			break;
+
 		case STAGE_NORM:
 			switch(anim) {
 				case ANIM_NEUTRAL:

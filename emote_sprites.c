@@ -166,7 +166,7 @@ void draw_dirt_sprite(uint8_t x, uint8_t y, uint8_t *last_sprite) {
 	SWITCH_ROM(saved_bank);
 }
 
-void draw_bath_sprite(uint8_t x, uint8_t y, uint8_t frame, uint8_t *last_sprite) {
+void draw_bath_sprite(uint8_t x, uint8_t y, int8_t y_offset, uint8_t *last_sprite) {
 	uint8_t saved_bank = _current_bank;
 
 	bath_anim_counter += 1;
@@ -176,7 +176,7 @@ void draw_bath_sprite(uint8_t x, uint8_t y, uint8_t frame, uint8_t *last_sprite)
 	}
 
 	SWITCH_ROM(BANK(bath));
-	*last_sprite += move_metasprite_ex(bath_metasprites[bath_frame], BATH_VRAM, 0, *last_sprite, x + 8, y + frame);
+	*last_sprite += move_metasprite_ex(bath_metasprites[bath_frame], BATH_VRAM, 0, *last_sprite, x + 8, y + y_offset);
 	*last_sprite += move_metasprite_ex(bath_metasprites[!bath_frame], BATH_VRAM, 0, *last_sprite, x + 8, y + 18);
 
 	SWITCH_ROM(saved_bank);

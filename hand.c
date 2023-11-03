@@ -3,6 +3,7 @@
 
 #include "hand_sprites.h"
 #include "frog.h"
+#include "scene.h"
 #include "field.h"
 
 uint8_t hand_state;
@@ -74,6 +75,8 @@ void setup_hand(void) {
 }
 
 void draw_hand(uint8_t *last_sprite) {
+	if (is_evolving) { return; }
+
 	hand_offset = 0;
 
 	SWITCH_ROM(BANK(frog_bank));
@@ -116,7 +119,7 @@ void update_hand(void) {
 	switch(hand_state) {
 
 		case HAND_DEFAULT:
-			if (is_hand_over_frog()) {
+			if (is_hand_over_frog() && !is_night && life_stage != EGG && life_stage != DEAD) {
 				set_hand_state(HAND_POINT);
 			}
 			break;

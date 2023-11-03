@@ -1,6 +1,6 @@
 #define STAGE_EGG 0
-#define STAGE_BABY 1
-#define STAGE_CHILD 2
+#define STAGE_TADPOLE 1
+#define STAGE_FROGLET 2
 #define STAGE_TEEN_NORM 3
 #define STAGE_TEEN_TAIL 4
 #define STAGE_TEEN_BW 5

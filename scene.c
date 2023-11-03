@@ -34,42 +34,50 @@ void setup_scene(uint8_t new_scene) {
 	draw_hud();
 }
 
+void update_transition(void) {
+	transition_counter += 1;
+	if (transition_counter >= 8) {
+		transition_counter = 0;
+		transition_frame += 1;
+		switch(transition_frame) {
+			case 1:
+				BGP_REG = DMG_PALETTE(DMG_LITE_GRAY, DMG_DARK_GRAY, DMG_BLACK, DMG_BLACK);
+				OBP0_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_LITE_GRAY, DMG_DARK_GRAY, DMG_BLACK);
+				break;
+			case 2:
+				BGP_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_BLACK, DMG_BLACK, DMG_BLACK);
+				OBP0_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_DARK_GRAY, DMG_BLACK, DMG_BLACK);
+				break;
+			case 3:
+				BGP_REG = DMG_PALETTE(DMG_BLACK, DMG_BLACK, DMG_BLACK, DMG_BLACK);
+				OBP0_REG = DMG_PALETTE(DMG_BLACK, DMG_BLACK, DMG_BLACK, DMG_BLACK);
+				is_night = next_is_night;
+				setup_scene(next_scene);
+				if (is_night) {
+					SWITCH_ROM(BANK(frog_bank));
+					start_sleep();
+				}
+				break;
+			case 4:
+				BGP_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_BLACK, DMG_BLACK, DMG_BLACK);
+				OBP0_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_DARK_GRAY, DMG_BLACK, DMG_BLACK);
+				break;
+			case 5:
+				BGP_REG = DMG_PALETTE(DMG_LITE_GRAY, DMG_DARK_GRAY, DMG_BLACK, DMG_BLACK);
+				OBP0_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_LITE_GRAY, DMG_DARK_GRAY, DMG_BLACK);
+				break;
+			case 6:
+				BGP_REG = DMG_PALETTE(DMG_WHITE, DMG_LITE_GRAY, DMG_DARK_GRAY, DMG_BLACK);
+				OBP0_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_WHITE, DMG_LITE_GRAY, DMG_BLACK);
+				is_transitioning = FALSE;
+				break;
+		}
+	}
+}
+
 void update_scene(void) {
 	if (is_transitioning) {
-		transition_counter += 1;
-		if (transition_counter >= 4) {
-			transition_counter = 0;
-			transition_frame += 1;
-			switch(transition_frame) {
-				case 1:
-					BGP_REG = DMG_PALETTE(DMG_LITE_GRAY, DMG_DARK_GRAY, DMG_BLACK, DMG_BLACK);
-					HIDE_SPRITES;
-					break;
-				case 2:
-					BGP_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_BLACK, DMG_BLACK, DMG_BLACK);
-					break;
-				case 3:
-					BGP_REG = DMG_PALETTE(DMG_BLACK, DMG_BLACK, DMG_BLACK, DMG_BLACK);
-					is_night = next_is_night;
-					setup_scene(next_scene);
-					if (is_night) {
-						SWITCH_ROM(BANK(frog_bank));
-						start_sleep();
-					}
-					break;
-				case 4:
-					BGP_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_BLACK, DMG_BLACK, DMG_BLACK);
-					break;
-				case 5:
-					BGP_REG = DMG_PALETTE(DMG_LITE_GRAY, DMG_DARK_GRAY, DMG_BLACK, DMG_BLACK);
-					break;
-				case 6:
-					BGP_REG = DMG_PALETTE(DMG_WHITE, DMG_LITE_GRAY, DMG_DARK_GRAY, DMG_BLACK);
-					is_transitioning = FALSE;
-					SHOW_SPRITES;
-					break;
-			}
-		}
+		update_transition();
 
 	} else {
 		switch(current_scene) {

@@ -87,7 +87,7 @@ void handle_a_button(void) {
 			set_hand_state(HAND_BROOM_USE);
 			sweep_count = 2;
 
-		} else if (is_hand_over_frog() && !is_night) {
+		} else if (is_hand_over_frog() && !is_night && life_stage != EGG && life_stage != DEAD) {
 			if (is_hand_empty() || hand_state == HAND_PET2) {
 				start_pet();
 				set_hand_state(HAND_PET1);

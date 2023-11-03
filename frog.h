@@ -1,5 +1,12 @@
 BANKREF_EXTERN(frog_bank)
 
+#define EGG 0
+#define TADPOLE 1
+#define FROGLET 2
+#define TEEN 3
+#define ADULT 4
+#define DEAD 5
+
 extern uint8_t frog_x;
 extern uint8_t frog_y;
 
@@ -22,6 +29,8 @@ extern uint8_t poops;
 extern uint8_t stage;
 extern uint8_t anim;
 extern uint8_t emote;
+
+extern uint8_t is_evolving;
 
 extern void update_stats(void);
 extern void setup_frog(void);
