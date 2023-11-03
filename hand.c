@@ -24,6 +24,9 @@ uint8_t hand_y;
 uint16_t hand_x_frac;
 uint16_t hand_y_frac;
 
+uint16_t push_left = 0;
+uint16_t push_right = 0;
+
 uint8_t hand_offset;
 
 uint8_t hand_timeout = 0;
@@ -39,6 +42,22 @@ void move_hand_by_frac(int16_t dx_frac, int16_t dy_frac) {
 	hand_y_frac += dy_frac;
 	hand_x = hand_x_frac >> 8;
 	hand_y = hand_y_frac >> 8;
+
+	if (hand_y < 8) {
+		hand_y = 8;
+		hand_y_frac = hand_y << 8;
+	} else if (hand_y > 152) {
+		hand_y = 152;
+		hand_y_frac = hand_y << 8;
+	}
+
+	if (hand_x > 176 && hand_x < 240 && dx_frac < 0) {
+		hand_x = 160;
+		hand_x_frac = hand_x << 8;
+	} else if (hand_x > 176 && dx_frac > 0) {
+		hand_x = 0;
+		hand_x_frac = hand_x << 8;
+	}
 }
 
 uint8_t is_hand_empty(void) {
