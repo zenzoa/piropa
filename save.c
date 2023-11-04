@@ -2,6 +2,8 @@
 
 #include "frog.h"
 
+uint8_t has_save = FALSE;
+
 typedef struct save_slot_t {
 	uint16_t save_flag;
 
@@ -44,10 +46,12 @@ void save_data(void) {
 	save_slot.poops = poops;
 
 	DISABLE_RAM;
+
+	has_save = TRUE;
 }
 
 uint8_t load_data(void) {
-	uint8_t was_load_successful = FALSE;
+	has_save = FALSE;
 
 	ENABLE_RAM;
 	SWITCH_RAM(0);
@@ -68,11 +72,11 @@ uint8_t load_data(void) {
 		sickness = save_slot.sickness;
 		poops = save_slot.poops;
 
-		was_load_successful = TRUE;
+		has_save = TRUE;
 
 	}
 
 	DISABLE_RAM;
-	return was_load_successful;
+	return has_save;
 
 }

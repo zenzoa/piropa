@@ -397,6 +397,11 @@ void draw_frog(uint8_t *last_sprite) {
 	draw_frog_sprite(frog_x, frog_y, frog_anim.frame, last_sprite);
 }
 
+void redraw_frog(void) {
+	set_frog_sprite_data(stage, anim);
+	set_emote_sprite_data(emote);
+}
+
 void random_goal(void) {
 	uint8_t zone = rand();
 
