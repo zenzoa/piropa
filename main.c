@@ -11,7 +11,6 @@
 #include "hand.h"
 #include "joypad.h"
 #include "scene.h"
-#include "hud.h"
 
 uint8_t frames = 0;
 uint8_t last_update_minutes = 0;
@@ -29,13 +28,13 @@ void main(void) {
 
 	initrand(DIV_REG);
 
-	setup_hud();
-	setup_scene(TITLE);
-
+	load_data();
 	SWITCH_ROM(BANK(frog_bank));
-	setup_frog();
+	setup_frog(!has_save);
 
 	setup_hand();
+
+	setup_scene(TITLE);
 
 	last_time = clock() / CLOCKS_PER_SEC;
 
@@ -56,6 +55,7 @@ void main(void) {
 				last_time = clock() / CLOCKS_PER_SEC;
 				SWITCH_ROM(BANK(frog_bank));
 				update_stats();
+				save_data();
 			}
 		}
 

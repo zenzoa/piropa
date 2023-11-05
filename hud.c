@@ -1,12 +1,13 @@
+#pragma bank 255
+
 #include <gbdk/platform.h>
 
 #include "hand.h"
 #include "scene.h"
-#include "field.h"
 
 #include "sprites/backgrounds/hud.h"
 
-#define HUD_VRAM 0xd0
+BANKREF(hud_bank)
 
 const unsigned char medicine_tile_map[4] = { 0xd0, 0xd1, 0xda, 0xdb };
 const unsigned char medicine_empty_tile_map[4] = { 0xe4, 0xe5, 0xee, 0xef };
@@ -29,8 +30,6 @@ uint8_t broom_is_held = 0;
 uint8_t moon_is_held = 0;
 
 void draw_hud(void) {
-	SWITCH_ROM(BANK(hud));
-
 	if (medicine_is_held) {
 		set_bkg_tiles(0x01, 0x01, 2, 2, medicine_empty_tile_map);
 	} else {
@@ -58,10 +57,12 @@ void draw_hud(void) {
 	}
 }
 
-void setup_hud(void) {
+void setup_hud_data(void) NONBANKED {
 	SWITCH_ROM(BANK(hud));
-	set_bkg_data(HUD_VRAM, 40, hud_tiles);
+	set_bkg_data(0xd0, 40, hud_tiles);
+}
 
+void setup_hud(void) {
 	if (!is_night) {
 		moon_is_held = 0;
 	}

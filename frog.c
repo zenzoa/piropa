@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <gbdk/emu_debug.h>
 
+#include "save.h"
 #include "scene.h"
 #include "field.h"
 #include "animation.h"
@@ -137,7 +138,7 @@ void update_stomach(void) {
 
 uint8_t check_bowels(void) {
 	if (bowels > 3) {
-		if (poops < MAX_POOPS) {
+		if (poops < 6) {
 			start_action(ACTION_POOP);
 		}
 		bowels = 0;
@@ -395,11 +396,6 @@ void draw_frog(uint8_t *last_sprite) {
 	}
 
 	draw_frog_sprite(frog_x, frog_y, frog_anim.frame, last_sprite);
-}
-
-void redraw_frog(void) {
-	set_frog_sprite_data(stage, anim);
-	set_emote_sprite_data(emote);
 }
 
 void random_goal(void) {
@@ -693,6 +689,8 @@ void set_stage(uint8_t new_stage) {
 	} else {
 		start_action(ACTION_ENJOY);
 	}
+
+	save_data();
 }
 
 void start_evolution(uint8_t new_stage) {
@@ -814,27 +812,48 @@ uint8_t is_time_to_evolve(void) {
 	);
 }
 
-void setup_frog(void) {
-	frog_x = 66;
-	frog_y = 82;
+void setup_frog(uint8_t reset) {
+	if (!reset) {
+		anim = ANIM_NEUTRAL;
+		set_frog_sprite_data(stage, anim);
+		if (life_stage == EGG || life_stage == DEAD) {
+			frog_anim = new_animation(32, 2, 0);
+			frog_x = 72;
+			frog_y = 78;
+		} else {
+			frog_x = 66;
+			frog_y = 82;
+		}
+	}
 
 	goal_x = frog_x;
 	goal_y = frog_y;
 
-	stomach = 9;
-	bowels = 0;
-	weight = 5;
-	hygiene = 9;
-	energy = 9;
-	love = 5;
-	medicine = 0;
-	health = 9;
-	poops = 0;
+	if (reset) {
+		stomach = 9;
+		bowels = 0;
+		weight = 5;
+		hygiene = 9;
+		energy = 9;
+		love = 5;
+		medicine = 0;
+		health = 9;
+		poops = 0;
+	}
 	update_mood();
 
 	setup_emote_sprites();
 
-	set_stage(STAGE_EGG);
+	if (reset) {
+		set_stage(STAGE_EGG);
+	} else if (is_night) {
+		set_frog_sprite_data(stage, ANIM_SLEEP);
+		set_emote_sprite_data(EMOTE_SLEEP);
+		start_action(ACTION_SLEEP);
+	} else {
+		set_frog_sprite_data(stage, ANIM_NEUTRAL);
+		start_action(ACTION_STAND);
+	}
 }
 
 void update_frog(void) {
@@ -955,6 +974,7 @@ void update_frog(void) {
 						if (anim_complete) {
 							if (current_scene == FIELD) {
 								poops += 1;
+								SWITCH_ROM(BANK(field_bank));
 								add_poop(frog_x / 8, frog_y / 8);
 							}
 							start_action(ACTION_STAND);

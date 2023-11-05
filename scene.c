@@ -7,6 +7,7 @@
 #include "hand.h"
 #include "frog.h"
 #include "hud.h"
+#include "save.h"
 
 #include "title.h"
 #include "field.h"
@@ -34,31 +35,35 @@ uint8_t next_is_night;
 uint8_t last_sprite;
 
 void setup_scene(uint8_t new_scene) {
+	setup_hud_data();
+	SWITCH_ROM(BANK(hud_bank));
+	setup_hud();
+
 	current_scene = new_scene;
 	switch(current_scene) {
 		case TITLE:
+			setup_title_data();
+			SWITCH_ROM(BANK(title_bank));
 			setup_title();
 			break;
 
 		case FIELD:
+			setup_field_data();
+			SWITCH_ROM(BANK(field_bank));
 			setup_field();
+			SWITCH_ROM(BANK(hud_bank));
 			draw_hud();
-			SWITCH_ROM(BANK(frog_bank));
-			redraw_frog();
 			break;
 
 		case POND:
 			//setup_pond();
 			draw_hud();
-			SWITCH_ROM(BANK(frog_bank));
-			redraw_frog();
 			break;
 
 		case GARDEN:
 			//setup_garden();
+			SWITCH_ROM(BANK(hud_bank));
 			draw_hud();
-			SWITCH_ROM(BANK(frog_bank));
-			redraw_frog();
 			break;
 
 		case INFO:
@@ -69,6 +74,8 @@ void setup_scene(uint8_t new_scene) {
 			// setup_inventory();
 			break;
 	}
+
+	save_data();
 }
 
 void update_transition(void) {
@@ -117,6 +124,7 @@ void draw_sprites(void) {
 
 	switch(current_scene) {
 		case TITLE:
+			SWITCH_ROM(BANK(title_bank));
 			draw_title_sprites(&last_sprite);
 			break;
 
@@ -139,6 +147,7 @@ void update_scene(void) {
 	} else {
 		switch(current_scene) {
 			case FIELD:
+				SWITCH_ROM(BANK(field_bank));
 				update_field();
 				break;
 
@@ -171,10 +180,14 @@ void start_transition_to_scene(uint8_t new_scene, uint8_t new_is_night) {
 	next_is_night = new_is_night;
 }
 
-void restart(void) {
-	drop_all(0);
+void reset_data(void) {
+	SWITCH_ROM(BANK(hud_bank));
+	medicine_is_held = 0;
+	soap_is_held = 0;
+	broom_is_held = 0;
+	moon_is_held = 0;
 	SWITCH_ROM(BANK(frog_bank));
-	setup_frog();
+	setup_frog(TRUE);
 	setup_hand();
 	start_transition_to_scene(FIELD, FALSE);
 }

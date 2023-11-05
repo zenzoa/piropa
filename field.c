@@ -1,4 +1,8 @@
+#pragma bank 255
+
 #include <gbdk/platform.h>
+
+#include <stdio.h>
 #include <gbdk/emu_debug.h>
 
 #include "hud.h"
@@ -13,10 +17,7 @@
 #include "sprites/backgrounds/basket.h"
 #include "sprites/backgrounds/poo.h"
 
-#define CLOUDS_VRAM 0x70
-#define MOON_VRAM 0x60
-#define BASKET_VRAM 0xf8
-#define POO_VRAM 0xfe
+BANKREF(field_bank)
 
 const unsigned char big_cloud_1_tile_map[3] = { 0x70, 0x71, 0x72 };
 const unsigned char big_cloud_2_tile_map[3] = { 0x73, 0x74, 0x75 };
@@ -56,22 +57,19 @@ void set_basket(uint8_t is_open) {
 void draw_poops(void) {
 	for (uint8_t i = 0; i < MAX_POOPS; i++) {
 		if (poops_x[i] > 0 || poops_y[i] > 0) {
-			set_bkg_tile_xy(poops_x[i], poops_y[i], POO_VRAM);
+			set_bkg_tile_xy(poops_x[i], poops_y[i], 0xfe);
 		}
 	}
 }
 
-void setup_field(void) {
+void setup_field_data(void) NONBANKED {
 	if (is_night) {
 		SWITCH_ROM(BANK(field_night));
 		set_bkg_data(0, field_night_TILE_COUNT, field_night_tiles);
 		set_bkg_tiles(0, 0, 20, 18, field_night_map);
 
 		SWITCH_ROM(BANK(moon));
-		set_bkg_data(MOON_VRAM, moon_TILE_COUNT, moon_tiles);
-
-		set_bkg_tiles(9, 5, 2, 2, moon_1_tile_map);
-		moon_in_sky = TRUE;
+		set_bkg_data(0x60, moon_TILE_COUNT, moon_tiles);
 
 	} else {
 		SWITCH_ROM(BANK(field));
@@ -79,22 +77,30 @@ void setup_field(void) {
 		set_bkg_tiles(0, 0, 20, 18, field_map);
 
 		SWITCH_ROM(BANK(clouds));
-		set_bkg_data(CLOUDS_VRAM, clouds_TILE_COUNT, clouds_tiles);
+		set_bkg_data(0x70, clouds_TILE_COUNT, clouds_tiles);
+	}
 
+	SWITCH_ROM(BANK(basket));
+	set_bkg_data(0xf8, basket_TILE_COUNT, basket_tiles);
+
+	SWITCH_ROM(BANK(poo));
+	set_bkg_data(0xfe, poo_TILE_COUNT, poo_tiles);
+}
+
+void setup_field(void) {
+	if (is_night) {
+		moon_in_sky = TRUE;
+		sky_anim_counter = 0;
+		set_bkg_tiles(9, 5, 2, 2, moon_1_tile_map);
+
+	} else {
+		sky_anim_counter = 0;
 		set_bkg_tiles(6, 5, 3, 1, big_cloud_2_tile_map);
 		set_bkg_tiles(8, 4, 2, 1, small_cloud_1_tile_map);
 		set_bkg_tiles(12, 5, 2, 1, small_cloud_2_tile_map);
 	}
 
-	sky_anim_counter = 0;
-
-	SWITCH_ROM(BANK(basket));
-	set_bkg_data(BASKET_VRAM, basket_TILE_COUNT, basket_tiles);
-
 	set_bkg_tiles(13, 8, 3, 1, basket_closed_tile_map);
-
-	SWITCH_ROM(BANK(poo));
-	set_bkg_data(POO_VRAM, poo_TILE_COUNT, poo_tiles);
 
 	draw_poops();
 }

@@ -1,12 +1,20 @@
 #include <gbdk/platform.h>
 
+#include <stdio.h>
+#include <gbdk/emu_debug.h>
+
+#include "scene.h"
+#include "field.h"
 #include "frog.h"
 
 uint8_t has_save = FALSE;
 
 typedef struct save_slot_t {
-	uint16_t save_flag;
+	uint16_t save_flag_start;
 
+	uint8_t is_night;
+	uint16_t age;
+	uint8_t stage;
 	uint8_t life_stage;
 	uint8_t stomach;
 	uint8_t bowels;
@@ -18,65 +26,103 @@ typedef struct save_slot_t {
 	uint8_t health;
 	uint8_t sickness;
 	uint8_t poops;
+	uint8_t poops_x[6];
+	uint8_t poops_y[6];
+
+	uint16_t save_flag_end;
 
 } save_slot_t;
 
-save_slot_t AT(0xA000) save_slot;
+save_slot_t AT(0xA000) save_slots[2];
 
-const uint16_t SAVE_FLAG_VALUE = 0xACAB;
+const uint16_t SAVE_FLAG_VALUE_1 = 0xACAB;
+const uint16_t SAVE_FLAG_VALUE_2 = 0xBABA;
+uint8_t last_flag = 0;
+
+void save_data_to_slot(uint8_t i) {
+	save_slots[i].save_flag_start = last_flag ? SAVE_FLAG_VALUE_1 : SAVE_FLAG_VALUE_2;
+
+	EMU_printf("");
+	EMU_printf("SAVING DATA TO SLOT %d", i);
+
+	save_slots[i].is_night = is_night;
+	SWITCH_ROM(BANK(frog_bank));
+	save_slots[i].age = age;
+	save_slots[i].stage = stage;
+	save_slots[i].life_stage = life_stage;
+	save_slots[i].stomach = stomach;
+	save_slots[i].bowels = bowels;
+	save_slots[i].weight = weight;
+	save_slots[i].hygiene = hygiene;
+	save_slots[i].energy = energy;
+	save_slots[i].love = love;
+	save_slots[i].medicine = medicine;
+	save_slots[i].health = health;
+	save_slots[i].sickness = sickness;
+	save_slots[i].poops = poops;
+	SWITCH_ROM(BANK(field_bank));
+	for (uint8_t j = 0; j < MAX_POOPS; j++) {
+		save_slots[i].poops_x[j] = poops_x[j];
+		save_slots[i].poops_y[j] = poops_y[j];
+	}
+
+	save_slots[i].save_flag_end = last_flag ? SAVE_FLAG_VALUE_1 : SAVE_FLAG_VALUE_2;
+}
 
 void save_data(void) {
 	ENABLE_RAM;
 	SWITCH_RAM(0);
 
-	save_slot.save_flag = SAVE_FLAG_VALUE;
-
-	SWITCH_ROM(BANK(frog_bank));
-
-	save_slot.life_stage = life_stage;
-	save_slot.stomach = stomach;
-	save_slot.bowels = bowels;
-	save_slot.weight = weight;
-	save_slot.hygiene = hygiene;
-	save_slot.energy = energy;
-	save_slot.love = love;
-	save_slot.medicine = medicine;
-	save_slot.health = health;
-	save_slot.sickness = sickness;
-	save_slot.poops = poops;
+	save_data_to_slot(0);
+	save_data_to_slot(1);
 
 	DISABLE_RAM;
-
 	has_save = TRUE;
 }
 
-uint8_t load_data(void) {
+uint8_t load_data_from_slot(uint8_t i) {
+	if (save_slots[i].save_flag_start == save_slots[i].save_flag_end &&
+		(save_slots[i].save_flag_start == SAVE_FLAG_VALUE_1 || save_slots[i].save_flag_start == SAVE_FLAG_VALUE_2)
+	) {
+		EMU_printf("");
+		EMU_printf("LOADING DATA FROM SLOT %d", i);
+		is_night = save_slots[i].is_night;
+		SWITCH_ROM(BANK(frog_bank));
+		age = save_slots[i].age;
+		stage = save_slots[i].stage;
+		life_stage = save_slots[i].life_stage;
+		stomach = save_slots[i].stomach;
+		bowels = save_slots[i].bowels;
+		weight = save_slots[i].weight;
+		hygiene = save_slots[i].hygiene;
+		energy = save_slots[i].energy;
+		love = save_slots[i].love;
+		medicine = save_slots[i].medicine;
+		health = save_slots[i].health;
+		sickness = save_slots[i].sickness;
+		poops = save_slots[i].poops;
+		SWITCH_ROM(BANK(field_bank));
+		for (uint8_t j = 0; j < MAX_POOPS; j++) {
+			poops_x[j] = save_slots[i].poops_x[j];
+			poops_y[j] = save_slots[i].poops_y[j];
+		}
+
+		return TRUE;
+
+	} else {
+		EMU_printf("");
+		EMU_printf("NO DATA IN SLOT %d", i);
+		return FALSE;
+	}
+}
+
+void load_data(void) {
 	has_save = FALSE;
 
 	ENABLE_RAM;
 	SWITCH_RAM(0);
 
-	if (save_slot.save_flag == SAVE_FLAG_VALUE) {
-
-		SWITCH_ROM(BANK(frog_bank));
-
-		life_stage = save_slot.life_stage;
-		stomach = save_slot.stomach;
-		bowels = save_slot.bowels;
-		weight = save_slot.weight;
-		hygiene = save_slot.hygiene;
-		energy = save_slot.energy;
-		love = save_slot.love;
-		medicine = save_slot.medicine;
-		health = save_slot.health;
-		sickness = save_slot.sickness;
-		poops = save_slot.poops;
-
-		has_save = TRUE;
-
-	}
+	has_save = load_data_from_slot(0) || load_data_from_slot(1);
 
 	DISABLE_RAM;
-	return has_save;
-
 }

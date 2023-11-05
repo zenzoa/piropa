@@ -1,5 +1,6 @@
 #include <gbdk/platform.h>
 
+#include "save.h"
 #include "hand.h"
 #include "frog.h"
 #include "hud.h"
@@ -14,10 +15,13 @@ uint8_t b_button_pressed = FALSE;
 void handle_dpad(void) {
 	switch(current_scene) {
 		case TITLE:
-			if (joypad_value & J_UP) {
-				select_title_item(CONTINUE);
-			} else if ((joypad_value & J_DOWN) && selected_title_item == CONTINUE) {
-				select_title_item(RESTART);
+			if (has_save) {
+				SWITCH_ROM(BANK(title_bank));
+				if (joypad_value & J_UP) {
+					select_title_item(TITLE_ITEM_CONTINUE);
+				} else if ((joypad_value & J_DOWN) && selected_title_item == TITLE_ITEM_CONTINUE) {
+					select_title_item(TITLE_ITEM_RESET);
+				}
 			}
 			break;
 
@@ -55,22 +59,29 @@ void handle_a_button(void) {
 
 		switch(current_scene) {
 			case TITLE:
-				switch(selected_title_item) {
-					case CONTINUE:
-						start_transition_to_scene(FIELD, is_night);
-						break;
-					case RESTART:
-						select_title_item(CONFIRM_RESTART);
-						break;
-					case CONFIRM_RESTART:
-						restart();
-						break;
+				if (has_save) {
+					SWITCH_ROM(BANK(title_bank));
+					switch(selected_title_item) {
+						case TITLE_ITEM_CONTINUE:
+							start_transition_to_scene(FIELD, is_night);
+							break;
+						case TITLE_ITEM_RESET:
+							select_title_item(TITLE_ITEM_CONFIRM_RESET);
+							break;
+						case TITLE_ITEM_CONFIRM_RESET:
+							reset_data();
+							break;
+					}
+				} else {
+					start_transition_to_scene(FIELD, FALSE);
 				}
 				break;
 
 			case FIELD:
 			case POND:
 			case GARDEN:
+				SWITCH_ROM(BANK(hud_bank));
+
 				if (is_hand_over_medicine()) {
 					if (hold_medicine()) {
 						set_hand_state(HAND_MEDICINE);
@@ -105,6 +116,7 @@ void handle_a_button(void) {
 
 				} else if (hand_state == HAND_MOON && hand_y >= 32 && hand_y < 80) {
 					if (is_night && current_scene == FIELD) {
+						SWITCH_ROM(BANK(field_bank));
 						return_moon_to_sky();
 						set_hand_state(HAND_DEFAULT);
 					} else if (!is_night) {
@@ -113,6 +125,7 @@ void handle_a_button(void) {
 					}
 
 				} else if (is_night && current_scene == FIELD && hand_x >= 72 && hand_x < 96 && hand_y >= 48 && hand_y < 68) {
+					SWITCH_ROM(BANK(field_bank));
 					grab_moon_from_sky();
 					set_hand_state(HAND_MOON);
 
@@ -150,14 +163,18 @@ void handle_b_button(void) {
 		b_button_pressed = TRUE;
 		switch(current_scene) {
 			case TITLE:
-				if (selected_title_item == CONFIRM_RESTART) {
-					select_title_item(RESTART);
+				if (has_save) {
+					SWITCH_ROM(BANK(title_bank));
+					if (selected_title_item == TITLE_ITEM_CONFIRM_RESET) {
+						select_title_item(TITLE_ITEM_RESET);
+					}
 				}
 				break;
 
 			case FIELD:
 			case POND:
 			case GARDEN:
+				SWITCH_ROM(BANK(hud_bank));
 				drop_all(0);
 				set_hand_state(HAND_DEFAULT);
 				break;
