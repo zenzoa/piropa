@@ -12,8 +12,10 @@ uint8_t has_save = FALSE;
 typedef struct save_slot_t {
 	uint16_t save_flag_start;
 
+	uint8_t game_speed;
 	uint8_t is_night;
 	uint16_t age;
+	uint8_t age_part;
 	uint8_t stage;
 	uint8_t life_stage;
 	uint8_t stomach;
@@ -45,9 +47,11 @@ void save_data_to_slot(uint8_t i) {
 	EMU_printf("");
 	EMU_printf("SAVING DATA TO SLOT %d", i);
 
+	save_slots[i].game_speed = game_speed;
 	save_slots[i].is_night = is_night;
 	SWITCH_ROM(BANK(frog_bank));
 	save_slots[i].age = age;
+	save_slots[i].age_part = age_part;
 	save_slots[i].stage = stage;
 	save_slots[i].life_stage = life_stage;
 	save_slots[i].stomach = stomach;
@@ -86,9 +90,11 @@ uint8_t load_data_from_slot(uint8_t i) {
 	) {
 		EMU_printf("");
 		EMU_printf("LOADING DATA FROM SLOT %d", i);
+		game_speed = save_slots[i].game_speed;
 		is_night = save_slots[i].is_night;
 		SWITCH_ROM(BANK(frog_bank));
 		age = save_slots[i].age;
+		age_part = save_slots[i].age_part;
 		stage = save_slots[i].stage;
 		life_stage = save_slots[i].life_stage;
 		stomach = save_slots[i].stomach;

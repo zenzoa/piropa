@@ -4,6 +4,7 @@
 
 #include "hand.h"
 #include "scene.h"
+#include "joypad.h"
 
 #include "sprites/backgrounds/hud.h"
 
@@ -120,6 +121,10 @@ uint8_t hold_soap(void) {
 	}
 }
 
+uint8_t is_hand_over_info(void) {
+	return (hand_x >= 68 && hand_x < 100 && hand_y < 48);
+}
+
 uint8_t is_hand_over_broom(void) {
 	return (hand_x >= 100 && hand_x < 132 && hand_y < 48);
 }
@@ -148,4 +153,51 @@ uint8_t hold_moon(void) {
 		set_bkg_tiles(0x11, 0x01, 2, 2, moon_empty_tile_map);
 		return TRUE;
 	}
+}
+
+uint8_t handle_hud_input(uint8_t button_pressed) {
+	if (button_pressed != A_BUTTON) {
+		return FALSE;
+	}
+
+	if (is_hand_over_medicine()) {
+		if (hold_medicine()) {
+			set_hand_state(HAND_MEDICINE);
+		} else {
+			drop_all(0);
+			set_hand_state(HAND_DEFAULT);
+		}
+
+	} else if (is_hand_over_soap()) {
+		if (hold_soap()) {
+			set_hand_state(HAND_SOAP);
+		} else {
+			drop_all(0);
+			set_hand_state(HAND_DEFAULT);
+		}
+
+	} else if (is_hand_over_info()) {
+		start_transition_to_scene(INFO, is_night);
+
+	} else if (is_hand_over_broom()) {
+		if (hold_broom()) {
+			set_hand_state(HAND_BROOM);
+		} else {
+			drop_all(0);
+			set_hand_state(HAND_DEFAULT);
+		}
+
+	} else if (is_hand_over_moon()) {
+		if (hold_moon()) {
+			set_hand_state(HAND_MOON);
+		} else {
+			drop_all(0);
+			set_hand_state(HAND_DEFAULT);
+		}
+
+	} else {
+		return FALSE;
+	}
+
+	return TRUE;
 }

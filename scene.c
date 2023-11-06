@@ -13,9 +13,10 @@
 #include "field.h"
 // #include "pond.h"
 // #include "garden.h"
-// #include "info.h"
+#include "info.h"
 // #include "inventory.h"
 
+uint8_t last_scene;
 uint8_t current_scene;
 #define TITLE 0
 #define FIELD 1
@@ -34,11 +35,17 @@ uint8_t next_is_night;
 
 uint8_t last_sprite;
 
+#define SPEED_FAST 0
+#define SPEED_MEDIUM 1
+#define SPEED_SLOW 2
+uint8_t game_speed = SPEED_MEDIUM;
+
 void setup_scene(uint8_t new_scene) {
 	setup_hud_data();
 	SWITCH_ROM(BANK(hud_bank));
 	setup_hud();
 
+	last_scene = current_scene;
 	current_scene = new_scene;
 	switch(current_scene) {
 		case TITLE:
@@ -57,6 +64,7 @@ void setup_scene(uint8_t new_scene) {
 
 		case POND:
 			//setup_pond();
+			SWITCH_ROM(BANK(hud_bank));
 			draw_hud();
 			break;
 
@@ -67,7 +75,24 @@ void setup_scene(uint8_t new_scene) {
 			break;
 
 		case INFO:
-			// setup_info();
+			SWITCH_ROM(BANK(frog_bank));
+			uint8_t temp_love = love;
+			uint8_t temp_stomach = stomach;
+			uint8_t temp_energy = energy;
+			uint8_t temp_age = age;
+			uint8_t temp_weight = weight;
+
+			setup_info_data();
+
+			SWITCH_ROM(BANK(info_bank));
+			info_love = temp_love;
+			info_stomach = temp_stomach;
+			info_energy = temp_energy;
+			info_age = temp_age;
+			info_weight = temp_weight;
+
+			setup_info();
+
 			break;
 
 		case INVENTORY:
@@ -186,6 +211,13 @@ void reset_data(void) {
 	soap_is_held = 0;
 	broom_is_held = 0;
 	moon_is_held = 0;
+
+	SWITCH_ROM(BANK(field_bank));
+	for (uint8_t i = 0; i < MAX_POOPS; i++) {
+		poops_x[i] = 0;
+		poops_y[i] = 0;
+	}
+
 	SWITCH_ROM(BANK(frog_bank));
 	setup_frog(TRUE);
 	setup_hand();

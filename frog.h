@@ -1,5 +1,12 @@
 BANKREF_EXTERN(frog_bank)
 
+extern uint8_t frog_x;
+extern uint8_t frog_y;
+
+extern uint16_t age;
+extern uint8_t age_part;
+
+extern uint8_t life_stage;
 #define EGG 0
 #define TADPOLE 1
 #define FROGLET 2
@@ -7,12 +14,6 @@ BANKREF_EXTERN(frog_bank)
 #define ADULT 4
 #define DEAD 5
 
-extern uint8_t frog_x;
-extern uint8_t frog_y;
-
-extern uint16_t age;
-
-extern uint8_t life_stage;
 extern uint8_t mood;
 extern uint8_t action;
 

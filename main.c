@@ -39,25 +39,21 @@ void main(void) {
 	last_time = clock() / CLOCKS_PER_SEC;
 
 	while(1) {
-		if (current_scene == FIELD || current_scene == POND || current_scene == GARDEN) {
+		if (!is_transitioning && (current_scene == FIELD || current_scene == POND || current_scene == GARDEN)) {
 			SWITCH_ROM(BANK(frog_bank));
 			update_frog();
 			update_hand();
+
+			current_time = clock() / CLOCKS_PER_SEC;
+			if (current_time >= last_time + 60) {
+				last_time = clock() / CLOCKS_PER_SEC;
+				update_stats();
+			}
 		}
 
 		handle_input();
 
 		update_scene();
-
-		if (current_scene == FIELD || current_scene == POND || current_scene == GARDEN) {
-			current_time = clock() / CLOCKS_PER_SEC;
-			if (current_time >= last_time + 60) {
-				last_time = clock() / CLOCKS_PER_SEC;
-				SWITCH_ROM(BANK(frog_bank));
-				update_stats();
-				save_data();
-			}
-		}
 
 		vsync(); // wait for next frame
 	}

@@ -1,9 +1,10 @@
 #pragma bank 255
 
 #include <gbdk/platform.h>
-#include <gbdk/metasprites.h>
 
 #include "save.h"
+#include "scene.h"
+#include "joypad.h"
 
 #include "sprites/backgrounds/title.h"
 #include "sprites/backgrounds/title_start.h"
@@ -127,5 +128,47 @@ void setup_title(void) {
 
 	if (has_save) {
 		select_title_item(TITLE_ITEM_CONTINUE);
+	}
+}
+
+void handle_title_input(uint8_t button_pressed) {
+	switch(button_pressed) {
+		case A_BUTTON:
+			if (has_save) {
+				switch(selected_title_item) {
+					case TITLE_ITEM_CONTINUE:
+						start_transition_to_scene(FIELD, is_night);
+						break;
+					case TITLE_ITEM_RESET:
+						select_title_item(TITLE_ITEM_CONFIRM_RESET);
+						break;
+					case TITLE_ITEM_CONFIRM_RESET:
+						reset_data();
+						break;
+				}
+			} else {
+				start_transition_to_scene(FIELD, FALSE);
+			}
+			break;
+
+		case B_BUTTON:
+			if (has_save) {
+				if (selected_title_item == TITLE_ITEM_CONFIRM_RESET) {
+					select_title_item(TITLE_ITEM_RESET);
+				}
+			}
+			break;
+
+		case UP_BUTTON:
+			if (has_save && selected_title_item != TITLE_ITEM_CONTINUE) {
+				select_title_item(TITLE_ITEM_CONTINUE);
+			}
+			break;
+
+		case DOWN_BUTTON:
+			if (has_save && selected_title_item == TITLE_ITEM_CONTINUE) {
+				select_title_item(TITLE_ITEM_RESET);
+			}
+			break;
 	}
 }

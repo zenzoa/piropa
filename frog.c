@@ -23,6 +23,7 @@ uint8_t goal_x;
 uint8_t goal_y;
 
 uint16_t age;
+uint8_t age_part;
 
 uint8_t life_stage;
 #define EGG 0
@@ -131,7 +132,9 @@ void update_stomach(void) {
 			weight -= 1;
 		}
 	} else if (stomach > 9) {
-		weight += 1;
+		if (weight < 99) {
+			weight += 1;
+		}
 		stomach = 9;
 	}
 }
@@ -239,39 +242,51 @@ void update_sickness(void) {
 }
 
 void update_stats(void) {
-	age += 1;
-	if (life_stage == EGG || life_stage == DEAD) { return; }
+	age_part += 1;
+	if (age_part >= ((2 * game_speed) + 1)) {
+		age_part = 0;
 
-	if (is_night) {
-		night_timer += 1;
+		age += 1;
+
+		if (life_stage == EGG || life_stage == DEAD) { return; }
+
+		if (is_night) {
+			night_timer += 1;
+		}
+
+		if (!is_night || night_timer >= 10) {
+			night_timer = 0;
+			update_stomach();
+			update_weight();
+			update_hygiene();
+			update_love();
+			update_medicine();
+			update_health();
+			update_sickness();
+		}
+
+		update_energy();
+
+		EMU_printf("");
+		EMU_printf("age: %d", age);
+		EMU_printf("stomach: %d", stomach);
+		EMU_printf("bowels: %d", bowels);
+		EMU_printf("weight: %d", weight);
+		EMU_printf("hygiene: %d", hygiene);
+		EMU_printf("energy: %d", energy);
+		EMU_printf("love: %d", love);
+		EMU_printf("medicine: %d", medicine);
+		EMU_printf("health: %d", health);
+		EMU_printf("sickness: %d", sickness);
+		EMU_printf("poops: %d", poops);
+
+		update_mood();
+
+	} else {
+		EMU_printf("partial age: %d", age_part);
 	}
 
-	if (!is_night || night_timer >= 10) {
-		night_timer = 0;
-		update_stomach();
-		update_weight();
-		update_hygiene();
-		update_love();
-		update_medicine();
-		update_health();
-		update_sickness();
-	}
-
-	update_energy();
-
-	EMU_printf("");
-	EMU_printf("stomach: %d", stomach);
-	EMU_printf("bowels: %d", bowels);
-	EMU_printf("weight: %d", weight);
-	EMU_printf("hygiene: %d", hygiene);
-	EMU_printf("energy: %d", energy);
-	EMU_printf("love: %d", love);
-	EMU_printf("medicine: %d", medicine);
-	EMU_printf("health: %d", health);
-	EMU_printf("sickness: %d", sickness);
-	EMU_printf("poops: %d", poops);
-
-	update_mood();
+	save_data();
 }
 
 void end_feed_fly(void) {
@@ -640,7 +655,6 @@ void start_action(uint8_t new_action) {
 
 void set_stage(uint8_t new_stage) {
 	stage = new_stage;
-	age = 0;
 
 	EMU_printf("");
 	EMU_printf("STAGE: %d", stage);
@@ -805,10 +819,10 @@ void evolve(void) {
 uint8_t is_time_to_evolve(void) {
 	return (
 		(life_stage == EGG && age >= 1) ||
-		(life_stage == TADPOLE && age >= 2) ||
-		(life_stage == FROGLET && age >= 3) ||
-		(life_stage == TEEN && age >= 4) ||
-		(life_stage == ADULT && age >= 5)
+		(life_stage == TADPOLE && age >= 3) ||
+		(life_stage == FROGLET && age >= 6) ||
+		(life_stage == TEEN && age >= 10) ||
+		(life_stage == ADULT && age >= 15)
 	);
 }
 
@@ -830,6 +844,8 @@ void setup_frog(uint8_t reset) {
 	goal_y = frog_y;
 
 	if (reset) {
+		age = 0;
+		age_part = 0;
 		stomach = 9;
 		bowels = 0;
 		weight = 5;
