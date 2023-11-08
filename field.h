@@ -1,8 +1,5 @@
 BANKREF_EXTERN(field_bank)
 
-extern uint8_t moon_in_sky;
-extern uint8_t sky_anim_counter;
-
 #define MAX_POOPS 6
 extern uint8_t poops_x[MAX_POOPS];
 extern uint8_t poops_y[MAX_POOPS];

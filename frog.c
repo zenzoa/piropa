@@ -373,6 +373,46 @@ void start_sleep(void) {
 	}
 }
 
+void place_in_scene(void) {
+	if (life_stage != EGG && life_stage != DEAD) {
+		switch(current_scene) {
+			case FIELD:
+				if (is_night) {
+					if (action == ACTION_SLEEP) {
+						frog_x = 76;
+						frog_y = 120;
+					} else {
+						start_sleep();
+					}
+				} else if (last_scene == POND) {
+					frog_x = 16;
+					frog_y = 96;
+				} else if (last_scene == GARDEN) {
+					frog_x = 128;
+					frog_y = 96;
+				}
+				break;
+
+			case POND:
+				if (!is_night) {
+					frog_x = 128;
+					frog_y = 96;
+				}
+				break;
+
+			case GARDEN:
+				if (!is_night) {
+					frog_x = 16;
+					frog_y = 96;
+				}
+				break;
+		}
+
+		goal_x = frog_x;
+		goal_y = frog_y;
+	}
+}
+
 void draw_frog(uint8_t *last_sprite) {
 	anim_complete = update_animation(&frog_anim);
 	update_animation(&emote_anim);

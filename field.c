@@ -19,13 +19,7 @@
 
 BANKREF(field_bank)
 
-const unsigned char big_cloud_1_tile_map[3] = { 0x70, 0x71, 0x72 };
-const unsigned char big_cloud_2_tile_map[3] = { 0x73, 0x74, 0x75 };
-
-const unsigned char small_cloud_1_tile_map[2] = { 0x70, 0x72 };
-const unsigned char small_cloud_2_tile_map[2] = { 0x73, 0x75 };
-
-const unsigned char no_moon_tile_map[4] = { 0x15, 0x15, 0x15, 0x15 };
+const unsigned char no_moon_tile_map[4] = { 0x16, 0x16, 0x16, 0x16 };
 const unsigned char moon_1_tile_map[4] = { 0x60, 0x61, 0x68, 0x69 };
 const unsigned char moon_2_tile_map[4] = { 0x62, 0x63, 0x6a, 0x6b };
 const unsigned char moon_3_tile_map[4] = { 0x62, 0x64, 0x6c, 0x6d };
@@ -89,9 +83,17 @@ void setup_field_data(void) NONBANKED {
 
 void setup_field(void) {
 	if (is_night) {
-		moon_in_sky = TRUE;
-		sky_anim_counter = 0;
-		set_bkg_tiles(9, 5, 2, 2, moon_1_tile_map);
+		if (hand_state == HAND_MOON) {
+			moon_in_sky = FALSE;
+			set_bkg_tiles(9, 5, 2, 2, no_moon_tile_map);
+		} else if (moon_in_sky) {
+			sky_anim_counter = 150;
+			set_bkg_tiles(9, 5, 2, 2, moon_4_tile_map);
+		} else {
+			moon_in_sky = TRUE;
+			sky_anim_counter = 0;
+			set_bkg_tiles(9, 5, 2, 2, moon_1_tile_map);
+		}
 
 	} else {
 		sky_anim_counter = 0;
@@ -103,6 +105,14 @@ void setup_field(void) {
 	set_bkg_tiles(13, 8, 3, 1, basket_closed_tile_map);
 
 	draw_poops();
+
+	if (last_scene == POND) {
+		hand_x = 0;
+		hand_x_frac = hand_x << 8;
+	} else if (last_scene == GARDEN) {
+		hand_x = 160;
+		hand_x_frac = hand_x << 8;
+	}
 }
 
 void update_field(void) {

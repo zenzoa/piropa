@@ -64,9 +64,7 @@ void setup_hud_data(void) NONBANKED {
 }
 
 void setup_hud(void) {
-	if (!is_night) {
-		moon_is_held = 0;
-	}
+	moon_is_held = is_night;
 }
 
 void drop_all(uint8_t except) {
@@ -177,6 +175,7 @@ uint8_t handle_hud_input(uint8_t button_pressed) {
 		}
 
 	} else if (is_hand_over_info()) {
+		drop_all(0);
 		start_transition_to_scene(INFO, is_night);
 
 	} else if (is_hand_over_broom()) {

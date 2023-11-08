@@ -51,12 +51,32 @@ void move_hand_by_frac(int16_t dx_frac, int16_t dy_frac) {
 		hand_y_frac = hand_y << 8;
 	}
 
-	if (hand_x > 176 && hand_x < 240 && dx_frac < 0) {
-		hand_x = 160;
-		hand_x_frac = hand_x << 8;
-	} else if (hand_x > 176 && dx_frac > 0) {
-		hand_x = 0;
-		hand_x_frac = hand_x << 8;
+	switch(current_scene) {
+		case FIELD:
+			if (hand_x > 176 && dx_frac < 0) {
+				start_transition_to_scene(POND, is_night);
+			} else if (hand_x > 160 && dx_frac > 0) {
+				start_transition_to_scene(GARDEN, is_night);
+			}
+			break;
+
+		case POND:
+			if (hand_x > 160 && hand_x < 240 && dx_frac > 0) {
+				start_transition_to_scene(FIELD, is_night);
+			} else if (hand_x > 176 && dx_frac < 0) {
+				hand_x = 0;
+				hand_x_frac = hand_x << 8;
+			}
+			break;
+
+		case GARDEN:
+			if (hand_x > 176 && dx_frac < 0) {
+				start_transition_to_scene(FIELD, is_night);
+			} else if (hand_x > 160 && dx_frac > 0) {
+				hand_x = 160;
+				hand_x_frac = hand_x << 8;
+			}
+			break;
 	}
 }
 
@@ -86,8 +106,8 @@ void set_hand_state(uint8_t new_state) {
 }
 
 void setup_hand(void) {
-	hand_x = 80;
-	hand_y = 50;
+	hand_x = 104;
+	hand_y = 60;
 	hand_x_frac = hand_x << 8;
 	hand_y_frac = hand_y << 8;
 	set_hand_state(HAND_DEFAULT);

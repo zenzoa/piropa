@@ -15,7 +15,23 @@ extern uint8_t life_stage;
 #define DEAD 5
 
 extern uint8_t mood;
+
 extern uint8_t action;
+#define ACTION_STAND 0
+#define ACTION_EMOTE 1
+#define ACTION_WALK 2
+#define ACTION_EAT 3
+#define ACTION_REFUSE 4
+#define ACTION_ENJOY 5
+#define ACTION_YAWN 6
+#define ACTION_SLEEP 7
+#define ACTION_WAKE 8
+#define ACTION_WASH 9
+#define ACTION_CLEAN 10
+#define ACTION_PET 11
+#define ACTION_LOVE 12
+#define ACTION_MEDICATE 13
+#define ACTION_POOP 14
 
 extern uint8_t stomach;
 extern uint8_t bowels;
@@ -44,3 +60,5 @@ extern void start_pet(void);
 extern void start_medicate(void);
 extern void start_wash(void);
 extern void start_sleep(void);
+
+extern void place_in_scene(void);

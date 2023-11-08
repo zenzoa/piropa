@@ -137,7 +137,7 @@ void handle_title_input(uint8_t button_pressed) {
 			if (has_save) {
 				switch(selected_title_item) {
 					case TITLE_ITEM_CONTINUE:
-						start_transition_to_scene(FIELD, is_night);
+						start_transition_to_scene(last_scene, is_night);
 						break;
 					case TITLE_ITEM_RESET:
 						select_title_item(TITLE_ITEM_CONFIRM_RESET);
