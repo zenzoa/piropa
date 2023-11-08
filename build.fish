@@ -21,7 +21,7 @@ end
 # remove old files
 if test $clean
 	set_color $text_color; echo ">> cleaning out old build files..."; set_color normal
-	for file in *.{gb,pocket,sav}
+	for file in *.{gb,pocket,sav,rtc}
 		rm $file
 	end
 	for file in sprites/*/*.{c,h,png}
@@ -69,17 +69,17 @@ if test $sprites
 end
 
 # build roms
-set compiler_args -autobank -msm83:gb -Wl-yt0x10 -Wl-ya1 -o
+set compiler_args -autobank -Wl-yt0x1B -Wl-ya1 -o
 set compiler_sources sprites/*/*.c *.c
 
 if test $compile_gameboy_rom
 	set_color $text_color; echo ">> building game boy rom..."; set_color normal
-	lcc $compiler_args $project_name.gb $compiler_sources
+	lcc -msm83:gb $compiler_args $project_name.gb $compiler_sources
 end
 
 if test $compile_pocket_rom
 	set_color $text_color; echo ">> building analogue pocket rom..."; set_color normal
-	lcc $compiler_args $project_name.pocket $compiler_sources
+	lcc -msm83:ap $compiler_args $project_name.pocket $compiler_sources
 end
 
 set_color $text_color; echo ">> all done!"; set_color normal
