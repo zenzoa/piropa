@@ -8,6 +8,7 @@
 #include "save.h"
 #include "frog.h"
 #include "hand.h"
+#include "bugs.h"
 #include "joypad.h"
 #include "scene.h"
 
@@ -25,17 +26,18 @@ void main(void) {
 	SPRITES_8x8;
 	OBP0_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_WHITE, DMG_LITE_GRAY, DMG_BLACK);
 
+	SWITCH_ROM(BANK(bugs_bank));
+	setup_bugs_data();
+
 	load_data();
+	setup_scene(TITLE);
+
 	SWITCH_ROM(BANK(frog_bank));
 	setup_frog(!has_save);
 
 	setup_hand();
 
-	setup_scene(TITLE);
-
 	last_time = clock() / CLOCKS_PER_SEC;
-
-	initrand(DIV_REG);
 
 	while(1) {
 		if (!is_transitioning && (current_scene == FIELD || current_scene == POND || current_scene == GARDEN)) {
@@ -47,6 +49,8 @@ void main(void) {
 			if (current_time >= last_time + 60) {
 				last_time = clock() / CLOCKS_PER_SEC;
 				update_stats();
+				SWITCH_ROM(BANK(bugs_bank));
+				respawn_bugs();
 			}
 		}
 

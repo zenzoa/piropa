@@ -1,8 +1,12 @@
 #include <gbdk/platform.h>
 
+#include <stdio.h>
+#include <gbdk/emu_debug.h>
+
 #include "save.h"
 #include "hand.h"
 #include "frog.h"
+#include "bugs.h"
 #include "hud.h"
 #include "scene.h"
 #include "title.h"
@@ -125,6 +129,24 @@ void handle_a_button(void) {
 							start_wash();
 							set_hand_state(HAND_SOAP_USE);
 						}
+
+					} else if (is_hand_empty()) {
+						SWITCH_ROM(BANK(bugs_bank));
+						uint8_t bug_type = grab_bug();
+						switch(bug_type) {
+							case BUG_FLY:
+								set_hand_state(HAND_FLY);
+								break;
+							case BUG_DRAGONFLY:
+								set_hand_state(HAND_DRAGONFLY);
+								break;
+							case BUG_FIREFLY:
+								set_hand_state(HAND_FIREFLY);
+								break;
+							case BUG_BUTTERFLY:
+								set_hand_state(HAND_BUTTERFLY);
+								break;
+						}
 					}
 				}
 
@@ -154,6 +176,21 @@ void handle_b_button(void) {
 			case FIELD:
 			case POND:
 			case GARDEN:
+				SWITCH_ROM(BANK(bugs_bank));
+				switch(hand_state) {
+					case HAND_FLY:
+						drop_bug(BUG_FLY);
+						break;
+					case HAND_DRAGONFLY:
+						drop_bug(BUG_DRAGONFLY);
+						break;
+					case HAND_FIREFLY:
+						drop_bug(BUG_FIREFLY);
+						break;
+					case HAND_BUTTERFLY:
+						drop_bug(BUG_BUTTERFLY);
+						break;
+				}
 				SWITCH_ROM(BANK(hud_bank));
 				drop_all(0);
 				set_hand_state(HAND_DEFAULT);

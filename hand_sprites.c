@@ -12,6 +12,10 @@
 #include "sprites/hand/hand_broom.h"
 #include "sprites/hand/hand_broom_use.h"
 #include "sprites/hand/hand_moon.h"
+#include "sprites/hand/hand_fly.h"
+#include "sprites/hand/hand_dragonfly.h"
+#include "sprites/hand/hand_firefly.h"
+#include "sprites/hand/hand_butterfly.h"
 
 #define HAND_DEFAULT 0
 #define HAND_POINT 1
@@ -24,6 +28,10 @@
 #define HAND_BROOM 8
 #define HAND_BROOM_USE 9
 #define HAND_MOON 10
+#define HAND_FLY 11
+#define HAND_DRAGONFLY 12
+#define HAND_FIREFLY 13
+#define HAND_BUTTERFLY 14
 
 uint8_t hand_sprite_bank;
 metasprite_t** hand_metasprites;
@@ -120,6 +128,34 @@ void set_hand_sprite_data(uint8_t hand_state) {
 			SWITCH_ROM(hand_sprite_bank);
 			set_sprite_data(hand_vram, hand_moon_TILE_COUNT, hand_moon_tiles);
 			hand_metasprites = hand_moon_metasprites;
+			break;
+
+		case HAND_FLY:
+			hand_sprite_bank = BANK(hand_fly);
+			SWITCH_ROM(hand_sprite_bank);
+			set_sprite_data(hand_vram, hand_fly_TILE_COUNT, hand_fly_tiles);
+			hand_metasprites = hand_fly_metasprites;
+			break;
+
+		case HAND_DRAGONFLY:
+			hand_sprite_bank = BANK(hand_dragonfly);
+			SWITCH_ROM(hand_sprite_bank);
+			set_sprite_data(hand_vram, hand_dragonfly_TILE_COUNT, hand_dragonfly_tiles);
+			hand_metasprites = hand_dragonfly_metasprites;
+			break;
+
+		case HAND_FIREFLY:
+			hand_sprite_bank = BANK(hand_firefly);
+			SWITCH_ROM(hand_sprite_bank);
+			set_sprite_data(hand_vram, hand_firefly_TILE_COUNT, hand_firefly_tiles);
+			hand_metasprites = hand_firefly_metasprites;
+			break;
+
+		case HAND_BUTTERFLY:
+			hand_sprite_bank = BANK(hand_butterfly);
+			SWITCH_ROM(hand_sprite_bank);
+			set_sprite_data(hand_vram, hand_butterfly_TILE_COUNT, hand_butterfly_tiles);
+			hand_metasprites = hand_butterfly_metasprites;
 			break;
 
 	}

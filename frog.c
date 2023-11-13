@@ -385,25 +385,25 @@ void place_in_scene(void) {
 						start_sleep();
 					}
 				} else if (last_scene == POND) {
-					frog_x = 16;
-					frog_y = 96;
+					frog_x = 12;
+					frog_y = 100;
 				} else if (last_scene == GARDEN) {
-					frog_x = 128;
-					frog_y = 96;
+					frog_x = 132;
+					frog_y = 100;
 				}
 				break;
 
 			case POND:
 				if (!is_night) {
 					frog_x = 128;
-					frog_y = 96;
+					frog_y = 128;
 				}
 				break;
 
 			case GARDEN:
 				if (!is_night) {
 					frog_x = 16;
-					frog_y = 96;
+					frog_y = 128;
 				}
 				break;
 		}
@@ -744,7 +744,9 @@ void set_stage(uint8_t new_stage) {
 		start_action(ACTION_ENJOY);
 	}
 
-	save_data();
+	if (life_stage != EGG) {
+		save_data();
+	}
 }
 
 void start_evolution(uint8_t new_stage) {
@@ -919,7 +921,7 @@ void update_frog(void) {
 	} else {
 		switch(life_stage) {
 			case EGG:
-				if (is_time_to_evolve()) {
+				if (is_time_to_evolve() && !is_night && current_scene == FIELD) {
 					evolve();
 				}
 				break;

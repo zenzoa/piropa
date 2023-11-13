@@ -29,7 +29,7 @@ const unsigned char moon_5_tile_map[4] = { 0x66, 0x67, 0x70, 0x71 };
 const unsigned char basket_closed_tile_map[3] = { 0xf8, 0xf9, 0xfa };
 const unsigned char basket_open_tile_map[3] = { 0xfb, 0xfc, 0xfd };
 
-uint8_t moon_in_sky = TRUE;
+uint8_t moon_in_sky = FALSE;
 uint8_t sky_anim_counter = 0;
 uint8_t basket_is_open = FALSE;
 

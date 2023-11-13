@@ -6,6 +6,7 @@
 
 #include "hand.h"
 #include "frog.h"
+#include "bugs.h"
 #include "hud.h"
 #include "save.h"
 
@@ -47,9 +48,8 @@ const unsigned char small_cloud_2_tile_map[2] = { 0x73, 0x75 };
 
 void setup_scene(uint8_t new_scene) {
 	setup_hud_data();
-	SWITCH_ROM(BANK(hud_bank));
-	setup_hud();
 
+	uint8_t skip_save = last_scene == TITLE && new_scene == TITLE;
 	last_scene = (current_scene == TITLE ? FIELD : current_scene);
 	current_scene = new_scene;
 	switch(current_scene) {
@@ -65,6 +65,8 @@ void setup_scene(uint8_t new_scene) {
 			setup_field();
 			SWITCH_ROM(BANK(hud_bank));
 			draw_hud();
+			SWITCH_ROM(BANK(bugs_bank));
+			setup_bugs();
 			break;
 
 		case POND:
@@ -73,6 +75,8 @@ void setup_scene(uint8_t new_scene) {
 			setup_pond();
 			SWITCH_ROM(BANK(hud_bank));
 			draw_hud();
+			SWITCH_ROM(BANK(bugs_bank));
+			setup_bugs();
 			break;
 
 		case GARDEN:
@@ -81,6 +85,8 @@ void setup_scene(uint8_t new_scene) {
 			setup_garden();
 			SWITCH_ROM(BANK(hud_bank));
 			draw_hud();
+			SWITCH_ROM(BANK(bugs_bank));
+			setup_bugs();
 			break;
 
 		case INFO:
@@ -109,7 +115,9 @@ void setup_scene(uint8_t new_scene) {
 			break;
 	}
 
-	save_data();
+	if (!skip_save) {
+		save_data();
+	}
 }
 
 void update_transition(void) {
@@ -174,6 +182,8 @@ void draw_sprites(void) {
 			if (current_scene == FIELD || (!is_night && life_stage != EGG && life_stage != DEAD)) {
 				draw_frog(&last_sprite);
 			}
+			SWITCH_ROM(BANK(bugs_bank));
+			draw_bugs(&last_sprite);
 			break;
 	}
 
@@ -220,10 +230,6 @@ void start_transition_to_scene(uint8_t new_scene, uint8_t new_is_night) {
 
 void reset_data(void) {
 	SWITCH_ROM(BANK(hud_bank));
-	medicine_is_held = 0;
-	soap_is_held = 0;
-	broom_is_held = 0;
-	moon_is_held = 0;
 
 	SWITCH_ROM(BANK(field_bank));
 	for (uint8_t i = 0; i < MAX_POOPS; i++) {

@@ -18,6 +18,10 @@ uint8_t hand_state;
 #define HAND_BROOM 8
 #define HAND_BROOM_USE 9
 #define HAND_MOON 10
+#define HAND_FLY 11
+#define HAND_DRAGONFLY 12
+#define HAND_FIREFLY 13
+#define HAND_BUTTERFLY 14
 
 uint8_t hand_x;
 uint8_t hand_y;

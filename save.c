@@ -6,6 +6,7 @@
 #include "scene.h"
 #include "field.h"
 #include "frog.h"
+#include "bugs.h"
 
 uint8_t has_save = FALSE;
 
@@ -28,8 +29,11 @@ typedef struct save_slot_t {
 	uint8_t health;
 	uint8_t sickness;
 	uint8_t poops;
-	uint8_t poops_x[6];
-	uint8_t poops_y[6];
+	uint8_t poops_x[MAX_POOPS];
+	uint8_t poops_y[MAX_POOPS];
+	uint8_t fly_respawn[FLY_COUNT];
+	uint8_t dragonfly_respawn[DRAGONFLY_COUNT];
+	uint8_t firefly_respawn[FIREFLY_COUNT];
 
 	uint16_t save_flag_end;
 
@@ -68,6 +72,16 @@ void save_data_to_slot(uint8_t i) {
 	for (uint8_t j = 0; j < MAX_POOPS; j++) {
 		save_slots[i].poops_x[j] = poops_x[j];
 		save_slots[i].poops_y[j] = poops_y[j];
+	}
+	SWITCH_ROM(BANK(bugs_bank));
+	for (uint8_t j = 0; j < FLY_COUNT; j++) {
+		save_slots[i].fly_respawn[j] = fly_respawn[j];
+	}
+	for (uint8_t j = 0; j < DRAGONFLY_COUNT; j++) {
+		save_slots[i].dragonfly_respawn[j] = dragonfly_respawn[j];
+	}
+	for (uint8_t j = 0; j < FIREFLY_COUNT; j++) {
+		save_slots[i].firefly_respawn[j] = firefly_respawn[j];
 	}
 
 	save_slots[i].save_flag_end = last_flag ? SAVE_FLAG_VALUE_1 : SAVE_FLAG_VALUE_2;
@@ -111,6 +125,16 @@ uint8_t load_data_from_slot(uint8_t i) {
 		for (uint8_t j = 0; j < MAX_POOPS; j++) {
 			poops_x[j] = save_slots[i].poops_x[j];
 			poops_y[j] = save_slots[i].poops_y[j];
+		}
+		SWITCH_ROM(BANK(bugs_bank));
+		for (uint8_t j = 0; j < FLY_COUNT; j++) {
+			fly_respawn[j] = save_slots[i].fly_respawn[j];
+		}
+		for (uint8_t j = 0; j < DRAGONFLY_COUNT; j++) {
+			dragonfly_respawn[j] = save_slots[i].dragonfly_respawn[j];
+		}
+		for (uint8_t j = 0; j < FIREFLY_COUNT; j++) {
+			firefly_respawn[j] = save_slots[i].firefly_respawn[j];
 		}
 
 		return TRUE;

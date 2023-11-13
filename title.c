@@ -1,6 +1,7 @@
 #pragma bank 255
 
 #include <gbdk/platform.h>
+#include <rand.h>
 
 #include "save.h"
 #include "scene.h"
@@ -32,6 +33,8 @@ uint8_t selected_title_item;
 
 uint8_t arrow_anim_counter;
 uint8_t arrow_anim_frame;
+
+uint8_t rand_seeded = FALSE;
 
 void draw_title_sprites(uint8_t *last_sprite) {
 	arrow_anim_counter += 1;
@@ -137,6 +140,10 @@ void handle_title_input(uint8_t button_pressed) {
 			if (has_save) {
 				switch(selected_title_item) {
 					case TITLE_ITEM_CONTINUE:
+						if (!rand_seeded) {
+							rand_seeded = TRUE;
+							initrand(DIV_REG);
+						}
 						start_transition_to_scene(last_scene, is_night);
 						break;
 					case TITLE_ITEM_RESET:
