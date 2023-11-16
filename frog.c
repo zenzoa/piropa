@@ -133,9 +133,6 @@ void update_stomach(void) {
 			weight -= 1;
 		}
 	} else if (stomach > 9) {
-		// if (weight < 99) {
-		// 	weight += 1;
-		// }
 		stomach = 9;
 	}
 }
@@ -156,24 +153,15 @@ uint8_t check_bowels(void) {
 void update_weight(void) {
 	if (weight == 0) {
 		die_badly();
+	} else if (life_stage == TADPOLE && weight > 5 && health > 0) {
+		health -= 1;
+	} else if (life_stage == FROGLET && weight > 10 && health > 0) {
+		health -= 1;
+	} else if (life_stage == TEEN && weight > 20 && health > 0) {
+		health -= 1;
+	} else if (life_stage == ADULT && weight > 40 && health > 0) {
+		health -= 1;
 	}
-	//  else if (life_stage == TADPOLE && (weight < 5 || weight > 10)) {
-	// 	if (health > 0) {
-	// 		health -= 1;
-	// 	}
-	// } else if (life_stage == FROGLET && (weight < 10 || weight > 20)) {
-	// 	if (health > 0) {
-	// 		health -= 1;
-	// 	}
-	// } else if (life_stage == TEEN && (weight < 20 || weight > 40)) {
-	// 	if (health > 0) {
-	// 		health -= 1;
-	// 	}
-	// } else if (life_stage == ADULT && (weight < 40 || weight > 80)) {
-	// 	if (health > 0) {
-	// 		health -= 1;
-	// 	}
-	// }
 	if (weight > 99) {
 		weight = 99;
 	}
@@ -185,10 +173,8 @@ void update_hygiene(void) {
 			hygiene -= 1;
 		}
 	}
-	if (hygiene == 0) {
-		if (health > 0) {
-			health -= 1;
-		}
+	if (hygiene == 0 && health > 0) {
+		health -= 1;
 	} else if (hygiene > 9) {
 		hygiene = 9;
 	}
@@ -197,15 +183,11 @@ void update_hygiene(void) {
 void update_energy(void) {
 	if (is_night) {
 		energy += 2;
-	} else {
-		if (energy > 0) {
-			energy -= 1;
-		}
+	} else if (energy > 0) {
+		energy -= 1;
 	}
-	if (energy == 0) {
-		if (health > 0) {
-			health -= 1;
-		}
+	if (energy == 0 && health > 0) {
+		health -= 1;
 	} else if (energy > 9) {
 		energy = 9;
 	}
@@ -214,8 +196,7 @@ void update_energy(void) {
 void update_love(void) {
 	if (love > 0 && !is_night) {
 		love -= 1;
-	}
-	if (love > 9) {
+	} else if (love > 9) {
 		love = 9;
 	}
 }
@@ -223,13 +204,7 @@ void update_love(void) {
 void update_medicine(void) {
 	if (medicine > 0) {
 		medicine -= 1;
-		health += 1;
 	} else if (medicine > 9) {
-		if (health >= 3) {
-			health -= 3;
-		} else {
-			health = 0;
-		}
 		medicine = 9;
 	}
 }
@@ -358,16 +333,18 @@ void end_pet(void) {
 }
 
 void start_medicate(void) {
-	start_action(ACTION_MEDICATE);
-}
-
-void end_medicate(void) {
-	medicine += 3;
-	sickness = 0;
-	if (love > 0) {
-		love -= 1;
+	if (sickness == 0 && health > 0) {
+		if (love > 0) {
+			love -= 1;
+		}
+		start_action(ACTION_REFUSE);
+	} else {
+		medicine = +1;
+		health += 1;
+		sickness = 0;
+		update_mood();
+		start_action(ACTION_MEDICATE);
 	}
-	update_mood();
 }
 
 void start_sleep(void) {
@@ -723,12 +700,18 @@ void set_stage(uint8_t new_stage) {
 
 		case STAGE_FROGLET:
 			life_stage = FROGLET;
+			if (weight < 5) {
+				weight = 5;
+			}
 			break;
 
 		case STAGE_TEEN_NORM:
 		case STAGE_TEEN_TAIL:
 		case STAGE_TEEN_BW:
 			life_stage = TEEN;
+			if (weight < 10) {
+				weight = 10;
+			}
 			break;
 
 		case STAGE_NORM:
@@ -738,6 +721,9 @@ void set_stage(uint8_t new_stage) {
 		case STAGE_APPLE:
 		case STAGE_PANDA:
 			life_stage = ADULT;
+			if (weight < 20) {
+				weight = 20;
+			}
 			break;
 
 		case STAGE_DEAD_GOOD:
@@ -874,10 +860,10 @@ void evolve(void) {
 uint8_t is_time_to_evolve(void) {
 	return (
 		(life_stage == EGG && age >= 1) ||
-		(life_stage == TADPOLE && age >= 3) ||
-		(life_stage == FROGLET && age >= 6) ||
-		(life_stage == TEEN && age >= 10) ||
-		(life_stage == ADULT && age >= 15)
+		(life_stage == TADPOLE && age >= 4) ||
+		(life_stage == FROGLET && age >= 9) ||
+		(life_stage == TEEN && age >= 16) ||
+		(life_stage == ADULT && age >= 25)
 	);
 }
 
@@ -1041,7 +1027,6 @@ void update_frog(void) {
 
 					case ACTION_MEDICATE:
 						if (anim_complete) {
-							end_medicate();
 							start_action(ACTION_STAND);
 						}
 						break;

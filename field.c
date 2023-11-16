@@ -80,6 +80,7 @@ void setup_field(void) {
 		}
 
 	} else {
+		moon_in_sky = FALSE;
 		sky_anim_counter = 0;
 		set_bkg_tiles(6, 5, 3, 1, big_cloud_2_tile_map);
 		set_bkg_tiles(8, 4, 2, 1, small_cloud_1_tile_map);

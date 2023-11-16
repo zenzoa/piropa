@@ -68,11 +68,7 @@ void add_poop_at(uint8_t i, uint8_t x, uint8_t y) {
 void add_poop(uint8_t x, uint8_t y) {
 	for (uint8_t i = 0; i < MAX_POOPS; i++) {
 		if (poops_x[i] == 0 && poops_y[i] == 0) {
-			if (!is_poop_at(x - 1, y + 1)) {
-				add_poop_at(i, x - 1, y + 1);
-			} else if (!is_poop_at(x + 2, y + 1)) {
-				add_poop_at(i, x + 2, y + 1);
-			} else if (!is_poop_at(x - 1, y)) {
+			if (!is_poop_at(x - 1, y)) {
 				add_poop_at(i, x - 1, y);
 			} else if (!is_poop_at(x + 2, y)) {
 				add_poop_at(i, x + 2, y);
@@ -80,10 +76,14 @@ void add_poop(uint8_t x, uint8_t y) {
 				add_poop_at(i, x, y + 1);
 			} else if (!is_poop_at(x + 1, y + 1)) {
 				add_poop_at(i, x + 1, y + 1);
-			} else if (!is_poop_at(x, y)) {
-				add_poop_at(i, x, y);
+			} else if (!is_poop_at(x - 1, y + 1)) {
+				add_poop_at(i, x - 1, y + 1);
+			} else if (!is_poop_at(x + 2, y + 1)) {
+				add_poop_at(i, x + 2, y + 1);
 			} else if (!is_poop_at(x + 1, y)) {
 				add_poop_at(i, x + 1, y);
+			} else if (!is_poop_at(x, y)) {
+				add_poop_at(i, x, y);
 			}
 			break;
 		}

@@ -51,8 +51,13 @@ void main(void) {
 			current_time = clock() / CLOCKS_PER_SEC;
 			if (current_time >= last_time + 60) {
 				last_time = clock() / CLOCKS_PER_SEC;
+
 				SWITCH_ROM(BANK(frog_bank));
 				update_stats();
+				if (is_night && action == ACTION_SLEEP && energy >= 9) {
+					start_transition_to_scene(FIELD, FALSE);
+				}
+
 				SWITCH_ROM(BANK(bugs_bank));
 				respawn_bugs();
 			}

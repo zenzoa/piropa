@@ -104,24 +104,9 @@ void setup_scene(uint8_t new_scene) {
 			break;
 
 		case INFO:
-			SWITCH_ROM(BANK(frog_bank));
-			uint8_t temp_love = love;
-			uint8_t temp_stomach = stomach;
-			uint8_t temp_energy = energy;
-			uint8_t temp_age = age;
-			uint8_t temp_weight = weight;
-
 			setup_info_data();
-
 			SWITCH_ROM(BANK(info_bank));
-			info_love = temp_love;
-			info_stomach = temp_stomach;
-			info_energy = temp_energy;
-			info_age = temp_age;
-			info_weight = temp_weight;
-
 			setup_info();
-
 			break;
 
 		// case INVENTORY:
@@ -177,6 +162,14 @@ void update_transition(void) {
 				break;
 		}
 	}
+}
+
+void start_transition_to_scene(uint8_t new_scene, uint8_t new_is_night) {
+	is_transitioning = TRUE;
+	transition_counter = 0;
+	transition_frame = 0;
+	next_scene = new_scene;
+	next_is_night = new_is_night;
 }
 
 void draw_sprites(void) {
@@ -254,14 +247,6 @@ void update_scene(void) {
 	}
 
 	draw_sprites();
-}
-
-void start_transition_to_scene(uint8_t new_scene, uint8_t new_is_night) {
-	is_transitioning = TRUE;
-	transition_counter = 0;
-	transition_frame = 0;
-	next_scene = new_scene;
-	next_is_night = new_is_night;
 }
 
 void reset_data(void) {

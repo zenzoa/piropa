@@ -25,16 +25,12 @@ const unsigned char speed_fast_selected_tile_map[4] = { 0x5c, 0x5d, 0x62, 0x63 }
 const unsigned char speed_medium_selected_tile_map[4] = { 0x5e, 0x5f, 0x64, 0x65 };
 const unsigned char speed_slow_selected_tile_map[4] = { 0x60, 0x61, 0x66, 0x67 };
 
-uint8_t info_love;
-uint8_t info_stomach;
-uint8_t info_energy;
-uint8_t info_age;
-uint8_t info_weight;
-
 BANKREF(info_bank)
 
 void draw_stat(uint8_t value, uint8_t y) {
 	switch(value) {
+		case 0:
+			break;
 		case 1:
 			set_bkg_tiles(0x06, y, 2, 2, lilypad_full_tile_map);
 			break;
@@ -139,12 +135,12 @@ void setup_info_data(void) NONBANKED {
 }
 
 void setup_info(void) {
-	draw_stat(info_love, 0x05);
-	draw_stat(info_stomach, 0x08);
-	draw_stat(info_energy, 0x0B);
+	draw_stat(love, 0x05);
+	draw_stat(stomach, 0x08);
+	draw_stat(energy, 0x0B);
 
-	draw_number(info_age, 0x06);
-	draw_number(info_weight, 0x0e);
+	draw_number(age, 0x06);
+	draw_number(weight, 0x0e);
 
 	draw_speed();
 }
