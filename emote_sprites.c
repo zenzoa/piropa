@@ -27,8 +27,21 @@
 #define EMOTE_SKULL 9
 #define EMOTE_HEAL 10
 
-uint8_t emote_sprite_bank;
-metasprite_t** emote_metasprites;
+#define EMOTE_TILE_COUNT 2
+
+const metasprite_t emote_metasprite0[] = {
+	METASPR_ITEM(0, 0, 0, S_PAL(0)),
+	METASPR_TERM
+};
+
+const metasprite_t emote_metasprite1[] = {
+	METASPR_ITEM(0, 0, 1, S_PAL(0)),
+	METASPR_TERM
+};
+
+const metasprite_t* const emote_metasprites[2] = {
+	emote_metasprite0, emote_metasprite1
+};
 
 #define EMOTE_VRAM_1 0x40
 #define EMOTE_VRAM_2 0x42
@@ -56,73 +69,53 @@ void set_emote_sprite_data(uint8_t emote) {
 	switch(emote) {
 
 		case EMOTE_SUN:
-			emote_sprite_bank = BANK(emote_sun);
-			SWITCH_ROM(emote_sprite_bank);
-			set_sprite_data(emote_vram, emote_sun_TILE_COUNT, emote_sun_tiles);
-			emote_metasprites = emote_sun_metasprites;
+			SWITCH_ROM(BANK(emote_sun));
+			set_sprite_data(emote_vram, EMOTE_TILE_COUNT, emote_sun_tiles);
 			break;
 
 		case EMOTE_SAD:
-			emote_sprite_bank = BANK(emote_sad);
-			SWITCH_ROM(emote_sprite_bank);
-			set_sprite_data(emote_vram, emote_sad_TILE_COUNT, emote_sad_tiles);
-			emote_metasprites = emote_sad_metasprites;
+			SWITCH_ROM(BANK(emote_sad));
+			set_sprite_data(emote_vram, EMOTE_TILE_COUNT, emote_sad_tiles);
 			break;
 
 		case EMOTE_ANGRY:
-			emote_sprite_bank = BANK(emote_angry);
-			SWITCH_ROM(emote_sprite_bank);
-			set_sprite_data(emote_vram, emote_angry_TILE_COUNT, emote_angry_tiles);
-			emote_metasprites = emote_angry_metasprites;
+			SWITCH_ROM(BANK(emote_angry));
+			set_sprite_data(emote_vram, EMOTE_TILE_COUNT, emote_angry_tiles);
 			break;
 
 		case EMOTE_BUBBLES:
-			emote_sprite_bank = BANK(emote_bubbles);
-			SWITCH_ROM(emote_sprite_bank);
-			set_sprite_data(emote_vram, emote_bubbles_TILE_COUNT, emote_bubbles_tiles);
-			emote_metasprites = emote_bubbles_metasprites;
+			SWITCH_ROM(BANK(emote_bubbles));
+			set_sprite_data(emote_vram, EMOTE_TILE_COUNT, emote_bubbles_tiles);
 			break;
 
 		case EMOTE_SPARKLE:
-			emote_sprite_bank = BANK(emote_sparkle);
-			SWITCH_ROM(emote_sprite_bank);
-			set_sprite_data(emote_vram, emote_sparkle_TILE_COUNT, emote_sparkle_tiles);
-			emote_metasprites = emote_sparkle_metasprites;
+			SWITCH_ROM(BANK(emote_sparkle));
+			set_sprite_data(emote_vram, EMOTE_TILE_COUNT, emote_sparkle_tiles);
 			break;
 
 		case EMOTE_HEART:
-			emote_sprite_bank = BANK(emote_heart);
-			SWITCH_ROM(emote_sprite_bank);
-			set_sprite_data(emote_vram, emote_heart_TILE_COUNT, emote_heart_tiles);
-			emote_metasprites = emote_heart_metasprites;
+			SWITCH_ROM(BANK(emote_heart));
+			set_sprite_data(emote_vram, EMOTE_TILE_COUNT, emote_heart_tiles);
 			break;
 
 		case EMOTE_HEARTBREAK:
-			emote_sprite_bank = BANK(emote_heartbreak);
-			SWITCH_ROM(emote_sprite_bank);
-			set_sprite_data(emote_vram, emote_heartbreak_TILE_COUNT, emote_heartbreak_tiles);
-			emote_metasprites = emote_heartbreak_metasprites;
+			SWITCH_ROM(BANK(emote_heartbreak));
+			set_sprite_data(emote_vram, EMOTE_TILE_COUNT, emote_heartbreak_tiles);
 			break;
 
 		case EMOTE_SLEEP:
-			emote_sprite_bank = BANK(emote_sleep);
-			SWITCH_ROM(emote_sprite_bank);
-			set_sprite_data(emote_vram, emote_sleep_TILE_COUNT, emote_sleep_tiles);
-			emote_metasprites = emote_sleep_metasprites;
+			SWITCH_ROM(BANK(emote_sleep));
+			set_sprite_data(emote_vram, EMOTE_TILE_COUNT, emote_sleep_tiles);
 			break;
 
 		case EMOTE_SKULL:
-			emote_sprite_bank = BANK(emote_skull);
-			SWITCH_ROM(emote_sprite_bank);
-			set_sprite_data(emote_vram, emote_skull_TILE_COUNT, emote_skull_tiles);
-			emote_metasprites = emote_skull_metasprites;
+			SWITCH_ROM(BANK(emote_skull));
+			set_sprite_data(emote_vram, EMOTE_TILE_COUNT, emote_skull_tiles);
 			break;
 
 		case EMOTE_HEAL:
-			emote_sprite_bank = BANK(emote_heal);
-			SWITCH_ROM(emote_sprite_bank);
-			set_sprite_data(emote_vram, emote_heal_TILE_COUNT, emote_heal_tiles);
-			emote_metasprites = emote_heal_metasprites;
+			SWITCH_ROM(BANK(emote_heal));
+			set_sprite_data(emote_vram, EMOTE_TILE_COUNT, emote_heal_tiles);
 			break;
 
 	}
@@ -131,12 +124,7 @@ void set_emote_sprite_data(uint8_t emote) {
 }
 
 void draw_emote_sprite(uint8_t x, uint8_t y, uint8_t frame, uint8_t *last_sprite) {
-	uint8_t saved_bank = _current_bank;
-
-	SWITCH_ROM(emote_sprite_bank);
 	*last_sprite += move_metasprite_ex(emote_metasprites[frame], emote_vram, 0, *last_sprite, x, y);
-
-	SWITCH_ROM(saved_bank);
 }
 
 void setup_emote_sprites(void) {

@@ -26,5 +26,5 @@
 #define ANIM_SLEEP 10
 
 extern void swap_frog_vram(void);
-extern void set_frog_sprite_data(uint8_t stage, uint8_t face);
+extern void set_frog_sprite_data(uint8_t new_stage, uint8_t new_anim);
 extern void draw_frog_sprite(uint8_t x, uint8_t y, uint8_t frame, uint8_t *last_sprite);

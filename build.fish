@@ -54,11 +54,11 @@ if test $sprites
 	end
 
 	for file in sprites/misc_8x8/*
-		png2asset $file $sprite_args -sw 8 -sh 8
+		png2asset $file $sprite_args -sw 8 -sh 8 -keep_duplicate_tiles
 	end
 
 	for file in sprites/misc_16x8/*
-		png2asset $file $sprite_args -sw 16 -sh 8
+		png2asset $file $sprite_args -sw 16 -sh 8 -keep_duplicate_tiles
 	end
 
 	set bg_args -map -noflip -b 255 -keep_palette_order

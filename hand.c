@@ -1,10 +1,15 @@
+#pragma bank 255
+
 #include <gbdk/platform.h>
 #include <gbdk/metasprites.h>
 
 #include "hand_sprites.h"
 #include "frog.h"
+#include "poop.h"
 #include "scene.h"
 #include "field.h"
+
+BANKREF(hand_bank)
 
 uint8_t hand_state;
 #define HAND_DEFAULT 0
@@ -89,11 +94,11 @@ uint8_t is_hand_empty(void) {
 }
 
 uint8_t is_hand_over_frog(void) {
-	SWITCH_ROM(BANK(frog_bank));
+	// SWITCH_ROM(BANK(frog_bank));
 	return (hand_x + 8 >= frog_x && hand_x < frog_x + 32 && hand_y + 8 >= frog_y && hand_y < frog_y + 24);
 }
 
-void set_hand_state(uint8_t new_state) {
+void set_hand_state(uint8_t new_state) NONBANKED {
 	hand_state = new_state;
 	swap_hand_vram();
 	set_hand_sprite_data(new_state);
@@ -122,7 +127,7 @@ void draw_hand(uint8_t *last_sprite) {
 
 	hand_offset = 0;
 
-	SWITCH_ROM(BANK(frog_bank));
+	// SWITCH_ROM(BANK(frog_bank));
 	uint8_t frog_mod = frog_x % 8;
 	uint8_t hand_mod = hand_x % 8;
 
@@ -211,7 +216,6 @@ void update_hand(void) {
 			if (hand_timeout == 0) {
 				sweep_count -= 1;
 				if (sweep_count == 0) {
-					SWITCH_ROM(BANK(field_bank));
 					clean_poop_at(hand_x / 8, hand_y / 8);
 				}
 				set_hand_state(HAND_BROOM);

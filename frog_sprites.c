@@ -170,11 +170,11 @@ void swap_frog_vram(void) {
 	}
 }
 
-void set_frog_sprite_data(uint8_t stage, uint8_t anim) {
+void set_frog_sprite_data(uint8_t new_stage, uint8_t new_anim) {
 	uint8_t saved_bank = _current_bank;
 	frog_flipped = FALSE;
 
-	switch(stage) {
+	switch(new_stage) {
 		case STAGE_EGG:
 			frog_sprite_bank = BANK(egg);
 			SWITCH_ROM(frog_sprite_bank);
@@ -183,7 +183,7 @@ void set_frog_sprite_data(uint8_t stage, uint8_t anim) {
 			break;
 
 		case STAGE_TADPOLE:
-			switch(anim) {
+			switch(new_anim) {
 				case ANIM_NEUTRAL:
 					frog_sprite_bank = BANK(tadpole_neutral);
 					SWITCH_ROM(frog_sprite_bank);
@@ -255,7 +255,7 @@ void set_frog_sprite_data(uint8_t stage, uint8_t anim) {
 			break;
 
 		case STAGE_FROGLET:
-			switch(anim) {
+			switch(new_anim) {
 				case ANIM_NEUTRAL:
 					frog_sprite_bank = BANK(froglet_neutral);
 					SWITCH_ROM(frog_sprite_bank);
@@ -327,7 +327,7 @@ void set_frog_sprite_data(uint8_t stage, uint8_t anim) {
 			break;
 
 		case STAGE_TEEN_NORM:
-			switch(anim) {
+			switch(new_anim) {
 				case ANIM_NEUTRAL:
 					frog_sprite_bank = BANK(teen_norm_neutral);
 					SWITCH_ROM(frog_sprite_bank);
@@ -399,7 +399,7 @@ void set_frog_sprite_data(uint8_t stage, uint8_t anim) {
 			break;
 
 		case STAGE_TEEN_TAIL:
-			switch(anim) {
+			switch(new_anim) {
 				case ANIM_NEUTRAL:
 					frog_sprite_bank = BANK(teen_tail_neutral);
 					SWITCH_ROM(frog_sprite_bank);
@@ -471,7 +471,7 @@ void set_frog_sprite_data(uint8_t stage, uint8_t anim) {
 			break;
 
 		case STAGE_TEEN_BW:
-			switch(anim) {
+			switch(new_anim) {
 				case ANIM_NEUTRAL:
 					frog_sprite_bank = BANK(teen_bw_neutral);
 					SWITCH_ROM(frog_sprite_bank);
@@ -543,7 +543,7 @@ void set_frog_sprite_data(uint8_t stage, uint8_t anim) {
 			break;
 
 		case STAGE_NORM:
-			switch(anim) {
+			switch(new_anim) {
 				case ANIM_NEUTRAL:
 					frog_sprite_bank = BANK(norm_neutral);
 					SWITCH_ROM(frog_sprite_bank);
@@ -615,7 +615,7 @@ void set_frog_sprite_data(uint8_t stage, uint8_t anim) {
 			break;
 
 		case STAGE_MUSH:
-			switch(anim) {
+			switch(new_anim) {
 				case ANIM_NEUTRAL:
 					frog_sprite_bank = BANK(mush_neutral);
 					SWITCH_ROM(frog_sprite_bank);
@@ -687,7 +687,7 @@ void set_frog_sprite_data(uint8_t stage, uint8_t anim) {
 			break;
 
 		case STAGE_AXO:
-			switch(anim) {
+			switch(new_anim) {
 				case ANIM_NEUTRAL:
 					frog_sprite_bank = BANK(axo_neutral);
 					SWITCH_ROM(frog_sprite_bank);
@@ -759,7 +759,7 @@ void set_frog_sprite_data(uint8_t stage, uint8_t anim) {
 			break;
 
 		case STAGE_DINO:
-			switch(anim) {
+			switch(new_anim) {
 				case ANIM_NEUTRAL:
 					frog_sprite_bank = BANK(dino_neutral);
 					SWITCH_ROM(frog_sprite_bank);
@@ -831,7 +831,7 @@ void set_frog_sprite_data(uint8_t stage, uint8_t anim) {
 			break;
 
 		case STAGE_APPLE:
-			switch(anim) {
+			switch(new_anim) {
 				case ANIM_NEUTRAL:
 					frog_sprite_bank = BANK(apple_neutral);
 					SWITCH_ROM(frog_sprite_bank);
@@ -903,7 +903,7 @@ void set_frog_sprite_data(uint8_t stage, uint8_t anim) {
 			break;
 
 		case STAGE_PANDA:
-			switch(anim) {
+			switch(new_anim) {
 				case ANIM_NEUTRAL:
 					frog_sprite_bank = BANK(panda_neutral);
 					SWITCH_ROM(frog_sprite_bank);

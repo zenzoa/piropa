@@ -7,6 +7,7 @@
 #include "field.h"
 #include "frog.h"
 #include "bugs.h"
+#include "poop.h"
 
 uint8_t has_save = FALSE;
 
@@ -28,7 +29,8 @@ typedef struct save_slot_t {
 	uint8_t medicine;
 	uint8_t health;
 	uint8_t sickness;
-	uint8_t poops;
+	uint8_t poop_count;
+	uint8_t poops_scene[MAX_POOPS];
 	uint8_t poops_x[MAX_POOPS];
 	uint8_t poops_y[MAX_POOPS];
 	uint8_t fly_respawn[FLY_COUNT];
@@ -53,6 +55,7 @@ void save_data_to_slot(uint8_t i) {
 
 	save_slots[i].game_speed = game_speed;
 	save_slots[i].is_night = is_night;
+
 	SWITCH_ROM(BANK(frog_bank));
 	save_slots[i].age = age;
 	save_slots[i].age_part = age_part;
@@ -67,12 +70,15 @@ void save_data_to_slot(uint8_t i) {
 	save_slots[i].medicine = medicine;
 	save_slots[i].health = health;
 	save_slots[i].sickness = sickness;
-	save_slots[i].poops = poops;
-	SWITCH_ROM(BANK(field_bank));
+
+	SWITCH_ROM(BANK(poop_bank));
+	save_slots[i].poop_count = poop_count;
 	for (uint8_t j = 0; j < MAX_POOPS; j++) {
+		save_slots[i].poops_scene[j] = poops_scene[j];
 		save_slots[i].poops_x[j] = poops_x[j];
 		save_slots[i].poops_y[j] = poops_y[j];
 	}
+
 	SWITCH_ROM(BANK(bugs_bank));
 	for (uint8_t j = 0; j < FLY_COUNT; j++) {
 		save_slots[i].fly_respawn[j] = fly_respawn[j];
@@ -104,8 +110,10 @@ uint8_t load_data_from_slot(uint8_t i) {
 	) {
 		EMU_printf("");
 		EMU_printf("LOADING DATA FROM SLOT %d", i);
+
 		game_speed = save_slots[i].game_speed;
 		is_night = save_slots[i].is_night;
+
 		SWITCH_ROM(BANK(frog_bank));
 		age = save_slots[i].age;
 		age_part = save_slots[i].age_part;
@@ -120,12 +128,15 @@ uint8_t load_data_from_slot(uint8_t i) {
 		medicine = save_slots[i].medicine;
 		health = save_slots[i].health;
 		sickness = save_slots[i].sickness;
-		poops = save_slots[i].poops;
-		SWITCH_ROM(BANK(field_bank));
+
+		SWITCH_ROM(BANK(poop_bank));
+		poop_count = save_slots[i].poop_count;
 		for (uint8_t j = 0; j < MAX_POOPS; j++) {
+			poops_scene[j] = save_slots[i].poops_scene[j];
 			poops_x[j] = save_slots[i].poops_x[j];
 			poops_y[j] = save_slots[i].poops_y[j];
 		}
+
 		SWITCH_ROM(BANK(bugs_bank));
 		for (uint8_t j = 0; j < FLY_COUNT; j++) {
 			fly_respawn[j] = save_slots[i].fly_respawn[j];

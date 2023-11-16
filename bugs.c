@@ -115,17 +115,22 @@ void spawn_firefly(uint8_t i, uint8_t is_setup) {
 void respawn_bugs(void) {
 	for (uint8_t i = 0; i < FLY_COUNT; i++) {
 		if (!fly_alive[i] && fly_respawn[i] > 0) {
+			EMU_printf("fly %d respawn: %d", i, fly_respawn[i]);
 			fly_respawn[i] -= 1;
+			break;
 		}
 	}
 	for (uint8_t i = 0; i < DRAGONFLY_COUNT; i++) {
 		if (!dragonfly_alive[i] && dragonfly_respawn[i] > 0) {
+			EMU_printf("dragonfly %d respawn: %d", i, dragonfly_respawn[i]);
 			dragonfly_respawn[i] -= 1;
+			break;
 		}
 	}
 	for (uint8_t i = 0; i < FIREFLY_COUNT; i++) {
 		if (!firefly_alive[i] && firefly_respawn[i] > 0) {
 			firefly_respawn[i] -= 1;
+			break;
 		}
 	}
 }
@@ -175,7 +180,7 @@ void update_fly(uint8_t i) {
 
 		if (fly_x[i] == 0 || fly_x[i] > 168 || fly_y[i] < MIN_Y || fly_y[i] > 144) {
 			fly_alive[i] = FALSE;
-			fly_respawn[i] = (2 * game_speed) + 1;
+			fly_respawn[i] = 2 * (game_speed + 1);
 		}
 
 	}
@@ -202,40 +207,42 @@ void update_dragonfly(uint8_t i) {
 		dragonfly_anim_counter[i] = 0;
 		dragonfly_anim_frame[i] = !dragonfly_anim_frame[i];
 	}
-	if (current_scene == POND && !is_night) {
-		if ((dragonfly_x[i] == dragonfly_goal_x[i] || !dragonfly_goal_x[i]) &&
-			(dragonfly_y[i] == dragonfly_goal_y[i] || !dragonfly_goal_y[i])) {
-				if (rand() < 6) {
-					dragonfly_goal_x[i] = MIN_X + (rand() % (MAX_X - MIN_X));
-					dragonfly_goal_y[i] = MIN_Y + (rand() % (MAX_Y - MIN_Y));
-				}
-		} else {
-			if (dragonfly_y[i] == dragonfly_goal_y[i] || rand() < 128) {
-				if (dragonfly_x[i] < dragonfly_goal_x[i]) {
-					dragonfly_x[i] += 1;
-					dragonfly_flip[i] = TRUE;
-				} else if (dragonfly_x[i] > dragonfly_goal_x[i]) {
-					dragonfly_x[i] -= 1;
-					dragonfly_flip[i] = FALSE;
-				}
+	if (dragonfly_anim_counter[i] % 2) {
+		if (current_scene == POND && !is_night) {
+			if ((dragonfly_x[i] == dragonfly_goal_x[i] || !dragonfly_goal_x[i]) &&
+				(dragonfly_y[i] == dragonfly_goal_y[i] || !dragonfly_goal_y[i])) {
+					if (rand() < 6) {
+						dragonfly_goal_x[i] = MIN_X + (rand() % (MAX_X - MIN_X));
+						dragonfly_goal_y[i] = MIN_Y + (rand() % (MAX_Y - MIN_Y));
+					}
 			} else {
-				if (dragonfly_y[i] < dragonfly_goal_y[i]) {
-					dragonfly_y[i] += 1;
-				} else if (dragonfly_y[i] > dragonfly_goal_y[i]) {
-					dragonfly_y[i] -= 1;
+				if (dragonfly_y[i] == dragonfly_goal_y[i] || rand() < 128) {
+					if (dragonfly_x[i] < dragonfly_goal_x[i]) {
+						dragonfly_x[i] += 1;
+						dragonfly_flip[i] = TRUE;
+					} else if (dragonfly_x[i] > dragonfly_goal_x[i]) {
+						dragonfly_x[i] -= 1;
+						dragonfly_flip[i] = FALSE;
+					}
+				} else {
+					if (dragonfly_y[i] < dragonfly_goal_y[i]) {
+						dragonfly_y[i] += 1;
+					} else if (dragonfly_y[i] > dragonfly_goal_y[i]) {
+						dragonfly_y[i] -= 1;
+					}
 				}
 			}
+
+		} else if (dragonfly_x[i] > 0 && dragonfly_y[i] >= MIN_Y) {
+			dragonfly_x[i] -= 1;
+			dragonfly_y[i] -= 1;
+			dragonfly_flip[i] = FALSE;
 		}
 
-	} else if (dragonfly_x[i] > 0 && dragonfly_y[i] >= MIN_Y) {
-		dragonfly_x[i] -= 1;
-		dragonfly_y[i] -= 1;
-		dragonfly_flip[i] = FALSE;
-	}
-
-	if (dragonfly_x[i] == 0 || dragonfly_x[i] > 168 || dragonfly_y[i] < MIN_Y || dragonfly_y[i] > 144) {
-		dragonfly_alive[i] = FALSE;
-		dragonfly_respawn[i] = (2 * game_speed) + 1;
+		if (dragonfly_x[i] == 0 || dragonfly_x[i] > 168 || dragonfly_y[i] < MIN_Y || dragonfly_y[i] > 144) {
+			dragonfly_alive[i] = FALSE;
+			dragonfly_respawn[i] = 4 * (game_speed + 1);
+		}
 	}
 }
 
@@ -297,7 +304,7 @@ void update_firefly(uint8_t i) {
 
 		if (firefly_x[i] == 0 || firefly_x[i] > 168 || firefly_y[i] < MIN_Y || firefly_y[i] > 144) {
 			firefly_alive[i] = FALSE;
-			firefly_respawn[i] = (2 * game_speed) + 1;
+			firefly_respawn[i] = 4 * (game_speed + 1);
 		}
 
 	}
@@ -359,7 +366,7 @@ uint8_t grab_bug(void) {
 			hand_x + 8 >= fly_x[i] && hand_x < fly_x[i] + 8 &&
 			hand_y + 8 >= fly_y[i] && hand_y < fly_y[i] + 8) {
 				fly_alive[i] = FALSE;
-				fly_respawn[i] = (2 * game_speed) + 1;
+				fly_respawn[i] = 2 * (game_speed + 1);
 				return BUG_FLY;
 		}
 	}
@@ -369,7 +376,7 @@ uint8_t grab_bug(void) {
 			hand_x + 16 >= dragonfly_x[i] && hand_x < dragonfly_x[i] + 16 &&
 			hand_y + 8 >= dragonfly_y[i] && hand_y < dragonfly_y[i] + 8) {
 				dragonfly_alive[i] = FALSE;
-				dragonfly_respawn[i] = (2 * game_speed) + 1;
+				dragonfly_respawn[i] = 4 * (game_speed + 1);
 				return BUG_DRAGONFLY;
 		}
 	}
@@ -379,7 +386,7 @@ uint8_t grab_bug(void) {
 			hand_x + 8 >= firefly_x[i] && hand_x < firefly_x[i] + 8 &&
 			hand_y + 8 >= firefly_y[i] && hand_y < firefly_y[i] + 8) {
 				firefly_alive[i] = FALSE;
-				firefly_respawn[i] = (2 * game_speed) + 1;
+				firefly_respawn[i] = 4 * (game_speed + 1);
 				return BUG_FIREFLY;
 		}
 	}

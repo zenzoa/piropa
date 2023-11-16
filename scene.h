@@ -1,3 +1,5 @@
+#include <time.h>
+
 extern uint8_t last_scene;
 extern uint8_t current_scene;
 #define TITLE 0
@@ -19,6 +21,12 @@ extern const unsigned char big_cloud_1_tile_map[3];
 extern const unsigned char big_cloud_2_tile_map[3];
 extern const unsigned char small_cloud_1_tile_map[2];
 extern const unsigned char small_cloud_2_tile_map[2];
+
+extern time_t last_time;
+extern time_t current_time;
+
+extern uint8_t restore_x;
+extern uint8_t restore_y;
 
 extern void setup_scene(uint8_t new_scene);
 extern void update_scene(void);

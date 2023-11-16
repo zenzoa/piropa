@@ -10,6 +10,8 @@
 #include "save.h"
 #include "scene.h"
 #include "field.h"
+#include "bugs.h"
+#include "poop.h"
 #include "animation.h"
 #include "frog_sprites.h"
 #include "emote_sprites.h"
@@ -45,18 +47,19 @@ uint8_t action;
 #define ACTION_STAND 0
 #define ACTION_EMOTE 1
 #define ACTION_WALK 2
-#define ACTION_EAT 3
-#define ACTION_REFUSE 4
-#define ACTION_ENJOY 5
-#define ACTION_YAWN 6
-#define ACTION_SLEEP 7
-#define ACTION_WAKE 8
-#define ACTION_WASH 9
-#define ACTION_CLEAN 10
-#define ACTION_PET 11
-#define ACTION_LOVE 12
-#define ACTION_MEDICATE 13
-#define ACTION_POOP 14
+#define ACTION_BITE 3
+#define ACTION_EAT 4
+#define ACTION_REFUSE 5
+#define ACTION_ENJOY 6
+#define ACTION_YAWN 7
+#define ACTION_SLEEP 8
+#define ACTION_WAKE 9
+#define ACTION_WASH 10
+#define ACTION_CLEAN 11
+#define ACTION_PET 12
+#define ACTION_LOVE 13
+#define ACTION_MEDICATE 14
+#define ACTION_POOP 15
 
 uint8_t stomach;
 uint8_t bowels;
@@ -67,8 +70,6 @@ uint8_t love;
 uint8_t medicine;
 uint8_t health;
 uint8_t sickness;
-
-uint8_t poops;
 
 uint8_t night_timer = 0;
 
@@ -132,19 +133,20 @@ void update_stomach(void) {
 			weight -= 1;
 		}
 	} else if (stomach > 9) {
-		if (weight < 99) {
-			weight += 1;
-		}
+		// if (weight < 99) {
+		// 	weight += 1;
+		// }
 		stomach = 9;
 	}
 }
 
 uint8_t check_bowels(void) {
 	if (bowels > 3) {
-		if (poops < 6) {
+		bowels = 0;
+		if (poop_count < 6) {
+			EMU_printf("start pooping");
 			start_action(ACTION_POOP);
 		}
-		bowels = 0;
 		return TRUE;
 	} else {
 		return FALSE;
@@ -154,30 +156,31 @@ uint8_t check_bowels(void) {
 void update_weight(void) {
 	if (weight == 0) {
 		die_badly();
-	} else if (life_stage == TADPOLE && (weight < 5 || weight > 10)) {
-		if (health > 0) {
-			health -= 1;
-		}
-	} else if (life_stage == FROGLET && (weight < 10 || weight > 20)) {
-		if (health > 0) {
-			health -= 1;
-		}
-	} else if (life_stage == TEEN && (weight < 20 || weight > 40)) {
-		if (health > 0) {
-			health -= 1;
-		}
-	} else if (life_stage == ADULT && (weight < 40 || weight > 80)) {
-		if (health > 0) {
-			health -= 1;
-		}
 	}
+	//  else if (life_stage == TADPOLE && (weight < 5 || weight > 10)) {
+	// 	if (health > 0) {
+	// 		health -= 1;
+	// 	}
+	// } else if (life_stage == FROGLET && (weight < 10 || weight > 20)) {
+	// 	if (health > 0) {
+	// 		health -= 1;
+	// 	}
+	// } else if (life_stage == TEEN && (weight < 20 || weight > 40)) {
+	// 	if (health > 0) {
+	// 		health -= 1;
+	// 	}
+	// } else if (life_stage == ADULT && (weight < 40 || weight > 80)) {
+	// 	if (health > 0) {
+	// 		health -= 1;
+	// 	}
+	// }
 	if (weight > 99) {
 		weight = 99;
 	}
 }
 
 void update_hygiene(void) {
-	for (uint8_t i = 0; i < poops; i++) {
+	for (uint8_t i = 0; i < poop_count; i++) {
 		if (hygiene > 0) {
 			hygiene -= 1;
 		}
@@ -222,8 +225,10 @@ void update_medicine(void) {
 		medicine -= 1;
 		health += 1;
 	} else if (medicine > 9) {
-		if (health > 0) {
+		if (health >= 3) {
 			health -= 3;
+		} else {
+			health = 0;
 		}
 		medicine = 9;
 	}
@@ -278,7 +283,6 @@ void update_stats(void) {
 		EMU_printf("medicine: %d", medicine);
 		EMU_printf("health: %d", health);
 		EMU_printf("sickness: %d", sickness);
-		EMU_printf("poops: %d", poops);
 
 		update_mood();
 
@@ -289,26 +293,28 @@ void update_stats(void) {
 	save_data();
 }
 
-void end_feed_fly(void) {
-	stomach += 1;
+void start_feed(uint8_t bug_type) {
+	switch(bug_type) {
+		case BUG_FLY:
+			stomach += 1;
+			break;
+		case BUG_DRAGONFLY:
+			stomach += 3;
+			break;
+		case BUG_FIREFLY:
+			stomach += 1;
+			energy += 3;
+			break;
+		case BUG_BUTTERFLY:
+			stomach += 1;
+			love += 3;
+			break;
+	}
+	if (stomach > 9) {
+		weight += 1;
+	}
 	update_mood();
-}
-
-void end_feed_dragonfly(void) {
-	stomach += 3;
-	update_mood();
-}
-
-void end_feed_butterfly(void) {
-	stomach += 1;
-	love += 3;
-	update_mood();
-}
-
-void end_feed_firefly(void) {
-	stomach += 1;
-	energy += 3;
-	update_mood();
+	start_action(ACTION_BITE);
 }
 
 void start_wash(void) {
@@ -343,7 +349,7 @@ void start_pet(void) {
 void end_pet(void) {
 	pet_loops += frog_anim.loop;
 	if (pet_loops >= 3) {
-		love += 1;
+		love += pet_loops / 3;
 		update_mood();
 		start_action(ACTION_ENJOY);
 	} else {
@@ -592,10 +598,17 @@ void start_action(uint8_t new_action) {
 			emote = EMOTE_NONE;
 			break;
 
+		case ACTION_BITE:
+			anim = ANIM_YAWN;
+			emote = EMOTE_NONE;
+			frog_anim = new_animation(24, 2, 1);
+			frog_anim.frame = 1;
+			break;
+
 		case ACTION_EAT:
 			anim = ANIM_EAT;
 			emote = EMOTE_NONE;
-			frog_anim = new_animation(24, 3, 3);
+			frog_anim = new_animation(24, 2, 3);
 			break;
 
 		case ACTION_REFUSE:
@@ -888,15 +901,15 @@ void setup_frog(uint8_t reset) {
 	if (reset) {
 		age = 0;
 		age_part = 0;
-		stomach = 9;
+		stomach = 5;
 		bowels = 0;
-		weight = 5;
-		hygiene = 9;
+		weight = 1;
+		hygiene = 5;
 		energy = 9;
 		love = 5;
 		medicine = 0;
 		health = 9;
-		poops = 0;
+		sickness = 0;
 	}
 	update_mood();
 
@@ -935,7 +948,7 @@ void update_frog(void) {
 						if (frog_anim.frame == 0 && frog_anim.ticks == 0) {
 							if (is_time_to_evolve()) {
 								evolve();
-							} else if (current_scene != FIELD || !check_bowels()) {
+							} else if (!check_bowels()) {
 								uint8_t n = rand();
 								if (n < 25 && current_scene == FIELD) {
 									start_action(ACTION_WALK);
@@ -961,9 +974,14 @@ void update_frog(void) {
 						}
 						break;
 
+					case ACTION_BITE:
+						if (anim_complete) {
+							start_action(ACTION_EAT);
+						}
+
 					case ACTION_EAT:
 						if (anim_complete) {
-							start_action(ACTION_STAND);
+							start_action(ACTION_ENJOY);
 						}
 						break;
 
@@ -1030,11 +1048,7 @@ void update_frog(void) {
 
 					case ACTION_POOP:
 						if (anim_complete) {
-							if (current_scene == FIELD) {
-								poops += 1;
-								SWITCH_ROM(BANK(field_bank));
-								add_poop(frog_x / 8, frog_y / 8);
-							}
+							poops_to_add += 1;
 							start_action(ACTION_STAND);
 						}
 						break;

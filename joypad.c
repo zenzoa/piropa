@@ -43,6 +43,7 @@ void handle_dpad(void) {
 		case FIELD:
 		case POND:
 		case GARDEN:
+			SWITCH_ROM(BANK(hand_bank));
 			if (joypad_value & J_LEFT) {
 				if (joypad_value & J_UP) {
 					move_hand_by_frac(-181, -181);
@@ -96,14 +97,15 @@ void handle_a_button(void) {
 			case GARDEN:
 				SWITCH_ROM(BANK(hud_bank));
 				if (!handle_hud_input(A_BUTTON)) {
+					SWITCH_ROM(BANK(hand_bank));
 					if (hand_state == HAND_MOON && hand_y >= 32 && hand_y < 80) {
 						if (is_night && current_scene == FIELD) {
+							set_hand_state(HAND_DEFAULT);
 							SWITCH_ROM(BANK(field_bank));
 							return_moon_to_sky();
-							set_hand_state(HAND_DEFAULT);
 						} else if (!is_night) {
-							start_transition_to_scene(FIELD, TRUE);
 							set_hand_state(HAND_DEFAULT);
+							start_transition_to_scene(FIELD, TRUE);
 						}
 
 					} else if (is_night && current_scene == FIELD && hand_x >= 72 && hand_x < 96 && hand_y >= 48 && hand_y < 68) {
@@ -111,23 +113,43 @@ void handle_a_button(void) {
 						grab_moon_from_sky();
 						set_hand_state(HAND_MOON);
 
-					} else if ((hand_state == HAND_BROOM || hand_state == HAND_BROOM_USE) && current_scene == FIELD) {
+					} else if (hand_state == HAND_BROOM || hand_state == HAND_BROOM_USE) {
 						set_hand_state(HAND_BROOM_USE);
 						sweep_count = 2;
 
 					} else if (is_hand_over_frog() && !is_night && life_stage != EGG && life_stage != DEAD) {
 						if (is_hand_empty() || hand_state == HAND_PET2) {
-							start_pet();
 							set_hand_state(HAND_PET1);
-						} else if (hand_state == HAND_PET1) {
+							SWITCH_ROM(BANK(frog_bank));
 							start_pet();
+						} else if (hand_state == HAND_PET1) {
 							set_hand_state(HAND_PET2);
+							SWITCH_ROM(BANK(frog_bank));
+							start_pet();
 						} else if (hand_state == HAND_MEDICINE) {
-							start_medicate();
 							set_hand_state(HAND_MEDICINE_USE);
+							SWITCH_ROM(BANK(frog_bank));
+							start_medicate();
 						} else if (hand_state == HAND_SOAP || hand_state == HAND_SOAP_USE) {
-							start_wash();
 							set_hand_state(HAND_SOAP_USE);
+							SWITCH_ROM(BANK(frog_bank));
+							start_wash();
+						} else if (hand_state == HAND_FLY) {
+							set_hand_state(HAND_DEFAULT);
+							SWITCH_ROM(BANK(frog_bank));
+							start_feed(BUG_FLY);
+						} else if (hand_state == HAND_DRAGONFLY) {
+							set_hand_state(HAND_DEFAULT);
+							SWITCH_ROM(BANK(frog_bank));
+							start_feed(BUG_DRAGONFLY);
+						} else if (hand_state == HAND_FIREFLY) {
+							set_hand_state(HAND_DEFAULT);
+							SWITCH_ROM(BANK(frog_bank));
+							start_feed(BUG_FIREFLY);
+						} else if (hand_state == HAND_BUTTERFLY) {
+							set_hand_state(HAND_DEFAULT);
+							SWITCH_ROM(BANK(frog_bank));
+							start_feed(BUG_BUTTERFLY);
 						}
 
 					} else if (is_hand_empty()) {

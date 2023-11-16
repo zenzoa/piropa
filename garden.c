@@ -71,3 +71,9 @@ void update_garden(void) {
 		}
 	}
 }
+
+void restore_garden_tile(uint8_t x, uint8_t y) NONBANKED {
+	SWITCH_ROM(BANK(garden));
+	uint8_t original_tile = garden_map[y * 20 + x];
+	set_bkg_tile_xy(x, y, original_tile);
+}

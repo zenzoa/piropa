@@ -20,18 +20,19 @@ extern uint8_t action;
 #define ACTION_STAND 0
 #define ACTION_EMOTE 1
 #define ACTION_WALK 2
-#define ACTION_EAT 3
-#define ACTION_REFUSE 4
-#define ACTION_ENJOY 5
-#define ACTION_YAWN 6
-#define ACTION_SLEEP 7
-#define ACTION_WAKE 8
-#define ACTION_WASH 9
-#define ACTION_CLEAN 10
-#define ACTION_PET 11
-#define ACTION_LOVE 12
-#define ACTION_MEDICATE 13
-#define ACTION_POOP 14
+#define ACTION_BITE 3
+#define ACTION_EAT 4
+#define ACTION_REFUSE 5
+#define ACTION_ENJOY 6
+#define ACTION_YAWN 7
+#define ACTION_SLEEP 8
+#define ACTION_WAKE 9
+#define ACTION_WASH 10
+#define ACTION_CLEAN 11
+#define ACTION_PET 12
+#define ACTION_LOVE 13
+#define ACTION_MEDICATE 14
+#define ACTION_POOP 15
 
 extern uint8_t stomach;
 extern uint8_t bowels;
@@ -42,8 +43,6 @@ extern uint8_t love;
 extern uint8_t medicine;
 extern uint8_t health;
 extern uint8_t sickness;
-
-extern uint8_t poops;
 
 extern uint8_t stage;
 extern uint8_t anim;
@@ -56,6 +55,7 @@ extern void setup_frog(uint8_t reset);
 extern void draw_frog(uint8_t *last_sprite);
 extern void update_frog(void);
 
+extern void start_feed(uint8_t bug_type);
 extern void start_pet(void);
 extern void start_medicate(void);
 extern void start_wash(void);

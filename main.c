@@ -9,15 +9,9 @@
 #include "frog.h"
 #include "hand.h"
 #include "bugs.h"
+#include "poop.h"
 #include "joypad.h"
 #include "scene.h"
-
-uint8_t frames = 0;
-uint8_t last_update_minutes = 0;
-uint8_t last_update_seconds = 0;
-
-time_t last_time = 0;
-time_t current_time = 0;
 
 void main(void) {
 	DISPLAY_ON;
@@ -29,12 +23,16 @@ void main(void) {
 	SWITCH_ROM(BANK(bugs_bank));
 	setup_bugs_data();
 
+	SWITCH_ROM(BANK(poop_bank));
+	setup_poop_data();
+
 	load_data();
 	setup_scene(TITLE);
 
 	SWITCH_ROM(BANK(frog_bank));
 	setup_frog(!has_save);
 
+	SWITCH_ROM(BANK(hand_bank));
 	setup_hand();
 
 	last_time = clock() / CLOCKS_PER_SEC;
@@ -43,11 +41,17 @@ void main(void) {
 		if (!is_transitioning && (current_scene == FIELD || current_scene == POND || current_scene == GARDEN)) {
 			SWITCH_ROM(BANK(frog_bank));
 			update_frog();
+
+			SWITCH_ROM(BANK(hand_bank));
 			update_hand();
+
+			SWITCH_ROM(BANK(poop_bank));
+			update_poops();
 
 			current_time = clock() / CLOCKS_PER_SEC;
 			if (current_time >= last_time + 60) {
 				last_time = clock() / CLOCKS_PER_SEC;
+				SWITCH_ROM(BANK(frog_bank));
 				update_stats();
 				SWITCH_ROM(BANK(bugs_bank));
 				respawn_bugs();

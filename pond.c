@@ -68,3 +68,9 @@ void update_pond(void) {
 		}
 	}
 }
+
+void restore_pond_tile(uint8_t x, uint8_t y) NONBANKED {
+	SWITCH_ROM(BANK(pond));
+	uint8_t original_tile = pond_map[y * 20 + x];
+	set_bkg_tile_xy(x, y, original_tile);
+}
