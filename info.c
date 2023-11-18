@@ -2,9 +2,6 @@
 
 #include <gbdk/platform.h>
 
-#include <stdio.h>
-#include <gbdk/emu_debug.h>
-
 #include "frog.h"
 #include "scene.h"
 #include "joypad.h"
@@ -98,8 +95,6 @@ void draw_number(uint8_t value, uint8_t x) {
 }
 
 void draw_speed(void) {
-	EMU_printf("");
-	EMU_printf("speed: %d", game_speed);
 	if (game_speed == SPEED_SLOW) {
 		set_bkg_tiles(0x07, 0x10, 2, 2, speed_slow_selected_tile_map);
 	} else {

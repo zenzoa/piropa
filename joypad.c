@@ -1,8 +1,5 @@
 #include <gbdk/platform.h>
 
-#include <stdio.h>
-#include <gbdk/emu_debug.h>
-
 #include "save.h"
 #include "hand.h"
 #include "frog.h"
@@ -44,27 +41,7 @@ void handle_dpad(void) {
 		case POND:
 		case GARDEN:
 			SWITCH_ROM(BANK(hand_bank));
-			if (joypad_value & J_LEFT) {
-				if (joypad_value & J_UP) {
-					move_hand_by_frac(-181, -181);
-				} else if (joypad_value & J_DOWN) {
-					move_hand_by_frac(-181, 181);
-				} else {
-					move_hand_by_frac(-256, 0);
-				}
-			} else if (joypad_value & J_RIGHT) {
-				if (joypad_value & J_UP) {
-					move_hand_by_frac(181, -181);
-				} else if (joypad_value & J_DOWN) {
-					move_hand_by_frac(181, 181);
-				} else {
-					move_hand_by_frac(256, 0);
-				}
-			} else if (joypad_value & J_UP) {
-				move_hand_by_frac(0, -256);
-			} else if (joypad_value & J_DOWN) {
-				move_hand_by_frac(0, 256);
-			}
+			move_hand(joypad_value);
 			break;
 
 		case INFO:

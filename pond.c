@@ -3,20 +3,16 @@
 #include <gbdk/platform.h>
 #include <gbdk/metasprites.h>
 
-#include "hud.h"
-#include "hand.h"
-#include "frog.h"
-#include "scene.h"
-
 #include "sprites/backgrounds/pond.h"
 #include "sprites/backgrounds/pond_night.h"
 #include "sprites/backgrounds/clouds.h"
+#include "cloud_tile_maps.h"
 
 BANKREF(pond_bank)
 
 uint8_t pond_sky_anim_counter = 0;
 
-void setup_pond_data(void) NONBANKED {
+void setup_pond_data(uint8_t is_night) NONBANKED {
 	if (is_night) {
 		SWITCH_ROM(BANK(pond_night));
 		set_bkg_data(0, pond_night_TILE_COUNT, pond_night_tiles);
@@ -32,25 +28,17 @@ void setup_pond_data(void) NONBANKED {
 	}
 }
 
-void setup_pond(void) {
-	pond_sky_anim_counter = 0;
-	if (is_night) {
-	} else {
+void setup_pond(uint8_t is_night) {
+	if (!is_night) {
+		pond_sky_anim_counter = 0;
 		set_bkg_tiles(0, 5, 3, 1, big_cloud_2_tile_map);
 		set_bkg_tiles(3, 6, 2, 1, small_cloud_1_tile_map);
 		set_bkg_tiles(11, 4, 2, 1, small_cloud_2_tile_map);
 	}
-
-	if (last_scene == FIELD) {
-		hand_x = 160;
-		hand_x_frac = hand_x << 8;
-	}
 }
 
-void update_pond(void) {
-	if (is_night) {
-
-	} else {
+void update_pond(uint8_t is_night) {
+	if (!is_night) {
 		pond_sky_anim_counter += 1;
 		if (pond_sky_anim_counter > 120) {
 			pond_sky_anim_counter = 0;

@@ -1,8 +1,5 @@
 #include <gbdk/platform.h>
 
-#include <stdio.h>
-#include <gbdk/emu_debug.h>
-
 #include "scene.h"
 #include "field.h"
 #include "frog.h"
@@ -49,9 +46,6 @@ uint8_t last_flag = 0;
 
 void save_data_to_slot(uint8_t i) {
 	save_slots[i].save_flag_start = last_flag ? SAVE_FLAG_VALUE_1 : SAVE_FLAG_VALUE_2;
-
-	EMU_printf("");
-	EMU_printf("SAVING DATA TO SLOT %d", i);
 
 	save_slots[i].game_speed = game_speed;
 	save_slots[i].is_night = is_night;
@@ -108,8 +102,6 @@ uint8_t load_data_from_slot(uint8_t i) {
 	if (save_slots[i].save_flag_start == save_slots[i].save_flag_end &&
 		(save_slots[i].save_flag_start == SAVE_FLAG_VALUE_1 || save_slots[i].save_flag_start == SAVE_FLAG_VALUE_2)
 	) {
-		EMU_printf("");
-		EMU_printf("LOADING DATA FROM SLOT %d", i);
 
 		game_speed = save_slots[i].game_speed;
 		is_night = save_slots[i].is_night;
@@ -151,8 +143,6 @@ uint8_t load_data_from_slot(uint8_t i) {
 		return TRUE;
 
 	} else {
-		EMU_printf("");
-		EMU_printf("NO DATA IN SLOT %d", i);
 		return FALSE;
 	}
 }

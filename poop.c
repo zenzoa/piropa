@@ -2,9 +2,6 @@
 
 #include <gbdk/platform.h>
 
-#include <stdio.h>
-#include <gbdk/emu_debug.h>
-
 #include "frog.h"
 #include "scene.h"
 
@@ -60,8 +57,6 @@ void add_poop_at(uint8_t i, uint8_t x, uint8_t y) {
 	poops_x[i] = x;
 	poops_y[i] = y;
 	poop_count += 1;
-	EMU_printf("");
-	EMU_printf("POOP at %d %d", x, y);
 	draw_poops();
 }
 
@@ -100,8 +95,6 @@ void clean_poop_at(uint8_t x, uint8_t y) NONBANKED {
 				}
 				restore_x = poops_x[i];
 				restore_y = poops_y[i];
-				EMU_printf("");
-				EMU_printf("CLEAN poop at %d, %d", poops_x[i], poops_y[i]);
 				poops_x[i] = 0;
 				poops_y[i] = 0;
 		}

@@ -4,9 +4,6 @@
 #include <gbdk/metasprites.h>
 #include <rand.h>
 
-#include <stdio.h>
-#include <gbdk/emu_debug.h>
-
 #include "save.h"
 #include "scene.h"
 #include "field.h"
@@ -104,22 +101,16 @@ void die_well(void) {
 void update_mood(void) {
 	if (sickness > 0) {
 		mood = MOOD_SICK;
-		EMU_printf("MOOD: SICK");
 	} else if (stomach <= energy && stomach <= love && stomach < 3) {
 		mood = MOOD_HUNGRY;
-		EMU_printf("MOOD: HUNGRY");
 	} else if (energy <= stomach && energy <= love && energy < 3) {
 		mood = MOOD_TIRED;
-		EMU_printf("MOOD: TIRED");
 	} else if (love <= energy && love <= stomach && love < 3) {
 		mood = MOOD_LONELY;
-		EMU_printf("MOOD: LONELY");
 	} else if (stomach > 5 && energy > 5 && love > 5) {
 		mood = MOOD_HAPPY;
-		EMU_printf("MOOD: HAPPY");
 	} else {
 		mood = MOOD_NEUTRAL;
-		EMU_printf("MOOD: NEUTRAL");
 	}
 }
 
@@ -141,7 +132,6 @@ uint8_t check_bowels(void) {
 	if (bowels > 3) {
 		bowels = 0;
 		if (poop_count < 6) {
-			EMU_printf("start pooping");
 			start_action(ACTION_POOP);
 		}
 		return TRUE;
@@ -247,22 +237,8 @@ void update_stats(void) {
 
 		update_energy();
 
-		EMU_printf("");
-		EMU_printf("age: %d", age);
-		EMU_printf("stomach: %d", stomach);
-		EMU_printf("bowels: %d", bowels);
-		EMU_printf("weight: %d", weight);
-		EMU_printf("hygiene: %d", hygiene);
-		EMU_printf("energy: %d", energy);
-		EMU_printf("love: %d", love);
-		EMU_printf("medicine: %d", medicine);
-		EMU_printf("health: %d", health);
-		EMU_printf("sickness: %d", sickness);
-
 		update_mood();
 
-	} else {
-		EMU_printf("partial age: %d", age_part);
 	}
 
 	save_data();
@@ -678,16 +654,10 @@ void start_action(uint8_t new_action) {
 
 	action = new_action;
 	anim_complete = 0;
-
-	EMU_printf("");
-	EMU_printf("ACTION: %d", action);
 }
 
 void set_stage(uint8_t new_stage) {
 	stage = new_stage;
-
-	EMU_printf("");
-	EMU_printf("STAGE: %d", stage);
 
 	switch(stage) {
 		case STAGE_EGG:

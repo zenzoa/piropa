@@ -2,9 +2,6 @@
 #include <gbdk/metasprites.h>
 #include <time.h>
 
-#include <stdio.h>
-#include <gbdk/emu_debug.h>
-
 #include "hand.h"
 #include "frog.h"
 #include "bugs.h"
@@ -46,20 +43,14 @@ uint8_t restore_y;
 #define SPEED_SLOW 2
 uint8_t game_speed = SPEED_MEDIUM;
 
-const unsigned char big_cloud_1_tile_map[3] = { 0x70, 0x71, 0x72 };
-const unsigned char big_cloud_2_tile_map[3] = { 0x73, 0x74, 0x75 };
-const unsigned char small_cloud_1_tile_map[2] = { 0x70, 0x72 };
-const unsigned char small_cloud_2_tile_map[2] = { 0x73, 0x75 };
-
 time_t last_time = 0;
 time_t current_time = 0;
 
 void setup_scene(uint8_t new_scene) {
-	setup_hud_data();
-
 	uint8_t skip_save = last_scene == TITLE && new_scene == TITLE;
 	last_scene = (current_scene == TITLE ? FIELD : current_scene);
 	current_scene = new_scene;
+
 	switch(current_scene) {
 		case TITLE:
 			setup_title_data();
@@ -68,39 +59,21 @@ void setup_scene(uint8_t new_scene) {
 			break;
 
 		case FIELD:
-			setup_field_data();
+			setup_field_data(is_night);
 			SWITCH_ROM(BANK(field_bank));
-			setup_field();
-			SWITCH_ROM(BANK(poop_bank));
-			draw_poops();
-			SWITCH_ROM(BANK(hud_bank));
-			draw_hud();
-			SWITCH_ROM(BANK(bugs_bank));
-			setup_bugs();
+			setup_field(is_night, hand_state == HAND_MOON);
 			break;
 
 		case POND:
-			setup_pond_data();
+			setup_pond_data(is_night);
 			SWITCH_ROM(BANK(pond_bank));
-			setup_pond();
-			SWITCH_ROM(BANK(poop_bank));
-			draw_poops();
-			SWITCH_ROM(BANK(hud_bank));
-			draw_hud();
-			SWITCH_ROM(BANK(bugs_bank));
-			setup_bugs();
+			setup_pond(is_night);
 			break;
 
 		case GARDEN:
-			setup_garden_data();
+			setup_garden_data(is_night);
 			SWITCH_ROM(BANK(garden_bank));
-			setup_garden();
-			SWITCH_ROM(BANK(poop_bank));
-			draw_poops();
-			SWITCH_ROM(BANK(hud_bank));
-			draw_hud();
-			SWITCH_ROM(BANK(bugs_bank));
-			setup_bugs();
+			setup_garden(is_night);
 			break;
 
 		case INFO:
@@ -112,6 +85,24 @@ void setup_scene(uint8_t new_scene) {
 		// case INVENTORY:
 			// setup_inventory();
 			// break;
+	}
+
+	if (current_scene == FIELD || current_scene == POND || current_scene == GARDEN) {
+		setup_hud_data();
+		SWITCH_ROM(BANK(hud_bank));
+		draw_hud();
+		SWITCH_ROM(BANK(poop_bank));
+		draw_poops();
+		SWITCH_ROM(BANK(bugs_bank));
+		setup_bugs();
+	}
+
+	if ((current_scene == FIELD && last_scene == POND) || (current_scene == GARDEN && last_scene == FIELD)) {
+		hand_x = 12;
+		hand_x_frac = hand_x << 8;
+	} else if ((current_scene == POND && last_scene == FIELD) || (current_scene == FIELD && last_scene == GARDEN)) {
+		hand_x = 148;
+		hand_x_frac = hand_x << 8;
 	}
 
 	if (!skip_save) {
@@ -198,18 +189,52 @@ void draw_sprites(void) {
 	hide_sprites_range(last_sprite, MAX_HARDWARE_SPRITES);
 }
 
+void update_every_minute(void) {
+	SWITCH_ROM(BANK(frog_bank));
+	update_stats();
+	if (is_night && action == ACTION_SLEEP && energy >= 9) {
+		start_transition_to_scene(FIELD, FALSE);
+	}
+
+	SWITCH_ROM(BANK(bugs_bank));
+	respawn_bugs();
+
+	SWITCH_ROM(BANK(garden_bank));
+	update_plants(game_speed);
+}
+
 void update_scene(void) {
 	if (is_transitioning) {
 		update_transition();
 
 	} else {
+		if ((current_scene == FIELD || current_scene == POND || current_scene == GARDEN)) {
+			SWITCH_ROM(BANK(frog_bank));
+			update_frog();
+
+			SWITCH_ROM(BANK(hand_bank));
+			update_hand();
+
+			SWITCH_ROM(BANK(poop_bank));
+			update_poops();
+
+			current_time = clock() / CLOCKS_PER_SEC;
+			if (current_time >= last_time + 60) {
+				last_time = clock() / CLOCKS_PER_SEC;
+				update_every_minute();
+			}
+		}
+
 		switch(current_scene) {
 			case FIELD:
 				SWITCH_ROM(BANK(field_bank));
-				update_field();
+				update_field(is_night);
+				if (hand_x + 16 >= 120 && hand_x < 136 && hand_y + 16 >= 80 && hand_y < 96) {
+					set_basket(TRUE);
+				} else {
+					set_basket(FALSE);
+				}
 				if (restore_x > 0 && restore_y > 0) {
-					EMU_printf("");
-					EMU_printf("RESTORE tile at %d, %d", restore_x, restore_y);
 					restore_field_tile(restore_x, restore_y);
 					restore_x = 0;
 					restore_y = 0;
@@ -218,10 +243,8 @@ void update_scene(void) {
 
 			case POND:
 				SWITCH_ROM(BANK(pond_bank));
-				update_pond();
+				update_pond(is_night);
 				if (restore_x > 0 && restore_y > 0) {
-					EMU_printf("");
-					EMU_printf("RESTORE tile at %d, %d", restore_x, restore_y);
 					restore_pond_tile(restore_x, restore_y);
 					restore_x = 0;
 					restore_y = 0;
@@ -230,10 +253,8 @@ void update_scene(void) {
 
 			case GARDEN:
 				SWITCH_ROM(BANK(garden_bank));
-				update_garden();
+				update_garden(is_night);
 				if (restore_x > 0 && restore_y > 0) {
-					EMU_printf("");
-					EMU_printf("RESTORE tile at %d, %d", restore_x, restore_y);
 					restore_garden_tile(restore_x, restore_y);
 					restore_x = 0;
 					restore_y = 0;
@@ -249,15 +270,23 @@ void update_scene(void) {
 	draw_sprites();
 }
 
-void reset_data(void) {
+void setup_data(uint8_t reset) {
+	SWITCH_ROM(BANK(bugs_bank));
+	setup_bugs_data();
+
 	SWITCH_ROM(BANK(poop_bank));
-	reset_poops();
+	setup_poop_data();
 
 	SWITCH_ROM(BANK(frog_bank));
-	setup_frog(TRUE);
+	setup_frog(reset);
+
 	SWITCH_ROM(BANK(hand_bank));
 	setup_hand();
-	start_transition_to_scene(FIELD, FALSE);
 
 	last_time = clock() / CLOCKS_PER_SEC;
+}
+
+void reset_data(void) {
+	setup_data(TRUE);
+	start_transition_to_scene(FIELD, FALSE);
 }

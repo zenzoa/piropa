@@ -89,12 +89,35 @@ void move_hand_by_frac(int16_t dx_frac, int16_t dy_frac) {
 	}
 }
 
+void move_hand(uint8_t joypad_value) {
+	if (joypad_value & J_LEFT) {
+		if (joypad_value & J_UP) {
+			move_hand_by_frac(-181, -181);
+		} else if (joypad_value & J_DOWN) {
+			move_hand_by_frac(-181, 181);
+		} else {
+			move_hand_by_frac(-256, 0);
+		}
+	} else if (joypad_value & J_RIGHT) {
+		if (joypad_value & J_UP) {
+			move_hand_by_frac(181, -181);
+		} else if (joypad_value & J_DOWN) {
+			move_hand_by_frac(181, 181);
+		} else {
+			move_hand_by_frac(256, 0);
+		}
+	} else if (joypad_value & J_UP) {
+		move_hand_by_frac(0, -256);
+	} else if (joypad_value & J_DOWN) {
+		move_hand_by_frac(0, 256);
+	}
+}
+
 uint8_t is_hand_empty(void) {
 	return (hand_state == HAND_DEFAULT || hand_state == HAND_POINT);
 }
 
 uint8_t is_hand_over_frog(void) {
-	// SWITCH_ROM(BANK(frog_bank));
 	return (hand_x + 8 >= frog_x && hand_x < frog_x + 32 && hand_y + 8 >= frog_y && hand_y < frog_y + 24);
 }
 
@@ -127,7 +150,6 @@ void draw_hand(uint8_t *last_sprite) {
 
 	hand_offset = 0;
 
-	// SWITCH_ROM(BANK(frog_bank));
 	uint8_t frog_mod = frog_x % 8;
 	uint8_t hand_mod = hand_x % 8;
 

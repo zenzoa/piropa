@@ -2,19 +2,12 @@
 
 #include <gbdk/platform.h>
 
-#include <stdio.h>
-#include <gbdk/emu_debug.h>
-
-#include "hud.h"
-#include "hand.h"
-#include "frog.h"
-#include "scene.h"
-
 #include "sprites/backgrounds/field.h"
 #include "sprites/backgrounds/field_night.h"
 #include "sprites/backgrounds/clouds.h"
 #include "sprites/backgrounds/moon.h"
 #include "sprites/backgrounds/basket.h"
+#include "cloud_tile_maps.h"
 
 BANKREF(field_bank)
 
@@ -43,7 +36,7 @@ void set_basket(uint8_t is_open) {
 	}
 }
 
-void setup_field_data(void) NONBANKED {
+void setup_field_data(uint8_t is_night) NONBANKED {
 	if (is_night) {
 		SWITCH_ROM(BANK(field_night));
 		set_bkg_data(0, field_night_TILE_COUNT, field_night_tiles);
@@ -65,9 +58,9 @@ void setup_field_data(void) NONBANKED {
 	set_bkg_data(0xf8, basket_TILE_COUNT, basket_tiles);
 }
 
-void setup_field(void) {
+void setup_field(uint8_t is_night, uint8_t hand_has_moon) {
 	if (is_night) {
-		if (hand_state == HAND_MOON) {
+		if (hand_has_moon) {
 			moon_in_sky = FALSE;
 			set_bkg_tiles(9, 5, 2, 2, no_moon_tile_map);
 		} else if (moon_in_sky) {
@@ -88,17 +81,9 @@ void setup_field(void) {
 	}
 
 	set_bkg_tiles(13, 8, 3, 1, basket_closed_tile_map);
-
-	if (last_scene == POND) {
-		hand_x = 0;
-		hand_x_frac = hand_x << 8;
-	} else if (last_scene == GARDEN) {
-		hand_x = 160;
-		hand_x_frac = hand_x << 8;
-	}
 }
 
-void update_field(void) {
+void update_field(uint8_t is_night) {
 	if (is_night) {
 		if (moon_in_sky) {
 			sky_anim_counter += 1;
@@ -131,12 +116,6 @@ void update_field(void) {
 		} else if (sky_anim_counter > 20) {
 			set_bkg_tiles(12, 5, 2, 1, small_cloud_1_tile_map);
 		}
-	}
-
-	if (hand_x + 16 >= 120 && hand_x < 136 && hand_y + 16 >= 80 && hand_y < 96) {
-		set_basket(TRUE);
-	} else {
-		set_basket(FALSE);
 	}
 }
 
