@@ -5,32 +5,20 @@
 #include <rand.h>
 
 #include "save.h"
-#include "scene.h"
-#include "field.h"
 #include "bugs.h"
 #include "poop.h"
 #include "animation.h"
 #include "frog_sprites.h"
 #include "emote_sprites.h"
+#include "shared_variables.h"
 
 BANKREF(frog_bank)
-
-uint8_t frog_x;
-uint8_t frog_y;
 
 uint8_t goal_x;
 uint8_t goal_y;
 
 uint16_t age;
 uint8_t age_part;
-
-uint8_t life_stage;
-#define EGG 0
-#define TADPOLE 1
-#define FROGLET 2
-#define TEEN 3
-#define ADULT 4
-#define DEAD 5
 
 uint8_t mood;
 #define MOOD_NEUTRAL 0
@@ -57,6 +45,7 @@ uint8_t action;
 #define ACTION_LOVE 13
 #define ACTION_MEDICATE 14
 #define ACTION_POOP 15
+#define ACTION_WATERING 16
 
 uint8_t stomach;
 uint8_t bowels;
@@ -81,7 +70,6 @@ uint8_t anim_complete = 0;
 uint8_t pet_loops = 0;
 uint8_t wash_loops = 0;
 
-uint8_t is_evolving = FALSE;
 uint8_t evolution_counter = 0;
 uint8_t evolution_frame = 0;
 uint8_t next_stage;
@@ -332,6 +320,24 @@ void start_sleep(void) {
 	}
 }
 
+void start_walk_to_plant(uint8_t plant_number) {
+	switch(plant_number) {
+		case 0:
+			goal_x = PLANT_0_X * 8 - 16;
+			goal_y = PLANT_0_Y * 8 + 8;
+			break;
+		case 1:
+			goal_x = PLANT_1_X * 8 - 16;
+			goal_y = PLANT_1_Y * 8 + 8;
+			break;
+		case 2:
+			goal_x = PLANT_2_X * 8 - 16;
+			goal_y = PLANT_2_Y * 8 + 8;
+			break;
+	}
+	start_action(ACTION_WALK);
+}
+
 void place_in_scene(void) {
 	if (life_stage != EGG && life_stage != DEAD) {
 		switch(current_scene) {
@@ -402,6 +408,9 @@ void draw_frog(uint8_t *last_sprite) {
 				y_offset += 2;
 			}
 			draw_bath_sprite(frog_x, frog_y, y_offset, last_sprite);
+
+		} else if (action == ACTION_WATERING) {
+			draw_watering_sprite(frog_x, frog_y, last_sprite);
 
 		} else if (hygiene == 0) {
 			draw_dirt_sprite(frog_x, frog_y, last_sprite);
@@ -541,7 +550,9 @@ void start_action(uint8_t new_action) {
 			break;
 
 		case ACTION_WALK:
-			random_goal();
+			if (current_scene == FIELD) {
+				random_goal();
+			}
 			if (goal_x < frog_x) {
 				anim = ANIM_WALK_LEFT;
 			} else {
@@ -637,6 +648,12 @@ void start_action(uint8_t new_action) {
 			anim = ANIM_HAPPY;
 			emote = EMOTE_NONE;
 			frog_anim = new_animation(64, 2, 1);
+			break;
+
+		case ACTION_WATERING:
+			anim = ANIM_WALK_RIGHT;
+			emote = EMOTE_NONE;
+			frog_anim = new_animation(24, 1, 6);
 			break;
 	}
 
@@ -904,6 +921,12 @@ void update_frog(void) {
 						if (frog_anim.frame == 0 && frog_anim.ticks == 0) {
 							if (is_time_to_evolve()) {
 								evolve();
+
+							} else if (current_scene == GARDEN && frog_x != 16 && frog_y != 128) {
+								goal_x = 16;
+								goal_y = 128;
+								start_action(ACTION_WALK);
+
 							} else if (!check_bowels()) {
 								uint8_t n = rand();
 								if (n < 25 && current_scene == FIELD) {
@@ -925,7 +948,18 @@ void update_frog(void) {
 						if (frog_anim.ticks == 6 || frog_anim.ticks == 18) {
 							move_toward_goal();
 							if (frog_x == goal_x && frog_y == goal_y) {
-								start_action(ACTION_STAND);
+								if (current_scene == GARDEN && frog_y < 128) {
+									if (frog_x == PLANT_0_X * 8 - 16) {
+										watering_plant = 1;
+									} else if (frog_x == 64) {
+										watering_plant = 2;
+									} else {
+										watering_plant = 3;
+									}
+									start_action(ACTION_WATERING);
+								} else {
+									start_action(ACTION_STAND);
+								}
 							}
 						}
 						break;
@@ -1005,6 +1039,12 @@ void update_frog(void) {
 						if (anim_complete) {
 							poops_to_add += 1;
 							start_action(ACTION_STAND);
+						}
+						break;
+
+					case ACTION_WATERING:
+						if (anim_complete) {
+							start_action(ACTION_ENJOY);
 						}
 						break;
 

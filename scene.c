@@ -16,16 +16,7 @@
 #include "info.h"
 // #include "inventory.h"
 
-uint8_t current_scene;
-uint8_t last_scene;
-#define TITLE 0
-#define FIELD 1
-#define POND 2
-#define GARDEN 3
-#define INFO 4
-#define INVENTORY 5
-
-uint8_t is_night;
+#include "shared_variables.h"
 
 uint8_t is_transitioning = FALSE;
 uint8_t transition_counter = 0;
@@ -34,14 +25,6 @@ uint8_t next_scene;
 uint8_t next_is_night;
 
 uint8_t last_sprite;
-
-uint8_t restore_x;
-uint8_t restore_y;
-
-#define SPEED_FAST 0
-#define SPEED_MEDIUM 1
-#define SPEED_SLOW 2
-uint8_t game_speed = SPEED_MEDIUM;
 
 time_t last_time = 0;
 time_t current_time = 0;
@@ -59,21 +42,21 @@ void setup_scene(uint8_t new_scene) {
 			break;
 
 		case FIELD:
-			setup_field_data(is_night);
+			setup_field_data();
 			SWITCH_ROM(BANK(field_bank));
-			setup_field(is_night, hand_state == HAND_MOON);
+			setup_field(hand_state == HAND_MOON);
 			break;
 
 		case POND:
-			setup_pond_data(is_night);
+			setup_pond_data();
 			SWITCH_ROM(BANK(pond_bank));
-			setup_pond(is_night);
+			setup_pond();
 			break;
 
 		case GARDEN:
-			setup_garden_data(is_night);
+			setup_garden_data();
 			SWITCH_ROM(BANK(garden_bank));
-			setup_garden(is_night);
+			setup_garden();
 			break;
 
 		case INFO:
@@ -228,7 +211,7 @@ void update_scene(void) {
 		switch(current_scene) {
 			case FIELD:
 				SWITCH_ROM(BANK(field_bank));
-				update_field(is_night);
+				update_field();
 				if (hand_x + 16 >= 120 && hand_x < 136 && hand_y + 16 >= 80 && hand_y < 96) {
 					set_basket(TRUE);
 				} else {
@@ -243,7 +226,7 @@ void update_scene(void) {
 
 			case POND:
 				SWITCH_ROM(BANK(pond_bank));
-				update_pond(is_night);
+				update_pond();
 				if (restore_x > 0 && restore_y > 0) {
 					restore_pond_tile(restore_x, restore_y);
 					restore_x = 0;
@@ -253,7 +236,7 @@ void update_scene(void) {
 
 			case GARDEN:
 				SWITCH_ROM(BANK(garden_bank));
-				update_garden(is_night);
+				update_garden();
 				if (restore_x > 0 && restore_y > 0) {
 					restore_garden_tile(restore_x, restore_y);
 					restore_x = 0;
@@ -271,11 +254,13 @@ void update_scene(void) {
 }
 
 void setup_data(uint8_t reset) {
-	SWITCH_ROM(BANK(bugs_bank));
 	setup_bugs_data();
 
-	SWITCH_ROM(BANK(poop_bank));
 	setup_poop_data();
+	if (reset) {
+		SWITCH_ROM(BANK(poop_bank));
+		reset_poops();
+	}
 
 	SWITCH_ROM(BANK(frog_bank));
 	setup_frog(reset);

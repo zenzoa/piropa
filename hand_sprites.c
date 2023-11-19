@@ -1,6 +1,8 @@
 #include <gbdk/platform.h>
 #include <gbdk/metasprites.h>
 
+#include "shared_variables.h"
+
 #include "sprites/hand/hand_default.h"
 #include "sprites/hand/hand_point.h"
 #include "sprites/hand/hand_pet1.h"
@@ -16,22 +18,6 @@
 #include "sprites/hand/hand_dragonfly.h"
 #include "sprites/hand/hand_firefly.h"
 #include "sprites/hand/hand_butterfly.h"
-
-#define HAND_DEFAULT 0
-#define HAND_POINT 1
-#define HAND_PET1 2
-#define HAND_PET2 3
-#define HAND_MEDICINE 4
-#define HAND_MEDICINE_USE 5
-#define HAND_SOAP 6
-#define HAND_SOAP_USE 7
-#define HAND_BROOM 8
-#define HAND_BROOM_USE 9
-#define HAND_MOON 10
-#define HAND_FLY 11
-#define HAND_DRAGONFLY 12
-#define HAND_FIREFLY 13
-#define HAND_BUTTERFLY 14
 
 uint8_t hand_sprite_bank;
 metasprite_t** hand_metasprites;

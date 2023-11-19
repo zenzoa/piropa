@@ -5,6 +5,7 @@
 #include "hand.h"
 #include "scene.h"
 #include "joypad.h"
+#include "shared_variables.h"
 
 #include "sprites/backgrounds/hud.h"
 

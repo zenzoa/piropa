@@ -14,6 +14,7 @@
 
 #include "sprites/misc_16x8/dirt.h"
 #include "sprites/misc_16x8/bath.h"
+#include "sprites/misc_16x8/watering_can.h"
 
 #define EMOTE_NONE 0
 #define EMOTE_SUN 1
@@ -54,6 +55,10 @@ uint8_t dirt_frame = 0;
 #define BATH_VRAM 0xc4
 uint8_t bath_anim_counter = 0;
 uint8_t bath_frame = 0;
+
+#define WATERING_CAN_VRAM 0xb0
+uint8_t watering_anim_counter = 0;
+uint8_t watering_frame = 0;
 
 void swap_emote_vram(void) {
 	if (emote_vram == EMOTE_VRAM_1) {
@@ -136,6 +141,9 @@ void setup_emote_sprites(void) {
 	SWITCH_ROM(BANK(bath));
 	set_sprite_data(BATH_VRAM, bath_TILE_COUNT, bath_tiles);
 
+	SWITCH_ROM(BANK(watering_can));
+	set_sprite_data(WATERING_CAN_VRAM, watering_can_TILE_COUNT, watering_can_tiles);
+
 	SWITCH_ROM(saved_bank);
 }
 
@@ -166,6 +174,21 @@ void draw_bath_sprite(uint8_t x, uint8_t y, int8_t y_offset, uint8_t *last_sprit
 	SWITCH_ROM(BANK(bath));
 	*last_sprite += move_metasprite_ex(bath_metasprites[bath_frame], BATH_VRAM, 0, *last_sprite, x + 8, y + y_offset);
 	*last_sprite += move_metasprite_ex(bath_metasprites[!bath_frame], BATH_VRAM, 0, *last_sprite, x + 8, y + 18);
+
+	SWITCH_ROM(saved_bank);
+}
+
+void draw_watering_sprite(uint8_t x, uint8_t y, uint8_t *last_sprite) {
+	uint8_t saved_bank = _current_bank;
+
+	watering_anim_counter += 1;
+	if (watering_anim_counter > 16) {
+		watering_anim_counter = 0;
+		watering_frame = !watering_frame;
+	}
+
+	SWITCH_ROM(BANK(watering_can));
+	*last_sprite += move_metasprite_ex(watering_can_metasprites[watering_frame], WATERING_CAN_VRAM, 0, *last_sprite, x + 16, y + 12);
 
 	SWITCH_ROM(saved_bank);
 }

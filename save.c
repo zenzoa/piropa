@@ -1,12 +1,10 @@
 #include <gbdk/platform.h>
 
 #include "scene.h"
-#include "field.h"
 #include "frog.h"
 #include "bugs.h"
 #include "poop.h"
-
-uint8_t has_save = FALSE;
+#include "shared_variables.h"
 
 typedef struct save_slot_t {
 	uint16_t save_flag_start;
@@ -33,6 +31,10 @@ typedef struct save_slot_t {
 	uint8_t fly_respawn[FLY_COUNT];
 	uint8_t dragonfly_respawn[DRAGONFLY_COUNT];
 	uint8_t firefly_respawn[FIREFLY_COUNT];
+	uint8_t butterfly_respawn[BUTTERFLY_COUNT];
+	uint8_t plant_age[PLANT_COUNT];
+	uint8_t plant_stage[PLANT_COUNT];
+	uint8_t plant_is_watered[PLANT_COUNT];
 
 	uint16_t save_flag_end;
 
@@ -82,6 +84,15 @@ void save_data_to_slot(uint8_t i) {
 	}
 	for (uint8_t j = 0; j < FIREFLY_COUNT; j++) {
 		save_slots[i].firefly_respawn[j] = firefly_respawn[j];
+	}
+	for (uint8_t j = 0; j < BUTTERFLY_COUNT; j++) {
+		save_slots[i].butterfly_respawn[j] = butterfly_respawn[j];
+	}
+
+	for (uint8_t j = 0; j < PLANT_COUNT; j++) {
+		save_slots[i].plant_age[j] = plant_age[j];
+		save_slots[i].plant_stage[j] = plant_stage[j];
+		save_slots[i].plant_is_watered[j] = plant_is_watered[j];
 	}
 
 	save_slots[i].save_flag_end = last_flag ? SAVE_FLAG_VALUE_1 : SAVE_FLAG_VALUE_2;
@@ -138,6 +149,15 @@ uint8_t load_data_from_slot(uint8_t i) {
 		}
 		for (uint8_t j = 0; j < FIREFLY_COUNT; j++) {
 			firefly_respawn[j] = save_slots[i].firefly_respawn[j];
+		}
+		for (uint8_t j = 0; j < BUTTERFLY_COUNT; j++) {
+			butterfly_respawn[j] = save_slots[i].butterfly_respawn[j];
+		}
+
+		for (uint8_t j = 0; j < PLANT_COUNT; j++) {
+			plant_age[j] = save_slots[i].plant_age[j];
+			plant_stage[j] = save_slots[i].plant_stage[j];
+			plant_is_watered[j] = save_slots[i].plant_is_watered[j];
 		}
 
 		return TRUE;

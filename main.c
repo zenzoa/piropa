@@ -5,6 +5,7 @@
 #include "save.h"
 #include "joypad.h"
 #include "scene.h"
+#include "shared_variables.h"
 
 void main(void) {
 	DISPLAY_ON;

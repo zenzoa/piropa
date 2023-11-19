@@ -4,34 +4,11 @@
 #include <gbdk/metasprites.h>
 
 #include "hand_sprites.h"
-#include "frog.h"
 #include "poop.h"
 #include "scene.h"
-#include "field.h"
+#include "shared_variables.h"
 
 BANKREF(hand_bank)
-
-uint8_t hand_state;
-#define HAND_DEFAULT 0
-#define HAND_POINT 1
-#define HAND_PET1 2
-#define HAND_PET2 3
-#define HAND_MEDICINE 4
-#define HAND_MEDICINE_USE 5
-#define HAND_SOAP 6
-#define HAND_SOAP_USE 7
-#define HAND_BROOM 8
-#define HAND_BROOM_USE 9
-#define HAND_MOON 10
-#define HAND_FLY 11
-#define HAND_DRAGONFLY 12
-#define HAND_FIREFLY 13
-#define HAND_BUTTERFLY 14
-
-uint8_t hand_x;
-uint8_t hand_y;
-uint16_t hand_x_frac;
-uint16_t hand_y_frac;
 
 uint16_t push_left = 0;
 uint16_t push_right = 0;

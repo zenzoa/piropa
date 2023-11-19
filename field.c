@@ -2,6 +2,8 @@
 
 #include <gbdk/platform.h>
 
+#include "shared_variables.h"
+
 #include "sprites/backgrounds/field.h"
 #include "sprites/backgrounds/field_night.h"
 #include "sprites/backgrounds/clouds.h"
@@ -12,11 +14,11 @@
 BANKREF(field_bank)
 
 const unsigned char no_moon_tile_map[4] = { 0x16, 0x16, 0x16, 0x16 };
-const unsigned char moon_1_tile_map[4] = { 0x60, 0x61, 0x68, 0x69 };
-const unsigned char moon_2_tile_map[4] = { 0x62, 0x63, 0x6a, 0x6b };
-const unsigned char moon_3_tile_map[4] = { 0x62, 0x64, 0x6c, 0x6d };
-const unsigned char moon_4_tile_map[4] = { 0x62, 0x65, 0x6e, 0x6f };
-const unsigned char moon_5_tile_map[4] = { 0x66, 0x67, 0x70, 0x71 };
+const unsigned char moon_1_tile_map[4] = { 0x6a, 0x6b, 0x72, 0x73 };
+const unsigned char moon_2_tile_map[4] = { 0x6c, 0x6d, 0x74, 0x75 };
+const unsigned char moon_3_tile_map[4] = { 0x6c, 0x6e, 0x76, 0x77 };
+const unsigned char moon_4_tile_map[4] = { 0x6c, 0x6f, 0x78, 0x79 };
+const unsigned char moon_5_tile_map[4] = { 0x70, 0x71, 0x7a, 0x7b };
 
 const unsigned char basket_closed_tile_map[3] = { 0xf8, 0xf9, 0xfa };
 const unsigned char basket_open_tile_map[3] = { 0xfb, 0xfc, 0xfd };
@@ -36,14 +38,14 @@ void set_basket(uint8_t is_open) {
 	}
 }
 
-void setup_field_data(uint8_t is_night) NONBANKED {
+void setup_field_data(void) NONBANKED {
 	if (is_night) {
 		SWITCH_ROM(BANK(field_night));
 		set_bkg_data(0, field_night_TILE_COUNT, field_night_tiles);
 		set_bkg_tiles(0, 0, 20, 18, field_night_map);
 
 		SWITCH_ROM(BANK(moon));
-		set_bkg_data(0x60, moon_TILE_COUNT, moon_tiles);
+		set_bkg_data(0x6a, moon_TILE_COUNT, moon_tiles);
 
 	} else {
 		SWITCH_ROM(BANK(field));
@@ -58,7 +60,7 @@ void setup_field_data(uint8_t is_night) NONBANKED {
 	set_bkg_data(0xf8, basket_TILE_COUNT, basket_tiles);
 }
 
-void setup_field(uint8_t is_night, uint8_t hand_has_moon) {
+void setup_field(uint8_t hand_has_moon) {
 	if (is_night) {
 		if (hand_has_moon) {
 			moon_in_sky = FALSE;
@@ -83,7 +85,7 @@ void setup_field(uint8_t is_night, uint8_t hand_has_moon) {
 	set_bkg_tiles(13, 8, 3, 1, basket_closed_tile_map);
 }
 
-void update_field(uint8_t is_night) {
+void update_field(void) {
 	if (is_night) {
 		if (moon_in_sky) {
 			sky_anim_counter += 1;
@@ -135,5 +137,14 @@ void return_moon_to_sky(void) {
 		moon_in_sky = TRUE;
 		sky_anim_counter = 0;
 		set_bkg_tiles(9, 5, 2, 2, moon_1_tile_map);
+	}
+}
+
+uint8_t tap_field(void) {
+	if (hand_x >= 72 && hand_x < 96 && hand_y >= 48 && hand_y < 68) {
+		grab_moon_from_sky();
+		return TRUE;
+	} else {
+		return FALSE;
 	}
 }

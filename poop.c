@@ -2,8 +2,7 @@
 
 #include <gbdk/platform.h>
 
-#include "frog.h"
-#include "scene.h"
+#include "shared_variables.h"
 
 #include "sprites/backgrounds/poo.h"
 

@@ -3,9 +3,8 @@
 #include <gbdk/platform.h>
 #include <rand.h>
 
-#include "save.h"
 #include "scene.h"
-#include "joypad.h"
+#include "shared_variables.h"
 
 #include "sprites/backgrounds/title.h"
 #include "sprites/backgrounds/title_start.h"

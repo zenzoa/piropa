@@ -3,6 +3,8 @@
 #include <gbdk/platform.h>
 #include <gbdk/metasprites.h>
 
+#include "shared_variables.h"
+
 #include "sprites/backgrounds/pond.h"
 #include "sprites/backgrounds/pond_night.h"
 #include "sprites/backgrounds/clouds.h"
@@ -12,7 +14,7 @@ BANKREF(pond_bank)
 
 uint8_t pond_sky_anim_counter = 0;
 
-void setup_pond_data(uint8_t is_night) NONBANKED {
+void setup_pond_data(void) NONBANKED {
 	if (is_night) {
 		SWITCH_ROM(BANK(pond_night));
 		set_bkg_data(0, pond_night_TILE_COUNT, pond_night_tiles);
@@ -28,7 +30,7 @@ void setup_pond_data(uint8_t is_night) NONBANKED {
 	}
 }
 
-void setup_pond(uint8_t is_night) {
+void setup_pond(void) {
 	if (!is_night) {
 		pond_sky_anim_counter = 0;
 		set_bkg_tiles(0, 5, 3, 1, big_cloud_2_tile_map);
@@ -37,7 +39,7 @@ void setup_pond(uint8_t is_night) {
 	}
 }
 
-void update_pond(uint8_t is_night) {
+void update_pond(void) {
 	if (!is_night) {
 		pond_sky_anim_counter += 1;
 		if (pond_sky_anim_counter > 120) {

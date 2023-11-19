@@ -4,12 +4,14 @@
 
 #include "frog.h"
 #include "scene.h"
-#include "joypad.h"
+#include "shared_variables.h"
 
 #include "sprites/backgrounds/info.h"
 #include "sprites/backgrounds/numbers.h"
 #include "sprites/backgrounds/lilypads.h"
 #include "sprites/backgrounds/speed_icons.h"
+
+BANKREF(info_bank)
 
 const unsigned char lilypad_full_tile_map[4] = { 0x40, 0x41, 0x44, 0x45 };
 const unsigned char lilypad_half_tile_map[4] = { 0x42, 0x43, 0x46, 0x47 };
@@ -22,7 +24,6 @@ const unsigned char speed_fast_selected_tile_map[4] = { 0x5c, 0x5d, 0x62, 0x63 }
 const unsigned char speed_medium_selected_tile_map[4] = { 0x5e, 0x5f, 0x64, 0x65 };
 const unsigned char speed_slow_selected_tile_map[4] = { 0x60, 0x61, 0x66, 0x67 };
 
-BANKREF(info_bank)
 
 void draw_stat(uint8_t value, uint8_t y) {
 	switch(value) {

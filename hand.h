@@ -1,26 +1,5 @@
 BANKREF_EXTERN(hand_bank)
 
-#define HAND_DEFAULT 0
-#define HAND_POINT 1
-#define HAND_PET1 2
-#define HAND_PET2 3
-#define HAND_MEDICINE 4
-#define HAND_MEDICINE_USE 5
-#define HAND_SOAP 6
-#define HAND_SOAP_USE 7
-#define HAND_BROOM 8
-#define HAND_BROOM_USE 9
-#define HAND_MOON 10
-#define HAND_FLY 11
-#define HAND_DRAGONFLY 12
-#define HAND_FIREFLY 13
-#define HAND_BUTTERFLY 14
-
-extern uint8_t hand_state;
-extern uint8_t hand_x;
-extern uint8_t hand_y;
-extern uint16_t hand_x_frac;
-extern uint16_t hand_y_frac;
 extern uint8_t sweep_count;
 
 extern void move_hand_by_frac(int16_t dx_frac, int16_t dy_frac);

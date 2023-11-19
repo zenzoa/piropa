@@ -8,14 +8,9 @@
 #include "scene.h"
 #include "title.h"
 #include "field.h"
+#include "garden.h"
 #include "info.h"
-
-#define A_BUTTON 0
-#define B_BUTTON 1
-#define UP_BUTTON 2
-#define RIGHT_BUTTON 3
-#define DOWN_BUTTON 4
-#define LEFT_BUTTON 5
+#include "shared_variables.h"
 
 uint8_t joypad_value;
 uint8_t a_button_pressed = FALSE;
@@ -145,7 +140,22 @@ void handle_a_button(void) {
 							case BUG_BUTTERFLY:
 								set_hand_state(HAND_BUTTERFLY);
 								break;
+
+							default:
+								if (current_scene == GARDEN && !is_night) {
+									if (hand_x >= PLANT_0_X*8 && hand_x < PLANT_0_X*8+24 && hand_y >= PLANT_0_Y*8+4 && hand_y < PLANT_0_Y*8+28) {
+										SWITCH_ROM(BANK(frog_bank));
+										start_walk_to_plant(0);
+									} else if (hand_x >= PLANT_1_X*8 && hand_x < PLANT_1_X*8+24 && hand_y >= PLANT_1_Y*8+4 && hand_y < PLANT_1_Y*8+28) {
+										SWITCH_ROM(BANK(frog_bank));
+										start_walk_to_plant(1);
+									} else if (hand_x >= PLANT_2_X*8 && hand_x < PLANT_2_X*8+24 && hand_y >= PLANT_2_Y*8+4 && hand_y < PLANT_2_Y*8+28) {
+										SWITCH_ROM(BANK(frog_bank));
+										start_walk_to_plant(2);
+									}
+								}
 						}
+
 					}
 				}
 
