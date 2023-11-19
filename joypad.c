@@ -139,6 +139,8 @@ void handle_a_button(void) {
 								break;
 							case BUG_BUTTERFLY:
 								set_hand_state(HAND_BUTTERFLY);
+								SWITCH_ROM(BANK(garden_bank));
+								draw_plants();
 								break;
 
 							default:

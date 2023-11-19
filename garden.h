@@ -1,6 +1,7 @@
 BANKREF_EXTERN(garden_bank)
 
-extern void update_plants(uint8_t game_speed);
+extern void draw_plants(void);
+extern void update_plants(void);
 extern void setup_garden_data(void) NONBANKED;
 extern void setup_garden(void);
 extern void update_garden(void);

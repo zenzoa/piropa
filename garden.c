@@ -38,9 +38,8 @@ void draw_plants(void) {
 		case 2:
 			set_bkg_tiles(PLANT_0_X, PLANT_0_Y, 2, 2, plant_2_tile_map);
 			break;
-		case 3:
+		default:
 			set_bkg_tiles(PLANT_0_X, PLANT_0_Y, 2, 2, plant_3_tile_map);
-			break;
 	}
 	switch(plant_stage[1]) {
 		case 0:
@@ -52,9 +51,8 @@ void draw_plants(void) {
 		case 2:
 			set_bkg_tiles(PLANT_1_X, PLANT_1_Y, 2, 2, plant_2_tile_map);
 			break;
-		case 3:
+		default:
 			set_bkg_tiles(PLANT_1_X, PLANT_1_Y, 2, 2, plant_3_tile_map);
-			break;
 	}
 	switch(plant_stage[2]) {
 		case 0:
@@ -66,19 +64,19 @@ void draw_plants(void) {
 		case 2:
 			set_bkg_tiles(PLANT_2_X, PLANT_2_Y, 2, 2, plant_2_tile_map);
 			break;
-		case 3:
+		default:
 			set_bkg_tiles(PLANT_2_X, PLANT_2_Y, 2, 2, plant_3_tile_map);
-			break;
 	}
 }
 
-void update_plants(uint8_t game_speed) {
+void update_plants(void) {
 	uint8_t redraw = FALSE;
 
 	for (uint8_t i = 0; i < PLANT_COUNT; i++) {
 		if (plant_is_watered[i]) {
 			plant_age[i] += 1;
-			if (plant_age[i] >= 1 + (game_speed * 2)) {
+			if (plant_age[i] >= 2 * (game_speed + 1)) {
+				plant_age[i] = 0;
 				plant_is_watered[i] = FALSE;
 				if (plant_stage[i] < 3) {
 					plant_stage[i] += 1;
@@ -118,6 +116,13 @@ void setup_garden(void) {
 		set_bkg_tiles(11, 4, 2, 1, small_cloud_1_tile_map);
 		set_bkg_tiles(13, 5, 3, 1, big_cloud_2_tile_map);
 		set_bkg_tiles(18, 4, 2, 1, small_cloud_2_tile_map);
+	}
+
+	for (uint8_t i = 0; i < PLANT_COUNT; i++) {
+		if (plant_stage[i] > 3) {
+			plant_stage[i] = 3;
+			plant_anim_counter[i] = i;
+		}
 	}
 
 	draw_plants();

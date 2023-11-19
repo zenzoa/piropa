@@ -98,6 +98,12 @@ uint8_t is_hand_over_frog(void) {
 	return (hand_x + 8 >= frog_x && hand_x < frog_x + 32 && hand_y + 8 >= frog_y && hand_y < frog_y + 24);
 }
 
+uint8_t is_hand_over_plant(void) {
+	return (hand_x >= PLANT_0_X*8 && hand_x < PLANT_0_X*8+24 && hand_y >= PLANT_0_Y*8+4 && hand_y < PLANT_0_Y*8+28) ||
+		(hand_x >= PLANT_1_X*8 && hand_x < PLANT_1_X*8+24 && hand_y >= PLANT_1_Y*8+4 && hand_y < PLANT_1_Y*8+28) ||
+		(hand_x >= PLANT_2_X*8 && hand_x < PLANT_2_X*8+24 && hand_y >= PLANT_2_Y*8+4 && hand_y < PLANT_2_Y*8+28);
+}
+
 void set_hand_state(uint8_t new_state) NONBANKED {
 	hand_state = new_state;
 	swap_hand_vram();
@@ -168,11 +174,13 @@ void update_hand(void) {
 		case HAND_DEFAULT:
 			if (is_hand_over_frog() && !is_night && life_stage != EGG && life_stage != DEAD) {
 				set_hand_state(HAND_POINT);
+			} else if (current_scene == GARDEN && is_hand_over_plant()) {
+				set_hand_state(HAND_POINT);
 			}
 			break;
 
 		case HAND_POINT:
-			if (!is_hand_over_frog()) {
+			if (!is_hand_over_frog() && (current_scene != GARDEN || !is_hand_over_plant())) {
 				set_hand_state(HAND_DEFAULT);
 			}
 			break;

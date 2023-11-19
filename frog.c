@@ -241,11 +241,11 @@ void start_feed(uint8_t bug_type) {
 			stomach += 3;
 			break;
 		case BUG_FIREFLY:
-			stomach += 1;
+			stomach += 3;
 			energy += 3;
 			break;
 		case BUG_BUTTERFLY:
-			stomach += 1;
+			stomach += 3;
 			love += 3;
 			break;
 	}
@@ -254,6 +254,7 @@ void start_feed(uint8_t bug_type) {
 	}
 	update_mood();
 	start_action(ACTION_BITE);
+	save_data();
 }
 
 void start_wash(void) {
@@ -274,6 +275,7 @@ void end_wash(void) {
 	} else {
 		start_action(ACTION_STAND);
 	}
+	save_data();
 }
 
 void start_pet(void) {
@@ -294,6 +296,7 @@ void end_pet(void) {
 	} else {
 		start_action(ACTION_STAND);
 	}
+	save_data();
 }
 
 void start_medicate(void) {
@@ -309,6 +312,7 @@ void start_medicate(void) {
 		update_mood();
 		start_action(ACTION_MEDICATE);
 	}
+	save_data();
 }
 
 void start_sleep(void) {
@@ -324,15 +328,15 @@ void start_walk_to_plant(uint8_t plant_number) {
 	switch(plant_number) {
 		case 0:
 			goal_x = PLANT_0_X * 8 - 16;
-			goal_y = PLANT_0_Y * 8 + 8;
+			goal_y = PLANT_0_Y * 8 + 10;
 			break;
 		case 1:
 			goal_x = PLANT_1_X * 8 - 16;
-			goal_y = PLANT_1_Y * 8 + 8;
+			goal_y = PLANT_1_Y * 8 + 10;
 			break;
 		case 2:
 			goal_x = PLANT_2_X * 8 - 16;
-			goal_y = PLANT_2_Y * 8 + 8;
+			goal_y = PLANT_2_Y * 8 + 10;
 			break;
 	}
 	start_action(ACTION_WALK);

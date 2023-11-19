@@ -46,7 +46,7 @@ uint8_t dragonfly_x[DRAGONFLY_COUNT];
 uint8_t dragonfly_y[DRAGONFLY_COUNT];
 uint8_t dragonfly_goal_x[DRAGONFLY_COUNT];
 uint8_t dragonfly_goal_y[DRAGONFLY_COUNT];
-uint8_t dragonfly_flip[DRAGONFLY_COUNT];
+uint8_t dragonfly_flip_x[DRAGONFLY_COUNT];
 uint8_t dragonfly_anim_counter[DRAGONFLY_COUNT];
 uint8_t dragonfly_anim_frame[DRAGONFLY_COUNT];
 uint8_t dragonfly_respawn[DRAGONFLY_COUNT];
@@ -67,7 +67,10 @@ uint8_t butterfly_alive[BUTTERFLY_COUNT];
 uint8_t butterfly_scene[BUTTERFLY_COUNT];
 uint8_t butterfly_x[BUTTERFLY_COUNT];
 uint8_t butterfly_y[BUTTERFLY_COUNT];
-uint8_t butterfly_flip[BUTTERFLY_COUNT];
+uint8_t butterfly_goal_x[BUTTERFLY_COUNT];
+uint8_t butterfly_goal_y[BUTTERFLY_COUNT];
+uint8_t butterfly_goal_plant[BUTTERFLY_COUNT];
+uint8_t butterfly_flip_x[BUTTERFLY_COUNT];
 uint8_t butterfly_flip_y[BUTTERFLY_COUNT];
 uint8_t butterfly_anim_counter[BUTTERFLY_COUNT];
 uint8_t butterfly_anim_frame[BUTTERFLY_COUNT];
@@ -131,6 +134,9 @@ void spawn_butterfly(uint8_t i, uint8_t is_setup) {
 	butterfly_y[i] = MIN_Y + (rand() % (MAX_Y - MIN_Y));
 	butterfly_anim_counter[i] = rand() % 12;
 	butterfly_anim_frame[i] = rand() % 2;
+	butterfly_goal_x[i] = 0;
+	butterfly_goal_y[i] = 0;
+	butterfly_goal_plant[i] = 0;
 }
 
 void respawn_bugs(void) {
@@ -289,10 +295,10 @@ void update_dragonfly(uint8_t i) {
 				if (dragonfly_y[i] == dragonfly_goal_y[i] || rand() < 128) {
 					if (dragonfly_x[i] < dragonfly_goal_x[i]) {
 						dragonfly_x[i] += 1;
-						dragonfly_flip[i] = TRUE;
+						dragonfly_flip_x[i] = TRUE;
 					} else if (dragonfly_x[i] > dragonfly_goal_x[i]) {
 						dragonfly_x[i] -= 1;
-						dragonfly_flip[i] = FALSE;
+						dragonfly_flip_x[i] = FALSE;
 					}
 				} else {
 					if (dragonfly_y[i] < dragonfly_goal_y[i]) {
@@ -306,7 +312,7 @@ void update_dragonfly(uint8_t i) {
 		} else if (dragonfly_x[i] > 0 && dragonfly_y[i] >= MIN_Y) {
 			dragonfly_x[i] -= 1;
 			dragonfly_y[i] -= 1;
-			dragonfly_flip[i] = FALSE;
+			dragonfly_flip_x[i] = FALSE;
 		}
 
 		if (dragonfly_x[i] == 0 || dragonfly_x[i] > 168 || dragonfly_y[i] < MIN_Y || dragonfly_y[i] > 144) {
@@ -367,43 +373,84 @@ void update_firefly(uint8_t i) {
 
 void update_butterfly(uint8_t i) {
 	butterfly_anim_counter[i] += 1;
-	if (butterfly_anim_counter[i] >= 12) {
+	uint8_t frame_rate = (butterfly_x[i] == butterfly_goal_x[i] && butterfly_y[i] == butterfly_goal_y[i]) ? 48 : 12;
+	if (butterfly_anim_counter[i] >= frame_rate) {
 		butterfly_anim_counter[i] = 0;
 		butterfly_anim_frame[i] = !butterfly_anim_frame[i];
 
 		if (current_scene == GARDEN && !is_night) {
-			if (rand() < 6) {
-				butterfly_flip[i] = !butterfly_flip[i];
-			}
-			if (butterfly_x[i] <= MIN_X) {
-				butterfly_flip[i] = TRUE;
-			} else if (butterfly_x[i] >= MAX_X) {
-				butterfly_flip[i] = FALSE;
-			}
-			if (butterfly_flip[i]) {
-				butterfly_x[i] += 1;
-			} else {
-				butterfly_x[i] -= 1;
-			}
+			if (butterfly_goal_x[i] && butterfly_goal_y[i]) {
+				if (butterfly_y[i] == butterfly_goal_y[i] || rand() < 128) {
+					if (butterfly_x[i] < butterfly_goal_x[i]) {
+						butterfly_x[i] += 1;
+						butterfly_flip_x[i] = TRUE;
+					} else if (butterfly_x[i] > butterfly_goal_x[i]) {
+						butterfly_x[i] -= 1;
+						butterfly_flip_x[i] = FALSE;
+					}
+				} else {
+					if (butterfly_y[i] < butterfly_goal_y[i]) {
+						butterfly_y[i] += 1;
+					} else if (butterfly_y[i] > butterfly_goal_y[i]) {
+						butterfly_y[i] -= 1;
+					}
+				}
+				plant_stage[butterfly_goal_plant[i] - 1] = 4;
 
-			if (rand() < 6) {
-				butterfly_flip_y[i] = !butterfly_flip_y[i];
-			}
-			if (butterfly_y[i] <= MIN_Y) {
-				butterfly_flip_y[i] = TRUE;
-			} else if (butterfly_y[i] >= frog_y - 8) {
-				butterfly_flip_y[i] = FALSE;
-			}
-			if (butterfly_flip_y[i]) {
-				butterfly_y[i] += 1;
 			} else {
-				butterfly_y[i] -= 1;
+				if (rand() < 6) {
+					butterfly_flip_x[i] = !butterfly_flip_x[i];
+				}
+				if (butterfly_x[i] <= MIN_X) {
+					butterfly_flip_x[i] = TRUE;
+				} else if (butterfly_x[i] >= MAX_X) {
+					butterfly_flip_x[i] = FALSE;
+				}
+				if (butterfly_flip_x[i]) {
+					butterfly_x[i] += 1;
+				} else {
+					butterfly_x[i] -= 1;
+				}
+
+				if (rand() < 6) {
+					butterfly_flip_y[i] = !butterfly_flip_y[i];
+				}
+				if (butterfly_y[i] <= MIN_Y) {
+					butterfly_flip_y[i] = TRUE;
+				} else if (butterfly_y[i] >= frog_y - 8) {
+					butterfly_flip_y[i] = FALSE;
+				}
+				if (butterfly_flip_y[i]) {
+					butterfly_y[i] += 1;
+				} else {
+					butterfly_y[i] -= 1;
+				}
+
+				uint8_t j = rand() % 3;
+				if (plant_stage[j] == 3) {
+					plant_stage[j] = 4;
+					butterfly_goal_plant[i] = j + 1;
+					switch(j) {
+						case 0:
+							butterfly_goal_x[i] = PLANT_0_X*8 + 11;
+							butterfly_goal_y[i] = PLANT_0_Y*8 + 12;
+							break;
+						case 1:
+							butterfly_goal_x[i] = PLANT_1_X*8 + 11;
+							butterfly_goal_y[i] = PLANT_1_Y*8 + 12;
+							break;
+						case 2:
+							butterfly_goal_x[i] = PLANT_2_X*8 + 11;
+							butterfly_goal_y[i] = PLANT_2_Y*8 + 12;
+							break;
+					}
+				}
 			}
 
 		} else if (butterfly_x[i] > 0 && butterfly_y[i] >= MIN_Y) {
 			butterfly_x[i] -= 1;
 			butterfly_y[i] -= 1;
-			butterfly_flip[i] = FALSE;
+			butterfly_flip_x[i] = FALSE;
 		}
 
 		if (butterfly_x[i] == 0 || butterfly_x[i] > 168 || butterfly_y[i] < MIN_Y || butterfly_y[i] > 144) {
@@ -430,7 +477,7 @@ void draw_bugs(uint8_t *last_sprite) {
 		if (dragonfly_alive[i] &&
 			dragonfly_scene[i] == current_scene) {
 				update_dragonfly(i);
-				draw_dragonfly(last_sprite, dragonfly_x[i], dragonfly_y[i], dragonfly_anim_frame[i], dragonfly_flip[i]);
+				draw_dragonfly(last_sprite, dragonfly_x[i], dragonfly_y[i], dragonfly_anim_frame[i], dragonfly_flip_x[i]);
 		} else if (!dragonfly_alive[i] && !dragonfly_respawn[i] &&
 			current_scene == POND && !is_night) {
 				spawn_dragonfly(i, FALSE);
@@ -452,7 +499,7 @@ void draw_bugs(uint8_t *last_sprite) {
 		if (butterfly_alive[i] &&
 			butterfly_scene[i] == current_scene) {
 				update_butterfly(i);
-				draw_butterfly(last_sprite, butterfly_x[i], butterfly_y[i], butterfly_anim_frame[i], butterfly_flip[i]);
+				draw_butterfly(last_sprite, butterfly_x[i], butterfly_y[i], butterfly_anim_frame[i], butterfly_flip_x[i]);
 		} else if (!butterfly_alive[i] && !butterfly_respawn[i] &&
 			current_scene == GARDEN && !is_night) {
 				spawn_butterfly(i, FALSE);
@@ -493,8 +540,12 @@ uint8_t grab_bug(void) {
 
 	for (uint8_t i = 0; i < BUTTERFLY_COUNT; i++) {
 		if (butterfly_alive[i] && butterfly_scene[i] == current_scene &&
+			butterfly_x[i] == butterfly_goal_x[i] && butterfly_y[i] == butterfly_goal_y[i] && butterfly_goal_plant[i] &&
 			hand_x + 8 >= butterfly_x[i] && hand_x < butterfly_x[i] + 8 &&
 			hand_y + 8 >= butterfly_y[i] && hand_y < butterfly_y[i] + 8) {
+				plant_age[butterfly_goal_plant[i] - 1] = 0;
+				plant_stage[butterfly_goal_plant[i] - 1] = 0;
+				plant_is_watered[butterfly_goal_plant[i] - 1] = FALSE;
 				butterfly_alive[i] = FALSE;
 				butterfly_respawn[i] = 4 * (game_speed + 1);
 				return BUG_BUTTERFLY;
@@ -553,6 +604,9 @@ void drop_bug(uint8_t bug_type) {
 					butterfly_scene[i] = current_scene;
 					butterfly_x[i] = hand_x;
 					butterfly_y[i] = hand_y;
+					butterfly_goal_x[i] = 0;
+					butterfly_goal_y[i] = 0;
+					butterfly_goal_plant[i] = 0;
 					return;
 				}
 			}

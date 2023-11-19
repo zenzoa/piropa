@@ -183,7 +183,9 @@ void update_every_minute(void) {
 	respawn_bugs();
 
 	SWITCH_ROM(BANK(garden_bank));
-	update_plants(game_speed);
+	update_plants();
+
+	save_data();
 }
 
 void update_scene(void) {
@@ -239,6 +241,8 @@ void update_scene(void) {
 				update_garden();
 				if (restore_x > 0 && restore_y > 0) {
 					restore_garden_tile(restore_x, restore_y);
+					SWITCH_ROM(BANK(garden_bank));
+					draw_plants();
 					restore_x = 0;
 					restore_y = 0;
 				}
