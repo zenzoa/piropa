@@ -29,18 +29,13 @@ BANKREF(bugs_bank)
 #define MIN_Y 48
 #define MAX_Y 120
 
-#define FLY_COUNT 5
-uint8_t fly_alive[FLY_COUNT];
 uint8_t fly_scene[FLY_COUNT];
 uint8_t fly_x[FLY_COUNT];
 uint8_t fly_y[FLY_COUNT];
 uint8_t fly_flip[FLY_COUNT];
 uint8_t fly_anim_counter[FLY_COUNT];
 uint8_t fly_anim_frame[FLY_COUNT];
-uint8_t fly_respawn[FLY_COUNT];
 
-#define DRAGONFLY_COUNT 1
-uint8_t dragonfly_alive[DRAGONFLY_COUNT];
 uint8_t dragonfly_scene[FLY_COUNT];
 uint8_t dragonfly_x[DRAGONFLY_COUNT];
 uint8_t dragonfly_y[DRAGONFLY_COUNT];
@@ -49,10 +44,7 @@ uint8_t dragonfly_goal_y[DRAGONFLY_COUNT];
 uint8_t dragonfly_flip_x[DRAGONFLY_COUNT];
 uint8_t dragonfly_anim_counter[DRAGONFLY_COUNT];
 uint8_t dragonfly_anim_frame[DRAGONFLY_COUNT];
-uint8_t dragonfly_respawn[DRAGONFLY_COUNT];
 
-#define FIREFLY_COUNT 3
-uint8_t firefly_alive[FIREFLY_COUNT];
 uint8_t firefly_scene[FIREFLY_COUNT];
 uint8_t firefly_x[FIREFLY_COUNT];
 uint8_t firefly_y[FIREFLY_COUNT];
@@ -60,10 +52,7 @@ uint8_t firefly_flip[FIREFLY_COUNT];
 uint8_t firefly_flip_y[FIREFLY_COUNT];
 uint8_t firefly_anim_counter[FIREFLY_COUNT];
 uint8_t firefly_anim_frame[FIREFLY_COUNT];
-uint8_t firefly_respawn[FIREFLY_COUNT];
 
-#define BUTTERFLY_COUNT 3
-uint8_t butterfly_alive[BUTTERFLY_COUNT];
 uint8_t butterfly_scene[BUTTERFLY_COUNT];
 uint8_t butterfly_x[BUTTERFLY_COUNT];
 uint8_t butterfly_y[BUTTERFLY_COUNT];
@@ -74,7 +63,6 @@ uint8_t butterfly_flip_x[BUTTERFLY_COUNT];
 uint8_t butterfly_flip_y[BUTTERFLY_COUNT];
 uint8_t butterfly_anim_counter[BUTTERFLY_COUNT];
 uint8_t butterfly_anim_frame[BUTTERFLY_COUNT];
-uint8_t butterfly_respawn[BUTTERFLY_COUNT];
 
 uint8_t hand_is_near;
 uint8_t chance_to_move_left;

@@ -1,6 +1,9 @@
 #include <gbdk/platform.h>
 
+uint8_t saved_bank;
+
 uint8_t has_save;
+uint8_t is_time_to_save;
 
 #define SPEED_FAST 0
 #define SPEED_MEDIUM 1
@@ -53,6 +56,9 @@ uint16_t hand_y_frac;
 uint8_t frog_x;
 uint8_t frog_y;
 
+uint16_t age;
+uint8_t age_part;
+
 #define EGG 0
 #define TADPOLE 1
 #define FROGLET 2
@@ -61,7 +67,68 @@ uint8_t frog_y;
 #define DEAD 5
 uint8_t life_stage;
 
+#define STAGE_EGG 0
+#define STAGE_TADPOLE 1
+#define STAGE_FROGLET 2
+#define STAGE_TEEN_NORM 3
+#define STAGE_TEEN_TAIL 4
+#define STAGE_TEEN_BW 5
+#define STAGE_NORM 6
+#define STAGE_MUSH 7
+#define STAGE_AXO 8
+#define STAGE_DINO 9
+#define STAGE_APPLE 10
+#define STAGE_PANDA 11
+#define STAGE_DEAD_BAD 12
+#define STAGE_DEAD_GOOD 13
+uint8_t stage;
+
+#define ANIM_NEUTRAL 0
+#define ANIM_HAPPY 1
+#define ANIM_LAUGH 2
+#define ANIM_SAD 3
+#define ANIM_STRESSED 4
+#define ANIM_ANGRY 5
+#define ANIM_EAT 6
+#define ANIM_YAWN 7
+#define ANIM_WALK_LEFT 8
+#define ANIM_WALK_RIGHT 9
+#define ANIM_SLEEP 10
+uint8_t anim;
+
+uint8_t emote;
+
 uint8_t is_evolving;
+
+uint8_t stomach;
+uint8_t bowels;
+uint8_t weight;
+uint8_t hygiene;
+uint8_t energy;
+uint8_t love;
+uint8_t medicine;
+uint8_t health;
+uint8_t sickness;
+
+#define MAX_POOPS 6
+uint8_t poop_count = 0;
+uint8_t poops_to_add = 0;
+uint8_t poops_scene[MAX_POOPS];
+uint8_t poops_x[MAX_POOPS];
+uint8_t poops_y[MAX_POOPS];
+
+#define FLY_COUNT 5
+uint8_t fly_alive[FLY_COUNT];
+uint8_t fly_respawn[FLY_COUNT];
+#define DRAGONFLY_COUNT 1
+uint8_t dragonfly_alive[DRAGONFLY_COUNT];
+uint8_t dragonfly_respawn[DRAGONFLY_COUNT];
+#define FIREFLY_COUNT 3
+uint8_t firefly_alive[FIREFLY_COUNT];
+uint8_t firefly_respawn[FIREFLY_COUNT];
+#define BUTTERFLY_COUNT 3
+uint8_t butterfly_alive[BUTTERFLY_COUNT];
+uint8_t butterfly_respawn[BUTTERFLY_COUNT];
 
 #define PLANT_COUNT 3
 uint8_t plant_age[PLANT_COUNT];

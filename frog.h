@@ -3,9 +3,6 @@ BANKREF_EXTERN(frog_bank)
 extern uint8_t goal_x;
 extern uint8_t goal_y;
 
-extern uint16_t age;
-extern uint8_t age_part;
-
 extern uint8_t mood;
 
 extern uint8_t action;
@@ -26,20 +23,6 @@ extern uint8_t action;
 #define ACTION_MEDICATE 14
 #define ACTION_POOP 15
 #define ACTION_WATERING 16
-
-extern uint8_t stomach;
-extern uint8_t bowels;
-extern uint8_t weight;
-extern uint8_t hygiene;
-extern uint8_t energy;
-extern uint8_t love;
-extern uint8_t medicine;
-extern uint8_t health;
-extern uint8_t sickness;
-
-extern uint8_t stage;
-extern uint8_t anim;
-extern uint8_t emote;
 
 extern void update_stats(void);
 extern void setup_frog(uint8_t reset);

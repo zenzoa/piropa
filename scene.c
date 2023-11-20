@@ -89,6 +89,7 @@ void setup_scene(uint8_t new_scene) {
 	}
 
 	if (!skip_save) {
+		SWITCH_ROM(BANK(save_bank));
 		save_data();
 	}
 }
@@ -184,8 +185,6 @@ void update_every_minute(void) {
 
 	SWITCH_ROM(BANK(garden_bank));
 	update_plants();
-
-	save_data();
 }
 
 void update_scene(void) {
@@ -207,6 +206,13 @@ void update_scene(void) {
 			if (current_time >= last_time + 60) {
 				last_time = clock() / CLOCKS_PER_SEC;
 				update_every_minute();
+				is_time_to_save = TRUE;
+			}
+
+			if (is_time_to_save) {
+				SWITCH_ROM(BANK(save_bank));
+				save_data();
+				is_time_to_save = FALSE;
 			}
 		}
 

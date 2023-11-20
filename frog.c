@@ -6,7 +6,6 @@
 
 #include "save.h"
 #include "bugs.h"
-#include "poop.h"
 #include "animation.h"
 #include "frog_sprites.h"
 #include "emote_sprites.h"
@@ -16,9 +15,6 @@ BANKREF(frog_bank)
 
 uint8_t goal_x;
 uint8_t goal_y;
-
-uint16_t age;
-uint8_t age_part;
 
 uint8_t mood;
 #define MOOD_NEUTRAL 0
@@ -47,21 +43,7 @@ uint8_t action;
 #define ACTION_POOP 15
 #define ACTION_WATERING 16
 
-uint8_t stomach;
-uint8_t bowels;
-uint8_t weight;
-uint8_t hygiene;
-uint8_t energy;
-uint8_t love;
-uint8_t medicine;
-uint8_t health;
-uint8_t sickness;
-
 uint8_t night_timer = 0;
-
-uint8_t stage;
-uint8_t anim;
-uint8_t emote;
 
 animation_t frog_anim;
 animation_t emote_anim;
@@ -229,7 +211,7 @@ void update_stats(void) {
 
 	}
 
-	save_data();
+	is_time_to_save = TRUE;
 }
 
 void start_feed(uint8_t bug_type) {
@@ -254,7 +236,7 @@ void start_feed(uint8_t bug_type) {
 	}
 	update_mood();
 	start_action(ACTION_BITE);
-	save_data();
+	is_time_to_save = TRUE;
 }
 
 void start_wash(void) {
@@ -275,7 +257,7 @@ void end_wash(void) {
 	} else {
 		start_action(ACTION_STAND);
 	}
-	save_data();
+	is_time_to_save = TRUE;
 }
 
 void start_pet(void) {
@@ -296,7 +278,7 @@ void end_pet(void) {
 	} else {
 		start_action(ACTION_STAND);
 	}
-	save_data();
+	is_time_to_save = TRUE;
 }
 
 void start_medicate(void) {
@@ -312,7 +294,7 @@ void start_medicate(void) {
 		update_mood();
 		start_action(ACTION_MEDICATE);
 	}
-	save_data();
+	is_time_to_save = TRUE;
 }
 
 void start_sleep(void) {
@@ -662,7 +644,7 @@ void start_action(uint8_t new_action) {
 	}
 
 	swap_frog_vram();
-	set_frog_sprite_data(stage, anim);
+	set_frog_sprite_data();
 
 	if (emote == EMOTE_NONE && medicine > 0) {
 		emote = EMOTE_HEAL;
@@ -725,7 +707,7 @@ void set_stage(uint8_t new_stage) {
 
 	if (life_stage == EGG || life_stage == DEAD) {
 		swap_frog_vram();
-		set_frog_sprite_data(stage, anim);
+		set_frog_sprite_data();
 		frog_anim = new_animation(32, 2, 0);
 		frog_x = 72;
 		frog_y = 78;
@@ -735,7 +717,7 @@ void set_stage(uint8_t new_stage) {
 	}
 
 	if (life_stage != EGG) {
-		save_data();
+		is_time_to_save = TRUE;
 	}
 }
 
@@ -861,7 +843,7 @@ uint8_t is_time_to_evolve(void) {
 void setup_frog(uint8_t reset) {
 	if (!reset) {
 		anim = ANIM_NEUTRAL;
-		set_frog_sprite_data(stage, anim);
+		set_frog_sprite_data();
 		if (life_stage == EGG || life_stage == DEAD) {
 			frog_anim = new_animation(32, 2, 0);
 			frog_x = 72;
@@ -895,11 +877,13 @@ void setup_frog(uint8_t reset) {
 	if (reset) {
 		set_stage(STAGE_EGG);
 	} else if (is_night) {
-		set_frog_sprite_data(stage, ANIM_SLEEP);
+		anim = ANIM_SLEEP;
+		set_frog_sprite_data();
 		set_emote_sprite_data(EMOTE_SLEEP);
 		start_action(ACTION_SLEEP);
 	} else {
-		set_frog_sprite_data(stage, ANIM_NEUTRAL);
+		anim = ANIM_NEUTRAL;
+		set_frog_sprite_data();
 		start_action(ACTION_STAND);
 	}
 }

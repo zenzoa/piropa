@@ -1,6 +1,10 @@
 .DS_Store
+/.vscode
 *.gb
 *.pocket
+*.map
+*.cdb
+*.noi
 *.rtc
 *.sav
 *.zip

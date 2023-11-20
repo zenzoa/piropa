@@ -1,4 +1,7 @@
+extern uint8_t saved_bank;
+
 extern uint8_t has_save;
+extern uint8_t is_time_to_save;
 
 #define SPEED_FAST 0
 #define SPEED_MEDIUM 1
@@ -51,6 +54,9 @@ extern uint16_t hand_y_frac;
 extern uint8_t frog_x;
 extern uint8_t frog_y;
 
+extern uint16_t age;
+extern uint8_t age_part;
+
 #define EGG 0
 #define TADPOLE 1
 #define FROGLET 2
@@ -59,7 +65,68 @@ extern uint8_t frog_y;
 #define DEAD 5
 extern uint8_t life_stage;
 
+#define STAGE_EGG 0
+#define STAGE_TADPOLE 1
+#define STAGE_FROGLET 2
+#define STAGE_TEEN_NORM 3
+#define STAGE_TEEN_TAIL 4
+#define STAGE_TEEN_BW 5
+#define STAGE_NORM 6
+#define STAGE_MUSH 7
+#define STAGE_AXO 8
+#define STAGE_DINO 9
+#define STAGE_APPLE 10
+#define STAGE_PANDA 11
+#define STAGE_DEAD_BAD 12
+#define STAGE_DEAD_GOOD 13
+extern uint8_t stage;
+
+#define ANIM_NEUTRAL 0
+#define ANIM_HAPPY 1
+#define ANIM_LAUGH 2
+#define ANIM_SAD 3
+#define ANIM_STRESSED 4
+#define ANIM_ANGRY 5
+#define ANIM_EAT 6
+#define ANIM_YAWN 7
+#define ANIM_WALK_LEFT 8
+#define ANIM_WALK_RIGHT 9
+#define ANIM_SLEEP 10
+extern uint8_t anim;
+
+extern uint8_t emote;
+
 extern uint8_t is_evolving;
+
+extern uint8_t stomach;
+extern uint8_t bowels;
+extern uint8_t weight;
+extern uint8_t hygiene;
+extern uint8_t energy;
+extern uint8_t love;
+extern uint8_t medicine;
+extern uint8_t health;
+extern uint8_t sickness;
+
+#define MAX_POOPS 6
+extern uint8_t poop_count;
+extern uint8_t poops_to_add;
+extern uint8_t poops_scene[MAX_POOPS];
+extern uint8_t poops_x[MAX_POOPS];
+extern uint8_t poops_y[MAX_POOPS];
+
+#define FLY_COUNT 5
+extern uint8_t fly_alive[FLY_COUNT];
+extern uint8_t fly_respawn[FLY_COUNT];
+#define DRAGONFLY_COUNT 1
+extern uint8_t dragonfly_alive[DRAGONFLY_COUNT];
+extern uint8_t dragonfly_respawn[DRAGONFLY_COUNT];
+#define FIREFLY_COUNT 3
+extern uint8_t firefly_alive[FIREFLY_COUNT];
+extern uint8_t firefly_respawn[FIREFLY_COUNT];
+#define BUTTERFLY_COUNT 3
+extern uint8_t butterfly_alive[BUTTERFLY_COUNT];
+extern uint8_t butterfly_respawn[BUTTERFLY_COUNT];
 
 #define PLANT_COUNT 3
 extern uint8_t plant_age[PLANT_COUNT];

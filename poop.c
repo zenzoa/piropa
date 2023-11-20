@@ -9,12 +9,6 @@
 BANKREF(poop_bank)
 
 #define POOP_VRAM 0xfe
-#define MAX_POOPS 6
-uint8_t poop_count = 0;
-uint8_t poops_to_add = 0;
-uint8_t poops_scene[MAX_POOPS];
-uint8_t poops_x[MAX_POOPS];
-uint8_t poops_y[MAX_POOPS];
 
 void setup_poop_data(void) NONBANKED {
 	SWITCH_ROM(BANK(poo));
