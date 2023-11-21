@@ -21,7 +21,7 @@ end
 # remove old files
 if test $clean
 	set_color $text_color; echo ">> cleaning out old build files..."; set_color normal
-	for file in *.{gb,pocket,sav,rtc}
+	for file in *.{gb,pocket,sav,rtc,map,noi,cdb}
 		rm $file
 	end
 	for file in sprites/*/*.{c,h,png}
@@ -69,8 +69,8 @@ if test $sprites
 end
 
 # build roms
-set compiler_args -autobank -Wl-yt0x1B -Wl-ya1 -o
-set compiler_sources sprites/*/*.c *.c
+set compiler_args -autobank -Wl-yt0x1B -Wl-ya1 -Ihugedriver/include -Wl-lhugedriver/gbdk/hUGEDriver.lib -o
+set compiler_sources sprites/*/*.c music/*.c *.c
 
 if test $compile_gameboy_rom
 	set_color $text_color; echo ">> building game boy rom..."; set_color normal
