@@ -21,7 +21,7 @@
 
 #define HAND_VRAM_1 0x50
 #define HAND_VRAM_2 0x80
-uint8_t hand_vram = HAND_VRAM_1;
+static uint8_t hand_vram = HAND_VRAM_1;
 
 typedef struct hand_sprite_t {
 	uint8_t bank;
@@ -30,8 +30,8 @@ typedef struct hand_sprite_t {
 	uint8_t * metasprites;
 } hand_sprite_t;
 
-hand_sprite_t hand_sprite_data;
-hand_sprite_t hand_sprite_data_table[15] = {
+static hand_sprite_t hand_sprite_data;
+static const hand_sprite_t hand_sprite_data_table[15] = {
 	{ BANK(hand_default), hand_default_TILE_COUNT, (uint8_t *)hand_default_tiles, (uint8_t *)hand_default_metasprites },
 	{ BANK(hand_point), hand_point_TILE_COUNT, (uint8_t *)hand_point_tiles, (uint8_t *)hand_point_metasprites },
 	{ BANK(hand_pet1), hand_pet1_TILE_COUNT, (uint8_t *)hand_pet1_tiles, (uint8_t *)hand_pet1_metasprites },

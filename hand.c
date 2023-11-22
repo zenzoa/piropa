@@ -8,22 +8,20 @@
 #include "scene.h"
 #include "shared_variables.h"
 
-BANKREF(hand_bank)
+static uint16_t push_left;
+static uint16_t push_right;
 
-uint16_t push_left = 0;
-uint16_t push_right = 0;
+static uint8_t hand_offset;
 
-uint8_t hand_offset;
+static uint8_t hand_timeout;
 
-uint8_t hand_timeout = 0;
+static uint8_t wiggle_anim_counter;
+static uint8_t wiggle_frame;
+static uint8_t wiggle_loops;
 
-uint8_t wiggle_anim_counter = 0;
-uint8_t wiggle_frame = 0;
-uint8_t wiggle_loops = 0;
+uint8_t sweep_count;
 
-uint8_t sweep_count = 0;
-
-void move_hand_by_frac(int16_t dx_frac, int16_t dy_frac) {
+void move_hand_by_frac(int16_t dx_frac, int16_t dy_frac) BANKED {
 	hand_x_frac += dx_frac;
 	hand_y_frac += dy_frac;
 	hand_x = hand_x_frac >> 8;
@@ -40,15 +38,15 @@ void move_hand_by_frac(int16_t dx_frac, int16_t dy_frac) {
 	switch(current_scene) {
 		case FIELD:
 			if (hand_x > 176 && dx_frac < 0) {
-				start_transition_to_scene(POND, is_night);
+				transition_to_scene(POND, is_night);
 			} else if (hand_x > 160 && dx_frac > 0) {
-				start_transition_to_scene(GARDEN, is_night);
+				transition_to_scene(GARDEN, is_night);
 			}
 			break;
 
 		case POND:
 			if (hand_x > 160 && hand_x < 240 && dx_frac > 0) {
-				start_transition_to_scene(FIELD, is_night);
+				transition_to_scene(FIELD, is_night);
 			} else if (hand_x > 176 && dx_frac < 0) {
 				hand_x = 0;
 				hand_x_frac = hand_x << 8;
@@ -57,7 +55,7 @@ void move_hand_by_frac(int16_t dx_frac, int16_t dy_frac) {
 
 		case GARDEN:
 			if (hand_x > 176 && dx_frac < 0) {
-				start_transition_to_scene(FIELD, is_night);
+				transition_to_scene(FIELD, is_night);
 			} else if (hand_x > 160 && dx_frac > 0) {
 				hand_x = 160;
 				hand_x_frac = hand_x << 8;
@@ -66,7 +64,7 @@ void move_hand_by_frac(int16_t dx_frac, int16_t dy_frac) {
 	}
 }
 
-void move_hand(uint8_t joypad_value) {
+void move_hand(uint8_t joypad_value) BANKED {
 	if (joypad_value & J_LEFT) {
 		if (joypad_value & J_UP) {
 			move_hand_by_frac(-181, -181);
@@ -90,15 +88,15 @@ void move_hand(uint8_t joypad_value) {
 	}
 }
 
-uint8_t is_hand_empty(void) {
+uint8_t is_hand_empty(void) BANKED {
 	return (hand_state == HAND_DEFAULT || hand_state == HAND_POINT);
 }
 
-uint8_t is_hand_over_frog(void) {
+uint8_t is_hand_over_frog(void) BANKED {
 	return (hand_x + 8 >= frog_x && hand_x < frog_x + 32 && hand_y + 8 >= frog_y && hand_y < frog_y + 24);
 }
 
-uint8_t is_hand_over_plant(void) {
+static uint8_t is_hand_over_plant(void) {
 	return (hand_x >= PLANT_0_X*8 && hand_x < PLANT_0_X*8+24 && hand_y >= PLANT_0_Y*8+4 && hand_y < PLANT_0_Y*8+28) ||
 		(hand_x >= PLANT_1_X*8 && hand_x < PLANT_1_X*8+24 && hand_y >= PLANT_1_Y*8+4 && hand_y < PLANT_1_Y*8+28) ||
 		(hand_x >= PLANT_2_X*8 && hand_x < PLANT_2_X*8+24 && hand_y >= PLANT_2_Y*8+4 && hand_y < PLANT_2_Y*8+28);
@@ -120,7 +118,7 @@ void set_hand_state(uint8_t new_state) NONBANKED {
 	}
 }
 
-void setup_hand(void) {
+void setup_hand(void) BANKED {
 	hand_x = 104;
 	hand_y = 60;
 	hand_x_frac = hand_x << 8;
@@ -128,7 +126,7 @@ void setup_hand(void) {
 	set_hand_state(HAND_DEFAULT);
 }
 
-void draw_hand(uint8_t *last_sprite) {
+void draw_hand(uint8_t *last_sprite) BANKED {
 	if (is_evolving) { return; }
 
 	hand_offset = 0;
@@ -145,7 +143,7 @@ void draw_hand(uint8_t *last_sprite) {
 	draw_hand_sprite(hand_x - hand_offset, hand_y, hand_offset, last_sprite);
 }
 
-uint8_t update_wiggle(void) {
+static uint8_t update_wiggle(void) {
 	wiggle_anim_counter += 1;
 	if (wiggle_anim_counter > 2) {
 		wiggle_anim_counter = 0;
@@ -164,7 +162,7 @@ uint8_t update_wiggle(void) {
 	return 0;
 }
 
-void update_hand(void) {
+void update_hand(void) BANKED {
 	if (hand_timeout > 0) {
 		hand_timeout -= 1;
 	}

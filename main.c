@@ -26,7 +26,6 @@ void main(void) {
 		add_VBL(play_music);
 	}
 
-	SWITCH_ROM(BANK(save_bank));
 	load_data();
 
 	setup_data(!has_save);

@@ -4,8 +4,6 @@
 
 #include "shared_variables.h"
 
-BANKREF(save_bank)
-
 typedef struct save_slot_t {
 	uint16_t save_flag_start;
 
@@ -55,7 +53,7 @@ const uint16_t SAVE_FLAG_VALUE_1 = 0xACAB;
 const uint16_t SAVE_FLAG_VALUE_2 = 0xBABA;
 uint8_t last_flag = 0;
 
-void save_data_to_slot(uint8_t i) {
+static void save_data_to_slot(uint8_t i) {
 	save_slots[i].save_flag_start = last_flag ? SAVE_FLAG_VALUE_1 : SAVE_FLAG_VALUE_2;
 
 	save_slots[i].game_speed = game_speed;
@@ -109,7 +107,7 @@ void save_data_to_slot(uint8_t i) {
 	save_slots[i].save_flag_end = last_flag ? SAVE_FLAG_VALUE_1 : SAVE_FLAG_VALUE_2;
 }
 
-void save_data(void) {
+void save_data(void) BANKED {
 	ENABLE_RAM;
 	SWITCH_RAM(0);
 
@@ -120,7 +118,7 @@ void save_data(void) {
 	has_save = TRUE;
 }
 
-uint8_t load_data_from_slot(uint8_t i) {
+static uint8_t load_data_from_slot(uint8_t i) {
 	if (save_slots[i].save_flag_start == save_slots[i].save_flag_end &&
 		(save_slots[i].save_flag_start == SAVE_FLAG_VALUE_1 || save_slots[i].save_flag_start == SAVE_FLAG_VALUE_2)
 	) {
@@ -180,7 +178,7 @@ uint8_t load_data_from_slot(uint8_t i) {
 	}
 }
 
-void load_data(void) {
+void load_data(void) BANKED {
 	has_save = FALSE;
 
 	ENABLE_RAM;

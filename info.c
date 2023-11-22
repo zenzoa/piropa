@@ -11,21 +11,19 @@
 #include "sprites/backgrounds/lilypads.h"
 #include "sprites/backgrounds/speed_icons.h"
 
-BANKREF(info_bank)
+static const unsigned char lilypad_full_tile_map[4] = { 0x40, 0x41, 0x44, 0x45 };
+static const unsigned char lilypad_half_tile_map[4] = { 0x42, 0x43, 0x46, 0x47 };
 
-const unsigned char lilypad_full_tile_map[4] = { 0x40, 0x41, 0x44, 0x45 };
-const unsigned char lilypad_half_tile_map[4] = { 0x42, 0x43, 0x46, 0x47 };
+static const unsigned char speed_fast_tile_map[4] = { 0x50, 0x51, 0x56, 0x57 };
+static const unsigned char speed_medium_tile_map[4] = { 0x52, 0x53, 0x58, 0x59 };
+static const unsigned char speed_slow_tile_map[4] = { 0x54, 0x55, 0x5a, 0x5b };
 
-const unsigned char speed_fast_tile_map[4] = { 0x50, 0x51, 0x56, 0x57 };
-const unsigned char speed_medium_tile_map[4] = { 0x52, 0x53, 0x58, 0x59 };
-const unsigned char speed_slow_tile_map[4] = { 0x54, 0x55, 0x5a, 0x5b };
-
-const unsigned char speed_fast_selected_tile_map[4] = { 0x5c, 0x5d, 0x62, 0x63 };
-const unsigned char speed_medium_selected_tile_map[4] = { 0x5e, 0x5f, 0x64, 0x65 };
-const unsigned char speed_slow_selected_tile_map[4] = { 0x60, 0x61, 0x66, 0x67 };
+static const unsigned char speed_fast_selected_tile_map[4] = { 0x5c, 0x5d, 0x62, 0x63 };
+static const unsigned char speed_medium_selected_tile_map[4] = { 0x5e, 0x5f, 0x64, 0x65 };
+static const unsigned char speed_slow_selected_tile_map[4] = { 0x60, 0x61, 0x66, 0x67 };
 
 
-void draw_stat(uint8_t value, uint8_t y) {
+static void draw_stat(uint8_t value, uint8_t y) {
 	switch(value) {
 		case 0:
 			break;
@@ -79,7 +77,7 @@ void draw_stat(uint8_t value, uint8_t y) {
 	}
 }
 
-void draw_number(uint8_t value, uint8_t x) {
+static void draw_number(uint8_t value, uint8_t x) {
 	uint8_t hundreds_place = value / 100;
 	uint8_t tens_place = (value % 100) / 10;
 	uint8_t ones_place = (value % 100) % 10;
@@ -95,7 +93,7 @@ void draw_number(uint8_t value, uint8_t x) {
 	}
 }
 
-void draw_speed(void) {
+static void draw_speed(void) {
 	if (game_speed == SPEED_SLOW) {
 		set_bkg_tiles(0x07, 0x10, 2, 2, speed_slow_selected_tile_map);
 	} else {
@@ -130,7 +128,7 @@ void setup_info_data(void) NONBANKED {
 	set_bkg_data(0x50, speed_icons_TILE_COUNT, speed_icons_tiles);
 }
 
-void setup_info(void) {
+void setup_info(void) BANKED {
 	draw_stat(love, 0x05);
 	draw_stat(stomach, 0x08);
 	draw_stat(energy, 0x0B);
@@ -141,14 +139,14 @@ void setup_info(void) {
 	draw_speed();
 }
 
-void handle_info_input(uint8_t button_pressed) {
+void handle_info_input(uint8_t button_pressed) BANKED {
 	switch(button_pressed) {
 		case A_BUTTON:
-			start_transition_to_scene(last_scene, is_night);
+			transition_to_scene(last_scene, is_night);
 			break;
 
 		case B_BUTTON:
-			start_transition_to_scene(last_scene, is_night);
+			transition_to_scene(last_scene, is_night);
 			break;
 
 		case LEFT_BUTTON:

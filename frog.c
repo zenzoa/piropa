@@ -11,20 +11,17 @@
 #include "emote_sprites.h"
 #include "shared_variables.h"
 
-BANKREF(frog_bank)
+static uint8_t goal_x;
+static uint8_t goal_y;
 
-uint8_t goal_x;
-uint8_t goal_y;
-
-uint8_t mood;
 #define MOOD_NEUTRAL 0
 #define MOOD_HAPPY 1
 #define MOOD_HUNGRY 2
 #define MOOD_TIRED 3
 #define MOOD_LONELY 4
 #define MOOD_SICK 5
+static uint8_t mood;
 
-uint8_t action;
 #define ACTION_STAND 0
 #define ACTION_EMOTE 1
 #define ACTION_WALK 2
@@ -42,33 +39,38 @@ uint8_t action;
 #define ACTION_MEDICATE 14
 #define ACTION_POOP 15
 #define ACTION_WATERING 16
+static uint8_t action;
 
-uint8_t night_timer = 0;
+static uint8_t night_timer;
 
-animation_t frog_anim;
-animation_t emote_anim;
-uint8_t anim_complete = 0;
+static animation_t frog_anim;
+static animation_t emote_anim;
+static uint8_t anim_complete;
 
-uint8_t pet_loops = 0;
-uint8_t wash_loops = 0;
+static uint8_t pet_loops;
+static uint8_t wash_loops;
 
-uint8_t evolution_counter = 0;
-uint8_t evolution_frame = 0;
-uint8_t next_stage;
+static uint8_t evolution_counter;
+static uint8_t evolution_frame;
+static uint8_t next_stage;
 
-void start_action(uint8_t new_action);
-void set_stage(uint8_t new_stage);
-void start_evolution(uint8_t new_stage);
+static void start_action(uint8_t new_action);
+static void set_stage(uint8_t new_stage);
+static void start_evolution(uint8_t new_stage);
 
-void die_badly(void) {
+uint8_t is_sleeping(void) BANKED {
+	return action == ACTION_SLEEP;
+}
+
+static void die_badly(void) {
 	start_evolution(STAGE_DEAD_BAD);
 }
 
-void die_well(void) {
+static void die_well(void) {
 	start_evolution(STAGE_DEAD_GOOD);
 }
 
-void update_mood(void) {
+static void update_mood(void) {
 	if (sickness > 0) {
 		mood = MOOD_SICK;
 	} else if (stomach <= energy && stomach <= love && stomach < 3) {
@@ -84,7 +86,7 @@ void update_mood(void) {
 	}
 }
 
-void update_stomach(void) {
+static void update_stomach(void) {
 	if (stomach > 0) {
 		stomach -= 1;
 		bowels += 1;
@@ -98,7 +100,7 @@ void update_stomach(void) {
 	}
 }
 
-uint8_t check_bowels(void) {
+static uint8_t check_bowels(void) {
 	if (bowels > 3) {
 		bowels = 0;
 		if (poop_count < 6) {
@@ -110,7 +112,7 @@ uint8_t check_bowels(void) {
 	}
 }
 
-void update_weight(void) {
+static void update_weight(void) {
 	if (weight == 0) {
 		die_badly();
 	} else if (life_stage == TADPOLE && weight > 5 && health > 0) {
@@ -127,7 +129,7 @@ void update_weight(void) {
 	}
 }
 
-void update_hygiene(void) {
+static void update_hygiene(void) {
 	for (uint8_t i = 0; i < poop_count; i++) {
 		if (hygiene > 0) {
 			hygiene -= 1;
@@ -140,7 +142,7 @@ void update_hygiene(void) {
 	}
 }
 
-void update_energy(void) {
+static void update_energy(void) {
 	if (is_night) {
 		energy += 2;
 	} else if (energy > 0) {
@@ -153,7 +155,7 @@ void update_energy(void) {
 	}
 }
 
-void update_love(void) {
+static void update_love(void) {
 	if (love > 0 && !is_night) {
 		love -= 1;
 	} else if (love > 9) {
@@ -161,7 +163,7 @@ void update_love(void) {
 	}
 }
 
-void update_medicine(void) {
+static void update_medicine(void) {
 	if (medicine > 0) {
 		medicine -= 1;
 	} else if (medicine > 9) {
@@ -169,19 +171,19 @@ void update_medicine(void) {
 	}
 }
 
-void update_health(void) {
+static void update_health(void) {
 	if (health == 0) {
 		sickness += 1;
 	}
 }
 
-void update_sickness(void) {
+static void update_sickness(void) {
 	if (sickness > 3) {
 		die_badly();
 	}
 }
 
-void update_stats(void) {
+void update_stats(void) BANKED {
 	age_part += 1;
 	if (age_part >= ((2 * game_speed) + 1)) {
 		age_part = 0;
@@ -214,7 +216,7 @@ void update_stats(void) {
 	is_time_to_save = TRUE;
 }
 
-void start_feed(uint8_t bug_type) {
+void start_feed(uint8_t bug_type) BANKED {
 	switch(bug_type) {
 		case BUG_FLY:
 			stomach += 1;
@@ -239,7 +241,7 @@ void start_feed(uint8_t bug_type) {
 	is_time_to_save = TRUE;
 }
 
-void start_wash(void) {
+void start_wash(void) BANKED {
 	if (action == ACTION_STAND || action == ACTION_EMOTE || action == ACTION_WALK) {
 		start_action(ACTION_WASH);
 	} else if (action == ACTION_WASH) {
@@ -248,7 +250,7 @@ void start_wash(void) {
 	}
 }
 
-void end_wash(void) {
+static void end_wash(void) {
 	wash_loops += frog_anim.loop;
 	if (wash_loops >= 3) {
 		hygiene += 3;
@@ -260,7 +262,7 @@ void end_wash(void) {
 	is_time_to_save = TRUE;
 }
 
-void start_pet(void) {
+void start_pet(void) BANKED {
 	if (action == ACTION_STAND || action == ACTION_EMOTE || action == ACTION_WALK) {
 		start_action(ACTION_PET);
 	} else if (action == ACTION_PET) {
@@ -269,7 +271,7 @@ void start_pet(void) {
 	}
 }
 
-void end_pet(void) {
+static void end_pet(void) {
 	pet_loops += frog_anim.loop;
 	if (pet_loops >= 3) {
 		love += pet_loops / 3;
@@ -281,7 +283,7 @@ void end_pet(void) {
 	is_time_to_save = TRUE;
 }
 
-void start_medicate(void) {
+void start_medicate(void) BANKED {
 	if (sickness == 0 && health > 0) {
 		if (love > 0) {
 			love -= 1;
@@ -297,7 +299,7 @@ void start_medicate(void) {
 	is_time_to_save = TRUE;
 }
 
-void start_sleep(void) {
+void start_sleep(void) BANKED {
 	if (life_stage != EGG && life_stage != DEAD) {
 		night_timer = 0;
 		frog_x = 76;
@@ -306,7 +308,7 @@ void start_sleep(void) {
 	}
 }
 
-void start_walk_to_plant(uint8_t plant_number) {
+void start_walk_to_plant(uint8_t plant_number) BANKED {
 	switch(plant_number) {
 		case 0:
 			goal_x = PLANT_0_X * 8 - 16;
@@ -324,7 +326,7 @@ void start_walk_to_plant(uint8_t plant_number) {
 	start_action(ACTION_WALK);
 }
 
-void place_in_scene(void) {
+void place_in_scene(void) BANKED {
 	if (life_stage != EGG && life_stage != DEAD) {
 		switch(current_scene) {
 			case FIELD:
@@ -364,7 +366,7 @@ void place_in_scene(void) {
 	}
 }
 
-void draw_frog(uint8_t *last_sprite) {
+void draw_frog(uint8_t *last_sprite) BANKED {
 	anim_complete = update_animation(&frog_anim);
 	update_animation(&emote_anim);
 
@@ -407,7 +409,7 @@ void draw_frog(uint8_t *last_sprite) {
 	draw_frog_sprite(frog_x, frog_y, frog_anim.frame, last_sprite);
 }
 
-void random_goal(void) {
+static void random_goal(void) {
 	uint8_t zone = rand();
 
 	if (zone < 32) {
@@ -437,7 +439,7 @@ void random_goal(void) {
 	}
 }
 
-void move_toward_goal(void) {
+static void move_toward_goal(void) {
 	uint8_t move_x = FALSE;
 	uint8_t move_y = FALSE;
 	if (goal_x != frog_x && goal_y != frog_y) {
@@ -473,7 +475,7 @@ void move_toward_goal(void) {
 	}
 }
 
-void start_action(uint8_t new_action) {
+static void start_action(uint8_t new_action) {
 	if (life_stage == EGG || life_stage == DEAD) { return; }
 
 	switch(new_action) {
@@ -659,7 +661,7 @@ void start_action(uint8_t new_action) {
 	anim_complete = 0;
 }
 
-void set_stage(uint8_t new_stage) {
+static void set_stage(uint8_t new_stage) {
 	stage = new_stage;
 
 	switch(stage) {
@@ -721,14 +723,14 @@ void set_stage(uint8_t new_stage) {
 	}
 }
 
-void start_evolution(uint8_t new_stage) {
+static void start_evolution(uint8_t new_stage) {
 	is_evolving = TRUE;
 	evolution_counter = 0;
 	evolution_frame = 0;
 	next_stage = new_stage;
 }
 
-void update_evolution(void) {
+static void update_evolution(void) {
 	evolution_counter += 1;
 	if (evolution_counter >= 8) {
 		evolution_counter = 0;
@@ -792,7 +794,7 @@ void update_evolution(void) {
 	}
 }
 
-void evolve(void) {
+static void evolve(void) {
 	if (life_stage == EGG) {
 		start_evolution(STAGE_TADPOLE);
 
@@ -830,7 +832,7 @@ void evolve(void) {
 	}
 }
 
-uint8_t is_time_to_evolve(void) {
+static uint8_t is_time_to_evolve(void) {
 	return (
 		(life_stage == EGG && age >= 1) ||
 		(life_stage == TADPOLE && age >= 4) ||
@@ -840,7 +842,7 @@ uint8_t is_time_to_evolve(void) {
 	);
 }
 
-void setup_frog(uint8_t reset) {
+void setup_frog(uint8_t reset) BANKED {
 	if (!reset) {
 		anim = ANIM_NEUTRAL;
 		set_frog_sprite_data();
@@ -888,7 +890,7 @@ void setup_frog(uint8_t reset) {
 	}
 }
 
-void update_frog(void) {
+void update_frog(void) BANKED {
 	if (is_evolving) {
 		update_evolution();
 

@@ -9,25 +9,22 @@
 #include "sprites/backgrounds/garden_night.h"
 #include "sprites/backgrounds/clouds.h"
 #include "sprites/backgrounds/plants.h"
-#include "cloud_tile_maps.h"
 
-BANKREF(garden_bank)
+static uint8_t plant_anim_counter[PLANT_COUNT];
+static uint8_t plant_anim_frame[PLANT_COUNT];
 
-uint8_t plant_anim_counter[PLANT_COUNT];
-uint8_t plant_anim_frame[PLANT_COUNT];
+static const unsigned char plant_0_tile_map[4] = { 0x06, 0x06, 0x50, 0x51 };
+static const unsigned char plant_1_tile_map[4] = { 0x53, 0x54, 0x50, 0x52 };
+static const unsigned char plant_2_tile_map[4] = { 0x55, 0x56, 0x50, 0x52 };
+static const unsigned char plant_3_tile_map[4] = { 0x57, 0x58, 0x50, 0x52 };
 
-const unsigned char plant_0_tile_map[4] = { 0x06, 0x06, 0x50, 0x51 };
-const unsigned char plant_1_tile_map[4] = { 0x53, 0x54, 0x50, 0x52 };
-const unsigned char plant_2_tile_map[4] = { 0x55, 0x56, 0x50, 0x52 };
-const unsigned char plant_3_tile_map[4] = { 0x57, 0x58, 0x50, 0x52 };
+static const unsigned char plant_watered_0_tile_map[2] = { 0x59, 0x5a };
+static const unsigned char plant_watered_1_tile_map[2] = { 0x5b, 0x5c };
+static const unsigned char plant_watered_2_tile_map[2] = { 0x5d, 0x5e };
 
-const unsigned char plant_watered_0_tile_map[2] = { 0x59, 0x5a };
-const unsigned char plant_watered_1_tile_map[2] = { 0x5b, 0x5c };
-const unsigned char plant_watered_2_tile_map[2] = { 0x5d, 0x5e };
+static uint8_t garden_sky_anim_counter;
 
-uint8_t garden_sky_anim_counter = 0;
-
-void draw_plants(void) {
+void draw_plants(void) BANKED {
 	switch(plant_stage[0]) {
 		case 0:
 			set_bkg_tiles(PLANT_0_X, PLANT_0_Y, 2, 2, plant_0_tile_map);
@@ -69,7 +66,7 @@ void draw_plants(void) {
 	}
 }
 
-void update_plants(void) {
+void update_plants(void) BANKED {
 	uint8_t redraw = FALSE;
 
 	for (uint8_t i = 0; i < PLANT_COUNT; i++) {
@@ -110,7 +107,7 @@ void setup_garden_data(void) NONBANKED {
 	set_bkg_data(0x50, plants_TILE_COUNT, plants_tiles);
 }
 
-void setup_garden(void) {
+void setup_garden(void) BANKED {
 	if (!is_night) {
 		garden_sky_anim_counter = 0;
 		set_bkg_tiles(11, 4, 2, 1, small_cloud_1_tile_map);
@@ -128,7 +125,7 @@ void setup_garden(void) {
 	draw_plants();
 }
 
-void update_garden(void) {
+void update_garden(void) BANKED {
 	if (!is_night) {
 		garden_sky_anim_counter += 1;
 		if (garden_sky_anim_counter > 120) {

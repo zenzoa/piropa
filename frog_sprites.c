@@ -131,7 +131,7 @@
 
 #define FROG_VRAM_1 0x0
 #define FROG_VRAM_2 0x20
-uint8_t frog_vram = FROG_VRAM_1;
+static uint8_t frog_vram = FROG_VRAM_1;
 
 typedef struct frog_sprite_t {
 	uint8_t bank;
@@ -141,8 +141,8 @@ typedef struct frog_sprite_t {
 	uint8_t flipped;
 } frog_sprite_t;
 
-frog_sprite_t frog_sprite_data;
-frog_sprite_t frog_sprite_data_table[14][11] = {
+static frog_sprite_t frog_sprite_data;
+static const frog_sprite_t frog_sprite_data_table[14][11] = {
 	{
 		{ BANK(egg), egg_TILE_COUNT, (uint8_t *)egg_tiles, (uint8_t *)egg_metasprites, FALSE },
 		{ BANK(egg), egg_TILE_COUNT, (uint8_t *)egg_tiles, (uint8_t *)egg_metasprites, FALSE },
@@ -327,7 +327,6 @@ frog_sprite_t frog_sprite_data_table[14][11] = {
 	}
 };
 
-
 void swap_frog_vram(void) {
 	if (frog_vram == FROG_VRAM_1) {
 		frog_vram = FROG_VRAM_2;
@@ -348,9 +347,6 @@ void set_frog_sprite_data(void) {
 
 void draw_frog_sprite(uint8_t x, uint8_t y, uint8_t frame, uint8_t *last_sprite) {
 	saved_bank = _current_bank;
-
-	// frog_sprite_data = frog_sprite_data_table[stage][anim];
-
 	SWITCH_ROM(frog_sprite_data.bank);
 
 	if (frog_sprite_data.flipped) {

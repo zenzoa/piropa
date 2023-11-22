@@ -8,11 +8,8 @@
 #include "sprites/backgrounds/pond.h"
 #include "sprites/backgrounds/pond_night.h"
 #include "sprites/backgrounds/clouds.h"
-#include "cloud_tile_maps.h"
 
-BANKREF(pond_bank)
-
-uint8_t pond_sky_anim_counter = 0;
+static uint8_t pond_sky_anim_counter;
 
 void setup_pond_data(void) NONBANKED {
 	if (is_night) {
@@ -30,7 +27,7 @@ void setup_pond_data(void) NONBANKED {
 	}
 }
 
-void setup_pond(void) {
+void setup_pond(void) BANKED {
 	if (!is_night) {
 		pond_sky_anim_counter = 0;
 		set_bkg_tiles(0, 5, 3, 1, big_cloud_2_tile_map);
@@ -39,7 +36,7 @@ void setup_pond(void) {
 	}
 }
 
-void update_pond(void) {
+void update_pond(void) BANKED {
 	if (!is_night) {
 		pond_sky_anim_counter += 1;
 		if (pond_sky_anim_counter > 120) {

@@ -111,8 +111,8 @@ uint8_t health;
 uint8_t sickness;
 
 #define MAX_POOPS 6
-uint8_t poop_count = 0;
-uint8_t poops_to_add = 0;
+uint8_t poop_count;
+uint8_t poops_to_add;
 uint8_t poops_scene[MAX_POOPS];
 uint8_t poops_x[MAX_POOPS];
 uint8_t poops_y[MAX_POOPS];
@@ -145,3 +145,8 @@ uint8_t plant_is_watered[PLANT_COUNT];
 #define PLANT_2_Y 11
 
 uint8_t watering_plant;
+
+const unsigned char big_cloud_1_tile_map[3] = { 0x70, 0x71, 0x72 };
+const unsigned char big_cloud_2_tile_map[3] = { 0x73, 0x74, 0x75 };
+const unsigned char small_cloud_1_tile_map[2] = { 0x70, 0x72 };
+const unsigned char small_cloud_2_tile_map[2] = { 0x73, 0x75 };

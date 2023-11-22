@@ -13,29 +13,27 @@
 #include "sprites/backgrounds/title_confirm.h"
 #include "sprites/misc_8x8/select_arrow.h"
 
-BANKREF(title_bank)
+static const unsigned char start_tile_map[3] = { 0x70, 0x71, 0x72 };
 
-const unsigned char start_tile_map[3] = { 0x70, 0x71, 0x72 };
+static const unsigned char continue_tile_map[5] = { 0x68, 0x69, 0x6a, 0x6b, 0x6c };
+static const unsigned char continue_selected_tile_map[5] = { 0x6d, 0x6e, 0x6f, 0x70, 0x71 };
 
-const unsigned char continue_tile_map[5] = { 0x68, 0x69, 0x6a, 0x6b, 0x6c };
-const unsigned char continue_selected_tile_map[5] = { 0x6d, 0x6e, 0x6f, 0x70, 0x71 };
+static const unsigned char reset_tile_map[5] = { 0x33, 0x72, 0x73, 0x74, 0x33 };
+static const unsigned char reset_selected_tile_map[5] = { 0x33, 0x75, 0x76, 0x77, 0x33 };
 
-const unsigned char reset_tile_map[5] = { 0x33, 0x72, 0x73, 0x74, 0x33 };
-const unsigned char reset_selected_tile_map[5] = { 0x33, 0x75, 0x76, 0x77, 0x33 };
+static const unsigned char confirm_reset_tile_map[5] = { 0x78, 0x79, 0x7a, 0x7b, 0x7c };
 
-const unsigned char confirm_reset_tile_map[5] = { 0x78, 0x79, 0x7a, 0x7b, 0x7c };
-
-uint8_t selected_title_item;
 #define TITLE_ITEM_CONTINUE 0
 #define TITLE_ITEM_RESET 1
 #define TITLE_ITEM_CONFIRM_RESET 2
+static uint8_t selected_title_item;
 
-uint8_t arrow_anim_counter;
-uint8_t arrow_anim_frame;
+static uint8_t arrow_anim_counter;
+static uint8_t arrow_anim_frame;
 
-uint8_t rand_seeded = FALSE;
+static uint8_t rand_seeded;
 
-void draw_title_sprites(uint8_t *last_sprite) {
+void draw_title_sprites(uint8_t *last_sprite) BANKED {
 	arrow_anim_counter += 1;
 	if (arrow_anim_counter >= 32) {
 		arrow_anim_counter = 0;
@@ -68,7 +66,7 @@ void draw_title_sprites(uint8_t *last_sprite) {
 	*last_sprite = 2;
 }
 
-void select_title_item(uint8_t new_item) {
+static void select_title_item(uint8_t new_item) {
 	selected_title_item = new_item;
 
 	switch(selected_title_item) {
@@ -115,7 +113,7 @@ void setup_title_data(void) NONBANKED {
 	set_sprite_data(0xff, select_arrow_TILE_COUNT, select_arrow_tiles);
 }
 
-void setup_title(void) {
+void setup_title(void) BANKED {
 	if (has_save) {
 		set_bkg_tiles(0x0d, 0x0d, 5, 1, continue_tile_map);
 		set_bkg_tiles(0x0d, 0x0f, 5, 1, reset_tile_map);
@@ -133,7 +131,7 @@ void setup_title(void) {
 	}
 }
 
-void handle_title_input(uint8_t button_pressed) {
+void handle_title_input(uint8_t button_pressed) BANKED {
 	switch(button_pressed) {
 		case A_BUTTON:
 			if (has_save) {
@@ -143,7 +141,7 @@ void handle_title_input(uint8_t button_pressed) {
 							rand_seeded = TRUE;
 							initrand(DIV_REG);
 						}
-						start_transition_to_scene(last_scene, is_night);
+						transition_to_scene(last_scene, is_night);
 						break;
 					case TITLE_ITEM_RESET:
 						select_title_item(TITLE_ITEM_CONFIRM_RESET);
@@ -153,7 +151,7 @@ void handle_title_input(uint8_t button_pressed) {
 						break;
 				}
 			} else {
-				start_transition_to_scene(FIELD, FALSE);
+				transition_to_scene(FIELD, FALSE);
 			}
 			break;
 

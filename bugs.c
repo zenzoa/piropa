@@ -11,8 +11,6 @@
 #include "sprites/misc_8x8/butterfly.h"
 #include "sprites/misc_16x8/dragonfly.h"
 
-BANKREF(bugs_bank)
-
 #define BUG_NONE 0
 #define BUG_FLY 1
 #define BUG_DRAGONFLY 2
@@ -29,46 +27,46 @@ BANKREF(bugs_bank)
 #define MIN_Y 48
 #define MAX_Y 120
 
-uint8_t fly_scene[FLY_COUNT];
-uint8_t fly_x[FLY_COUNT];
-uint8_t fly_y[FLY_COUNT];
-uint8_t fly_flip[FLY_COUNT];
-uint8_t fly_anim_counter[FLY_COUNT];
-uint8_t fly_anim_frame[FLY_COUNT];
+static uint8_t fly_scene[FLY_COUNT];
+static uint8_t fly_x[FLY_COUNT];
+static uint8_t fly_y[FLY_COUNT];
+static uint8_t fly_flip[FLY_COUNT];
+static uint8_t fly_anim_counter[FLY_COUNT];
+static uint8_t fly_anim_frame[FLY_COUNT];
 
-uint8_t dragonfly_scene[FLY_COUNT];
-uint8_t dragonfly_x[DRAGONFLY_COUNT];
-uint8_t dragonfly_y[DRAGONFLY_COUNT];
-uint8_t dragonfly_goal_x[DRAGONFLY_COUNT];
-uint8_t dragonfly_goal_y[DRAGONFLY_COUNT];
-uint8_t dragonfly_flip_x[DRAGONFLY_COUNT];
-uint8_t dragonfly_anim_counter[DRAGONFLY_COUNT];
-uint8_t dragonfly_anim_frame[DRAGONFLY_COUNT];
+static uint8_t dragonfly_scene[FLY_COUNT];
+static uint8_t dragonfly_x[DRAGONFLY_COUNT];
+static uint8_t dragonfly_y[DRAGONFLY_COUNT];
+static uint8_t dragonfly_goal_x[DRAGONFLY_COUNT];
+static uint8_t dragonfly_goal_y[DRAGONFLY_COUNT];
+static uint8_t dragonfly_flip_x[DRAGONFLY_COUNT];
+static uint8_t dragonfly_anim_counter[DRAGONFLY_COUNT];
+static uint8_t dragonfly_anim_frame[DRAGONFLY_COUNT];
 
-uint8_t firefly_scene[FIREFLY_COUNT];
-uint8_t firefly_x[FIREFLY_COUNT];
-uint8_t firefly_y[FIREFLY_COUNT];
-uint8_t firefly_flip[FIREFLY_COUNT];
-uint8_t firefly_flip_y[FIREFLY_COUNT];
-uint8_t firefly_anim_counter[FIREFLY_COUNT];
-uint8_t firefly_anim_frame[FIREFLY_COUNT];
+static uint8_t firefly_scene[FIREFLY_COUNT];
+static uint8_t firefly_x[FIREFLY_COUNT];
+static uint8_t firefly_y[FIREFLY_COUNT];
+static uint8_t firefly_flip[FIREFLY_COUNT];
+static uint8_t firefly_flip_y[FIREFLY_COUNT];
+static uint8_t firefly_anim_counter[FIREFLY_COUNT];
+static uint8_t firefly_anim_frame[FIREFLY_COUNT];
 
-uint8_t butterfly_scene[BUTTERFLY_COUNT];
-uint8_t butterfly_x[BUTTERFLY_COUNT];
-uint8_t butterfly_y[BUTTERFLY_COUNT];
-uint8_t butterfly_goal_x[BUTTERFLY_COUNT];
-uint8_t butterfly_goal_y[BUTTERFLY_COUNT];
-uint8_t butterfly_goal_plant[BUTTERFLY_COUNT];
-uint8_t butterfly_flip_x[BUTTERFLY_COUNT];
-uint8_t butterfly_flip_y[BUTTERFLY_COUNT];
-uint8_t butterfly_anim_counter[BUTTERFLY_COUNT];
-uint8_t butterfly_anim_frame[BUTTERFLY_COUNT];
+static uint8_t butterfly_scene[BUTTERFLY_COUNT];
+static uint8_t butterfly_x[BUTTERFLY_COUNT];
+static uint8_t butterfly_y[BUTTERFLY_COUNT];
+static uint8_t butterfly_goal_x[BUTTERFLY_COUNT];
+static uint8_t butterfly_goal_y[BUTTERFLY_COUNT];
+static uint8_t butterfly_goal_plant[BUTTERFLY_COUNT];
+static uint8_t butterfly_flip_x[BUTTERFLY_COUNT];
+static uint8_t butterfly_flip_y[BUTTERFLY_COUNT];
+static uint8_t butterfly_anim_counter[BUTTERFLY_COUNT];
+static uint8_t butterfly_anim_frame[BUTTERFLY_COUNT];
 
-uint8_t hand_is_near;
-uint8_t chance_to_move_left;
-uint8_t chance_to_move_up;
+static uint8_t hand_is_near;
+static uint8_t chance_to_move_left;
+static uint8_t chance_to_move_up;
 
-void spawn_fly(uint8_t i, uint8_t is_setup) {
+static void spawn_fly(uint8_t i, uint8_t is_setup) {
 	fly_alive[i] = TRUE;
 	fly_respawn[i] = 0;
 	fly_scene[i] = POND;
@@ -82,7 +80,7 @@ void spawn_fly(uint8_t i, uint8_t is_setup) {
 	fly_anim_frame[i] = rand() % 2;
 }
 
-void spawn_dragonfly(uint8_t i, uint8_t is_setup) {
+static void spawn_dragonfly(uint8_t i, uint8_t is_setup) {
 	dragonfly_alive[i] = TRUE;
 	dragonfly_respawn[i] = 0;
 	dragonfly_scene[i] = POND;
@@ -96,7 +94,7 @@ void spawn_dragonfly(uint8_t i, uint8_t is_setup) {
 	dragonfly_anim_frame[i] = rand() % 2;
 }
 
-void spawn_firefly(uint8_t i, uint8_t is_setup) {
+static void spawn_firefly(uint8_t i, uint8_t is_setup) {
 	firefly_alive[i] = TRUE;
 	firefly_respawn[i] = 0;
 	firefly_scene[i] = POND;
@@ -110,7 +108,7 @@ void spawn_firefly(uint8_t i, uint8_t is_setup) {
 	firefly_anim_frame[i] = rand() % 2;
 }
 
-void spawn_butterfly(uint8_t i, uint8_t is_setup) {
+static void spawn_butterfly(uint8_t i, uint8_t is_setup) {
 	butterfly_alive[i] = TRUE;
 	butterfly_respawn[i] = 0;
 	butterfly_scene[i] = GARDEN;
@@ -127,7 +125,7 @@ void spawn_butterfly(uint8_t i, uint8_t is_setup) {
 	butterfly_goal_plant[i] = 0;
 }
 
-void respawn_bugs(void) {
+void respawn_bugs(void) BANKED {
 	for (uint8_t i = 0; i < FLY_COUNT; i++) {
 		if (!fly_alive[i] && fly_respawn[i] > 0) {
 			fly_respawn[i] -= 1;
@@ -154,7 +152,7 @@ void respawn_bugs(void) {
 	}
 }
 
-void draw_fly(uint8_t *last_sprite, uint8_t x, uint8_t y, uint8_t frame, uint8_t flip) NONBANKED {
+static void draw_fly(uint8_t *last_sprite, uint8_t x, uint8_t y, uint8_t frame, uint8_t flip) NONBANKED {
 	uint8_t prev_bank = _current_bank;
 	SWITCH_ROM(BANK(fly));
 	if (flip) {
@@ -169,7 +167,7 @@ void draw_fly(uint8_t *last_sprite, uint8_t x, uint8_t y, uint8_t frame, uint8_t
 	SWITCH_ROM(prev_bank);
 }
 
-void draw_dragonfly(uint8_t *last_sprite, uint8_t x, uint8_t y, uint8_t frame, uint8_t flip) NONBANKED {
+static void draw_dragonfly(uint8_t *last_sprite, uint8_t x, uint8_t y, uint8_t frame, uint8_t flip) NONBANKED {
 	uint8_t prev_bank = _current_bank;
 	SWITCH_ROM(BANK(dragonfly));
 	if (flip) {
@@ -184,7 +182,7 @@ void draw_dragonfly(uint8_t *last_sprite, uint8_t x, uint8_t y, uint8_t frame, u
 	SWITCH_ROM(prev_bank);
 }
 
-void draw_firefly(uint8_t *last_sprite, uint8_t x, uint8_t y, uint8_t frame, uint8_t flip) NONBANKED {
+static void draw_firefly(uint8_t *last_sprite, uint8_t x, uint8_t y, uint8_t frame, uint8_t flip) NONBANKED {
 	uint8_t prev_bank = _current_bank;
 	SWITCH_ROM(BANK(firefly));
 	if (flip) {
@@ -199,7 +197,7 @@ void draw_firefly(uint8_t *last_sprite, uint8_t x, uint8_t y, uint8_t frame, uin
 	SWITCH_ROM(prev_bank);
 }
 
-void draw_butterfly(uint8_t *last_sprite, uint8_t x, uint8_t y, uint8_t frame, uint8_t flip) NONBANKED {
+static void draw_butterfly(uint8_t *last_sprite, uint8_t x, uint8_t y, uint8_t frame, uint8_t flip) NONBANKED {
 	uint8_t prev_bank = _current_bank;
 	SWITCH_ROM(BANK(butterfly));
 	if (flip) {
@@ -214,7 +212,7 @@ void draw_butterfly(uint8_t *last_sprite, uint8_t x, uint8_t y, uint8_t frame, u
 	SWITCH_ROM(prev_bank);
 }
 
-void update_fly(uint8_t i) {
+static void update_fly(uint8_t i) {
 	fly_anim_counter[i] += 1;
 	if (fly_anim_counter[i] >= 12) {
 		fly_anim_counter[i] = 0;
@@ -265,7 +263,7 @@ void update_fly(uint8_t i) {
 	}
 }
 
-void update_dragonfly(uint8_t i) {
+static void update_dragonfly(uint8_t i) {
 	dragonfly_anim_counter[i] += 1;
 	if (dragonfly_anim_counter[i] >= 6) {
 		dragonfly_anim_counter[i] = 0;
@@ -310,7 +308,7 @@ void update_dragonfly(uint8_t i) {
 	}
 }
 
-void update_firefly(uint8_t i) {
+static void update_firefly(uint8_t i) {
 	firefly_anim_counter[i] += 1;
 	if (firefly_anim_counter[i] >= 8) {
 		firefly_anim_counter[i] = 0;
@@ -359,7 +357,7 @@ void update_firefly(uint8_t i) {
 	}
 }
 
-void update_butterfly(uint8_t i) {
+static void update_butterfly(uint8_t i) {
 	butterfly_anim_counter[i] += 1;
 	uint8_t frame_rate = (butterfly_x[i] == butterfly_goal_x[i] && butterfly_y[i] == butterfly_goal_y[i]) ? 48 : 12;
 	if (butterfly_anim_counter[i] >= frame_rate) {
@@ -449,7 +447,7 @@ void update_butterfly(uint8_t i) {
 	}
 }
 
-void draw_bugs(uint8_t *last_sprite) {
+void draw_bugs(uint8_t *last_sprite) BANKED {
 	for (uint8_t i = 0; i < FLY_COUNT; i++) {
 		if (fly_alive[i] &&
 			fly_scene[i] == current_scene) {
@@ -495,7 +493,7 @@ void draw_bugs(uint8_t *last_sprite) {
 	}
 }
 
-uint8_t grab_bug(void) {
+uint8_t grab_bug(void) BANKED {
 	for (uint8_t i = 0; i < FLY_COUNT; i++) {
 		if (fly_alive[i] && fly_scene[i] == current_scene &&
 			hand_x + 8 >= fly_x[i] && hand_x < fly_x[i] + 8 &&
@@ -543,7 +541,7 @@ uint8_t grab_bug(void) {
 	return BUG_NONE;
 }
 
-void drop_bug(uint8_t bug_type) {
+void drop_bug(uint8_t bug_type) BANKED {
 	switch(bug_type) {
 		case BUG_FLY:
 			for (uint8_t i = 0; i < FLY_COUNT; i++) {
@@ -602,7 +600,7 @@ void drop_bug(uint8_t bug_type) {
 	}
 }
 
-void setup_bugs(void) {
+void setup_bugs(void) BANKED {
 	for (uint8_t i = 0; i < FLY_COUNT; i++) {
 		if (fly_alive[i] &&
 			(fly_scene[i] != current_scene ||
