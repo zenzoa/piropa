@@ -3,10 +3,10 @@
 #include <gbdk/platform.h>
 #include <gbdk/metasprites.h>
 
+#include "common.h"
 #include "hand_sprites.h"
 #include "poop.h"
 #include "scene.h"
-#include "shared_variables.h"
 
 static uint16_t push_left;
 static uint16_t push_right;
@@ -20,6 +20,26 @@ static uint8_t wiggle_frame;
 static uint8_t wiggle_loops;
 
 uint8_t sweep_count;
+
+#define HAND_VRAM_1 0x40
+#define HAND_VRAM_2 0x70
+static uint8_t hand_vram = HAND_VRAM_1;
+
+static sprite_data_t hand_sprite;
+
+void swap_hand_vram(void) {
+	if (hand_vram == HAND_VRAM_1) {
+		hand_vram = HAND_VRAM_2;
+	} else {
+		hand_vram = HAND_VRAM_1;
+	}
+}
+
+static void update_hand_sprite_data(void) {
+	hand_sprite = hand_sprite_table[hand_state];
+	swap_hand_vram();
+	set_banked_sprite_data(hand_sprite.bank, hand_vram, hand_sprite.tile_count, hand_sprite.tiles);
+}
 
 void move_hand_by_frac(int16_t dx_frac, int16_t dy_frac) BANKED {
 	hand_x_frac += dx_frac;
@@ -102,10 +122,9 @@ static uint8_t is_hand_over_plant(void) {
 		(hand_x >= PLANT_2_X*8 && hand_x < PLANT_2_X*8+24 && hand_y >= PLANT_2_Y*8+4 && hand_y < PLANT_2_Y*8+28);
 }
 
-void set_hand_state(uint8_t new_state) NONBANKED {
+void set_hand_state(uint8_t new_state) BANKED {
 	hand_state = new_state;
-	swap_hand_vram();
-	set_hand_sprite_data(new_state);
+	update_hand_sprite_data();
 
 	if (new_state == HAND_PET1 || new_state == HAND_PET2) {
 		hand_timeout = 32;
@@ -126,7 +145,7 @@ void setup_hand(void) BANKED {
 	set_hand_state(HAND_DEFAULT);
 }
 
-void draw_hand(uint8_t *last_sprite) BANKED {
+void draw_hand(void) BANKED {
 	if (is_evolving) { return; }
 
 	hand_offset = 0;
@@ -140,7 +159,7 @@ void draw_hand(uint8_t *last_sprite) BANKED {
 		hand_offset = hand_mod - frog_mod;
 	}
 
-	draw_hand_sprite(hand_x - hand_offset, hand_y, hand_offset, last_sprite);
+	draw_banked_sprite(hand_sprite.bank, hand_sprite.metasprites, hand_offset, hand_vram, hand_x - hand_offset, hand_y);
 }
 
 static uint8_t update_wiggle(void) {

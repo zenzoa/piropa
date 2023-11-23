@@ -4,14 +4,14 @@
 #include <rand.h>
 
 #include "scene.h"
-#include "shared_variables.h"
+#include "common.h"
 
 #include "sprites/backgrounds/title.h"
 #include "sprites/backgrounds/title_start.h"
 #include "sprites/backgrounds/title_continue.h"
 #include "sprites/backgrounds/title_reset.h"
 #include "sprites/backgrounds/title_confirm.h"
-#include "sprites/misc_8x8/select_arrow.h"
+#include "sprites/arrows/select_arrow.h"
 
 static const unsigned char start_tile_map[3] = { 0x70, 0x71, 0x72 };
 
@@ -33,7 +33,7 @@ static uint8_t arrow_anim_frame;
 
 static uint8_t rand_seeded;
 
-void draw_title_sprites(uint8_t *last_sprite) BANKED {
+void draw_title_sprites(void) BANKED {
 	arrow_anim_counter += 1;
 	if (arrow_anim_counter >= 32) {
 		arrow_anim_counter = 0;
@@ -63,7 +63,7 @@ void draw_title_sprites(uint8_t *last_sprite) BANKED {
 		}
 	}
 
-	*last_sprite = 2;
+	last_sprite = 2;
 }
 
 static void select_title_item(uint8_t new_item) {
@@ -89,28 +89,20 @@ static void select_title_item(uint8_t new_item) {
 	arrow_anim_frame = 1;
 }
 
-void setup_title_data(void) NONBANKED {
-	SWITCH_ROM(BANK(title));
-	set_bkg_data(0, title_TILE_COUNT, title_tiles);
-	set_bkg_tiles(0, 0, 20, 18, title_map);
+void setup_title_data(void) BANKED {
+	set_banked_bkg_data(BANK(title), 0, title_TILE_COUNT, title_tiles);
+	set_banked_bkg_tiles(BANK(title), 0, 0, 20, 18, title_map);
 
 	if (has_save) {
-		SWITCH_ROM(BANK(title_continue));
-		set_bkg_data(0x68, title_continue_TILE_COUNT, title_continue_tiles);
-
-		SWITCH_ROM(BANK(title_reset));
-		set_bkg_data(0x72, title_reset_TILE_COUNT, title_reset_tiles);
-
-		SWITCH_ROM(BANK(title_confirm));
-		set_bkg_data(0x78, title_confirm_TILE_COUNT, title_confirm_tiles);
+		set_banked_bkg_data(BANK(title_continue), 0x68, title_continue_TILE_COUNT, title_continue_tiles);
+		set_banked_bkg_data(BANK(title_reset), 0x72, title_reset_TILE_COUNT, title_reset_tiles);
+		set_banked_bkg_data(BANK(title_confirm), 0x78, title_confirm_TILE_COUNT, title_confirm_tiles);
 
 	} else {
-		SWITCH_ROM(BANK(title_start));
-		set_bkg_data(0x70, title_start_TILE_COUNT, title_start_tiles);
+		set_banked_bkg_data(BANK(title_start), 0x70, title_start_TILE_COUNT, title_start_tiles);
 	}
 
-	SWITCH_ROM(BANK(select_arrow));
-	set_sprite_data(0xff, select_arrow_TILE_COUNT, select_arrow_tiles);
+	set_banked_sprite_data(BANK(select_arrow), 0xff, select_arrow_TILE_COUNT, select_arrow_tiles);
 }
 
 void setup_title(void) BANKED {

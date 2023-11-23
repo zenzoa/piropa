@@ -3,7 +3,7 @@
 #include <gbdk/platform.h>
 #include <gbdk/metasprites.h>
 
-#include "shared_variables.h"
+#include "common.h"
 
 #include "sprites/backgrounds/garden.h"
 #include "sprites/backgrounds/garden_night.h"
@@ -88,23 +88,19 @@ void update_plants(void) BANKED {
 	}
 }
 
-void setup_garden_data(void) NONBANKED {
+void setup_garden_data(void) BANKED {
 	if (is_night) {
-		SWITCH_ROM(BANK(garden_night));
-		set_bkg_data(0, garden_night_TILE_COUNT, garden_night_tiles);
-		set_bkg_tiles(0, 0, 20, 18, garden_night_map);
+		set_banked_bkg_data(BANK(garden_night), 0, garden_night_TILE_COUNT, garden_night_tiles);
+		set_banked_bkg_tiles(BANK(garden_night), 0, 0, 20, 18, garden_night_map);
 
 	} else {
-		SWITCH_ROM(BANK(garden));
-		set_bkg_data(0, garden_TILE_COUNT, garden_tiles);
-		set_bkg_tiles(0, 0, 20, 18, garden_map);
+		set_banked_bkg_data(BANK(garden), 0, garden_TILE_COUNT, garden_tiles);
+		set_banked_bkg_tiles(BANK(garden), 0, 0, 20, 18, garden_map);
 
-		SWITCH_ROM(BANK(clouds));
-		set_bkg_data(0x70, clouds_TILE_COUNT, clouds_tiles);
+		set_banked_bkg_data(BANK(clouds), 0x70, clouds_TILE_COUNT, clouds_tiles);
 	}
 
-	SWITCH_ROM(BANK(plants));
-	set_bkg_data(0x50, plants_TILE_COUNT, plants_tiles);
+	set_banked_bkg_data(BANK(plants), 0x50, plants_TILE_COUNT, plants_tiles);
 }
 
 void setup_garden(void) BANKED {
@@ -172,8 +168,6 @@ void update_garden(void) BANKED {
 	}
 }
 
-void restore_garden_tile(uint8_t x, uint8_t y) NONBANKED {
-	SWITCH_ROM(BANK(garden));
-	uint8_t original_tile = garden_map[y * 20 + x];
-	set_bkg_tile_xy(x, y, original_tile);
+void restore_garden_tile(uint8_t x, uint8_t y) BANKED {
+	restore_banked_bkg_tile_xy(BANK(garden), x, y, garden_map);
 }

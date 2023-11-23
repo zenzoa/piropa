@@ -4,12 +4,12 @@
 #include <gbdk/metasprites.h>
 #include <rand.h>
 
+#include "common.h"
 #include "save.h"
 #include "bugs.h"
 #include "animation.h"
 #include "frog_sprites.h"
 #include "emote_sprites.h"
-#include "shared_variables.h"
 
 static uint8_t goal_x;
 static uint8_t goal_y;
@@ -57,6 +57,26 @@ static uint8_t next_stage;
 static void start_action(uint8_t new_action);
 static void set_stage(uint8_t new_stage);
 static void start_evolution(uint8_t new_stage);
+
+#define FROG_VRAM_1 0x0
+#define FROG_VRAM_2 0x20
+static uint8_t frog_vram = FROG_VRAM_1;
+
+static sprite_data_t frog_sprite;
+
+static void swap_frog_vram(void) {
+	if (frog_vram == FROG_VRAM_1) {
+		frog_vram = FROG_VRAM_2;
+	} else {
+		frog_vram = FROG_VRAM_1;
+	}
+}
+
+static void update_frog_sprite_data(void) {
+	frog_sprite = frog_sprite_table[stage][anim];
+	swap_frog_vram();
+	set_banked_sprite_data(frog_sprite.bank, frog_vram, frog_sprite.tile_count, frog_sprite.tiles);
+}
 
 uint8_t is_sleeping(void) BANKED {
 	return action == ACTION_SLEEP;
@@ -366,7 +386,7 @@ void place_in_scene(void) BANKED {
 	}
 }
 
-void draw_frog(uint8_t *last_sprite) BANKED {
+void draw_frog(void) BANKED {
 	anim_complete = update_animation(&frog_anim);
 	update_animation(&emote_anim);
 
@@ -381,7 +401,7 @@ void draw_frog(uint8_t *last_sprite) BANKED {
 			} else if (life_stage == TEEN) {
 				y_offset += 2;
 			}
-			draw_emote_sprite(frog_x + 12, frog_y + y_offset, emote_anim.frame, last_sprite);
+			draw_emote_sprite(frog_x + 8, frog_y + y_offset, emote_anim.frame);
 		}
 
 		if (action == ACTION_WASH) {
@@ -395,18 +415,22 @@ void draw_frog(uint8_t *last_sprite) BANKED {
 			} else if (life_stage == TEEN) {
 				y_offset += 2;
 			}
-			draw_bath_sprite(frog_x, frog_y, y_offset, last_sprite);
+			draw_bath_sprite(frog_x, frog_y, y_offset);
 
 		} else if (action == ACTION_WATERING) {
-			draw_watering_sprite(frog_x, frog_y, last_sprite);
+			draw_watering_sprite(frog_x, frog_y);
 
 		} else if (hygiene == 0) {
-			draw_dirt_sprite(frog_x, frog_y, last_sprite);
+			draw_dirt_sprite(frog_x, frog_y);
 		}
 
 	}
 
-	draw_frog_sprite(frog_x, frog_y, frog_anim.frame, last_sprite);
+	if (anim == ANIM_WALK_RIGHT) {
+		draw_banked_sprite_flip(frog_sprite.bank, frog_sprite.metasprites, frog_anim.frame, frog_vram, frog_x + 32, frog_y);
+	} else {
+		draw_banked_sprite(frog_sprite.bank, frog_sprite.metasprites, frog_anim.frame, frog_vram, frog_x, frog_y);
+	}
 }
 
 static void random_goal(void) {
@@ -645,15 +669,13 @@ static void start_action(uint8_t new_action) {
 			break;
 	}
 
-	swap_frog_vram();
-	set_frog_sprite_data();
+	update_frog_sprite_data();
 
 	if (emote == EMOTE_NONE && medicine > 0) {
 		emote = EMOTE_HEAL;
 	}
 
 	if (emote != EMOTE_NONE) {
-		swap_emote_vram();
 		set_emote_sprite_data(emote);
 	}
 
@@ -708,8 +730,7 @@ static void set_stage(uint8_t new_stage) {
 	}
 
 	if (life_stage == EGG || life_stage == DEAD) {
-		swap_frog_vram();
-		set_frog_sprite_data();
+		update_frog_sprite_data();
 		frog_anim = new_animation(32, 2, 0);
 		frog_x = 72;
 		frog_y = 78;
@@ -845,7 +866,7 @@ static uint8_t is_time_to_evolve(void) {
 void setup_frog(uint8_t reset) BANKED {
 	if (!reset) {
 		anim = ANIM_NEUTRAL;
-		set_frog_sprite_data();
+		update_frog_sprite_data();
 		if (life_stage == EGG || life_stage == DEAD) {
 			frog_anim = new_animation(32, 2, 0);
 			frog_x = 72;
@@ -880,12 +901,12 @@ void setup_frog(uint8_t reset) BANKED {
 		set_stage(STAGE_EGG);
 	} else if (is_night) {
 		anim = ANIM_SLEEP;
-		set_frog_sprite_data();
+		update_frog_sprite_data();
 		set_emote_sprite_data(EMOTE_SLEEP);
 		start_action(ACTION_SLEEP);
 	} else {
 		anim = ANIM_NEUTRAL;
-		set_frog_sprite_data();
+		update_frog_sprite_data();
 		start_action(ACTION_STAND);
 	}
 }

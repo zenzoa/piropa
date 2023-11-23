@@ -5,7 +5,7 @@
 #include "hand.h"
 #include "scene.h"
 #include "joypad.h"
-#include "shared_variables.h"
+#include "common.h"
 
 #include "sprites/backgrounds/hud.h"
 
@@ -52,9 +52,8 @@ void draw_hud(void) BANKED {
 	}
 }
 
-void setup_hud_data(void) NONBANKED {
-	SWITCH_ROM(BANK(hud));
-	set_bkg_data(0xd0, 40, hud_tiles);
+void setup_hud_data(void) BANKED {
+	set_banked_bkg_data(BANK(hud), 0xd0, 40, hud_tiles);
 }
 
 void drop_all(uint8_t except) BANKED {

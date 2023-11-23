@@ -2,7 +2,7 @@
 
 #include <gbdk/platform.h>
 
-#include "shared_variables.h"
+#include "common.h"
 
 #include "sprites/backgrounds/field.h"
 #include "sprites/backgrounds/field_night.h"
@@ -35,26 +35,21 @@ void set_basket(uint8_t is_open) BANKED {
 	}
 }
 
-void setup_field_data(void) NONBANKED {
+void setup_field_data(void) BANKED {
 	if (is_night) {
-		SWITCH_ROM(BANK(field_night));
-		set_bkg_data(0, field_night_TILE_COUNT, field_night_tiles);
-		set_bkg_tiles(0, 0, 20, 18, field_night_map);
+		set_banked_bkg_data(BANK(field_night), 0, field_night_TILE_COUNT, field_night_tiles);
+		set_banked_bkg_tiles(BANK(field_night), 0, 0, 20, 18, field_night_map);
 
-		SWITCH_ROM(BANK(moon));
-		set_bkg_data(0x6a, moon_TILE_COUNT, moon_tiles);
+		set_banked_bkg_data(BANK(moon), 0x6a, moon_TILE_COUNT, moon_tiles);
 
 	} else {
-		SWITCH_ROM(BANK(field));
-		set_bkg_data(0, field_TILE_COUNT, field_tiles);
-		set_bkg_tiles(0, 0, 20, 18, field_map);
+		set_banked_bkg_data(BANK(field), 0, field_TILE_COUNT, field_tiles);
+		set_banked_bkg_tiles(BANK(field), 0, 0, 20, 18, field_map);
 
-		SWITCH_ROM(BANK(clouds));
-		set_bkg_data(0x70, clouds_TILE_COUNT, clouds_tiles);
+		set_banked_bkg_data(BANK(clouds), 0x70, clouds_TILE_COUNT, clouds_tiles);
 	}
 
-	SWITCH_ROM(BANK(basket));
-	set_bkg_data(0xf8, basket_TILE_COUNT, basket_tiles);
+	set_banked_bkg_data(BANK(basket), 0xf8, basket_TILE_COUNT, basket_tiles);
 }
 
 void setup_field(uint8_t hand_has_moon) BANKED {
@@ -118,10 +113,8 @@ void update_field(void) BANKED {
 	}
 }
 
-void restore_field_tile(uint8_t x, uint8_t y) NONBANKED {
-	SWITCH_ROM(BANK(field));
-	uint8_t original_tile = field_map[y * 20 + x];
-	set_bkg_tile_xy(x, y, original_tile);
+void restore_field_tile(uint8_t x, uint8_t y) BANKED {
+	restore_banked_bkg_tile_xy(BANK(field), x, y, field_map);
 }
 
 void grab_moon_from_sky(void) BANKED {

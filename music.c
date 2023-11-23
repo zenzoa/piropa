@@ -3,12 +3,12 @@
 #include <stdint.h>
 
 #include "hugedriver/include/hUGEDriver.h"
-#include "music/frog_galliard.h"
+#include "music/bs_rpg_forest.h"
 
 #define FROG_MUSIC 0
 
 uint8_t current_music = 255;
-uint8_t current_music_bank = BANK(frog_galliard_bank);
+uint8_t current_music_bank = BANK(bs_rpg_forest_bank);
 
 void set_music(uint8_t new_music) {
 	if (current_music != new_music) {
@@ -21,9 +21,9 @@ void set_music(uint8_t new_music) {
 
 			switch(new_music) {
 				case FROG_MUSIC:
-					current_music_bank = BANK(frog_galliard_bank);
+					current_music_bank = BANK(bs_rpg_forest_bank);
 					SWITCH_ROM(current_music_bank);
-					hUGE_init(&frog_galliard);
+					hUGE_init(&bs_rpg_forest);
 					break;
 			}
 		}

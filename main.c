@@ -6,7 +6,7 @@
 #include "joypad.h"
 #include "scene.h"
 #include "music.h"
-#include "shared_variables.h"
+#include "common.h"
 
 void main(void) {
 	// enable graphics
@@ -21,6 +21,7 @@ void main(void) {
 	NR51_REG = 0xFF;
 	NR50_REG = 0x77;
 
+	// init music
 	__critical {
 		set_music(FROG_MUSIC);
 		add_VBL(play_music);

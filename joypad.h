@@ -5,4 +5,4 @@
 #define DOWN_BUTTON 4
 #define LEFT_BUTTON 5
 
-extern void handle_input(void);
+extern void handle_input(void) BANKED;

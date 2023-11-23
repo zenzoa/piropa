@@ -4,12 +4,12 @@
 #include <gbdk/metasprites.h>
 #include <rand.h>
 
-#include "shared_variables.h"
+#include "common.h"
 
-#include "sprites/misc_8x8/fly.h"
-#include "sprites/misc_8x8/firefly.h"
-#include "sprites/misc_8x8/butterfly.h"
-#include "sprites/misc_16x8/dragonfly.h"
+#include "sprites/bugs_small/fly.h"
+#include "sprites/bugs_small/firefly.h"
+#include "sprites/bugs_small/butterfly.h"
+#include "sprites/bugs_big/dragonfly.h"
 
 #define BUG_NONE 0
 #define BUG_FLY 1
@@ -17,10 +17,10 @@
 #define BUG_FIREFLY 3
 #define BUG_BUTTERFLY 4
 
-#define FLY_VRAM 0xc8
-#define DRAGONFLY_VRAM 0xca
-#define FIREFLY_VRAM 0xce
-#define BUTTERFLY_VRAM 0xbe
+#define FLY_VRAM 0xc0
+#define DRAGONFLY_VRAM 0xc2
+#define FIREFLY_VRAM 0xc6
+#define BUTTERFLY_VRAM 0xc8
 
 #define MIN_X 8
 #define MAX_X 160
@@ -152,64 +152,36 @@ void respawn_bugs(void) BANKED {
 	}
 }
 
-static void draw_fly(uint8_t *last_sprite, uint8_t x, uint8_t y, uint8_t frame, uint8_t flip) NONBANKED {
-	uint8_t prev_bank = _current_bank;
-	SWITCH_ROM(BANK(fly));
+static void draw_fly(uint8_t x, uint8_t y, uint8_t frame, uint8_t flip) {
 	if (flip) {
-		*last_sprite += move_metasprite_flipx(
-			fly_metasprites[frame],
-			FLY_VRAM, 0, *last_sprite, x + 8, y);
+		draw_banked_sprite_flip(BANK(fly), (uint8_t *) fly_metasprites, frame, FLY_VRAM, x + 8, y);
 	} else {
-		*last_sprite += move_metasprite_ex(
-			fly_metasprites[frame],
-			FLY_VRAM, 0, *last_sprite, x, y);
+		draw_banked_sprite(BANK(fly), (uint8_t *) fly_metasprites, frame, FLY_VRAM, x, y);
 	}
-	SWITCH_ROM(prev_bank);
 }
 
-static void draw_dragonfly(uint8_t *last_sprite, uint8_t x, uint8_t y, uint8_t frame, uint8_t flip) NONBANKED {
-	uint8_t prev_bank = _current_bank;
-	SWITCH_ROM(BANK(dragonfly));
+static void draw_dragonfly(uint8_t x, uint8_t y, uint8_t frame, uint8_t flip) {
 	if (flip) {
-		*last_sprite += move_metasprite_flipx(
-			dragonfly_metasprites[frame],
-			DRAGONFLY_VRAM, 0, *last_sprite, x + 16, y + (frame * 3));
+		draw_banked_sprite_flip(BANK(dragonfly), (uint8_t *) dragonfly_metasprites, frame, DRAGONFLY_VRAM, x + 16, y + (frame * 3));
 	} else {
-		*last_sprite += move_metasprite_ex(
-			dragonfly_metasprites[frame],
-			DRAGONFLY_VRAM, 0, *last_sprite, x, y + (frame * 3));
+		draw_banked_sprite(BANK(dragonfly), (uint8_t *) dragonfly_metasprites, frame, DRAGONFLY_VRAM, x, y + (frame * 3));
 	}
-	SWITCH_ROM(prev_bank);
 }
 
-static void draw_firefly(uint8_t *last_sprite, uint8_t x, uint8_t y, uint8_t frame, uint8_t flip) NONBANKED {
-	uint8_t prev_bank = _current_bank;
-	SWITCH_ROM(BANK(firefly));
+static void draw_firefly(uint8_t x, uint8_t y, uint8_t frame, uint8_t flip) {
 	if (flip) {
-		*last_sprite += move_metasprite_flipx(
-			firefly_metasprites[frame],
-			FIREFLY_VRAM, 0, *last_sprite, x + 8, y);
+		draw_banked_sprite_flip(BANK(firefly), (uint8_t *) firefly_metasprites, frame, FIREFLY_VRAM, x + 8, y);
 	} else {
-		*last_sprite += move_metasprite_ex(
-			firefly_metasprites[frame],
-			FIREFLY_VRAM, 0, *last_sprite, x, y);
+		draw_banked_sprite(BANK(firefly), (uint8_t *) firefly_metasprites, frame, FIREFLY_VRAM, x, y);
 	}
-	SWITCH_ROM(prev_bank);
 }
 
-static void draw_butterfly(uint8_t *last_sprite, uint8_t x, uint8_t y, uint8_t frame, uint8_t flip) NONBANKED {
-	uint8_t prev_bank = _current_bank;
-	SWITCH_ROM(BANK(butterfly));
+static void draw_butterfly(uint8_t x, uint8_t y, uint8_t frame, uint8_t flip) {
 	if (flip) {
-		*last_sprite += move_metasprite_flipx(
-			butterfly_metasprites[frame],
-			BUTTERFLY_VRAM, 0, *last_sprite, x + 8, y);
+		draw_banked_sprite_flip(BANK(butterfly), (uint8_t *) butterfly_metasprites, frame, BUTTERFLY_VRAM, x + 8, y);
 	} else {
-		*last_sprite += move_metasprite_ex(
-			butterfly_metasprites[frame],
-			BUTTERFLY_VRAM, 0, *last_sprite, x, y);
+		draw_banked_sprite(BANK(butterfly), (uint8_t *) butterfly_metasprites, frame, BUTTERFLY_VRAM, x, y);
 	}
-	SWITCH_ROM(prev_bank);
 }
 
 static void update_fly(uint8_t i) {
@@ -447,12 +419,12 @@ static void update_butterfly(uint8_t i) {
 	}
 }
 
-void draw_bugs(uint8_t *last_sprite) BANKED {
+void draw_bugs(void) BANKED {
 	for (uint8_t i = 0; i < FLY_COUNT; i++) {
 		if (fly_alive[i] &&
 			fly_scene[i] == current_scene) {
 				update_fly(i);
-				draw_fly(last_sprite, fly_x[i], fly_y[i], fly_anim_frame[i], fly_flip[i]);
+				draw_fly(fly_x[i], fly_y[i], fly_anim_frame[i], fly_flip[i]);
 		} else if (!fly_alive[i] && !fly_respawn[i] &&
 			current_scene == POND && !is_night) {
 				spawn_fly(i, FALSE);
@@ -463,7 +435,7 @@ void draw_bugs(uint8_t *last_sprite) BANKED {
 		if (dragonfly_alive[i] &&
 			dragonfly_scene[i] == current_scene) {
 				update_dragonfly(i);
-				draw_dragonfly(last_sprite, dragonfly_x[i], dragonfly_y[i], dragonfly_anim_frame[i], dragonfly_flip_x[i]);
+				draw_dragonfly(dragonfly_x[i], dragonfly_y[i], dragonfly_anim_frame[i], dragonfly_flip_x[i]);
 		} else if (!dragonfly_alive[i] && !dragonfly_respawn[i] &&
 			current_scene == POND && !is_night) {
 				spawn_dragonfly(i, FALSE);
@@ -474,7 +446,7 @@ void draw_bugs(uint8_t *last_sprite) BANKED {
 		if (firefly_alive[i] &&
 			firefly_scene[i] == current_scene) {
 				update_firefly(i);
-				draw_firefly(last_sprite, firefly_x[i], firefly_y[i], firefly_anim_frame[i], firefly_flip[i]);
+				draw_firefly(firefly_x[i], firefly_y[i], firefly_anim_frame[i], firefly_flip[i]);
 		} else if (!firefly_alive[i] && !firefly_respawn[i] &&
 			current_scene == POND && is_night) {
 				spawn_firefly(i, FALSE);
@@ -485,7 +457,7 @@ void draw_bugs(uint8_t *last_sprite) BANKED {
 		if (butterfly_alive[i] &&
 			butterfly_scene[i] == current_scene) {
 				update_butterfly(i);
-				draw_butterfly(last_sprite, butterfly_x[i], butterfly_y[i], butterfly_anim_frame[i], butterfly_flip_x[i]);
+				draw_butterfly(butterfly_x[i], butterfly_y[i], butterfly_anim_frame[i], butterfly_flip_x[i]);
 		} else if (!butterfly_alive[i] && !butterfly_respawn[i] &&
 			current_scene == GARDEN && !is_night) {
 				spawn_butterfly(i, FALSE);
@@ -646,16 +618,9 @@ void setup_bugs(void) BANKED {
 	}
 }
 
-void setup_bugs_data(void) NONBANKED {
-	SWITCH_ROM(BANK(fly));
-	set_sprite_data(FLY_VRAM, fly_TILE_COUNT, fly_tiles);
-
-	SWITCH_ROM(BANK(dragonfly));
-	set_sprite_data(DRAGONFLY_VRAM, dragonfly_TILE_COUNT, dragonfly_tiles);
-
-	SWITCH_ROM(BANK(firefly));
-	set_sprite_data(FIREFLY_VRAM, firefly_TILE_COUNT, firefly_tiles);
-
-	SWITCH_ROM(BANK(butterfly));
-	set_sprite_data(BUTTERFLY_VRAM, butterfly_TILE_COUNT, butterfly_tiles);
+void setup_bugs_data(void) BANKED {
+	set_banked_sprite_data(BANK(fly), FLY_VRAM, fly_TILE_COUNT, fly_tiles);
+	set_banked_sprite_data(BANK(dragonfly), DRAGONFLY_VRAM, dragonfly_TILE_COUNT, dragonfly_tiles);
+	set_banked_sprite_data(BANK(firefly), FIREFLY_VRAM, firefly_TILE_COUNT, firefly_tiles);
+	set_banked_sprite_data(BANK(butterfly), BUTTERFLY_VRAM, butterfly_TILE_COUNT, butterfly_tiles);
 }

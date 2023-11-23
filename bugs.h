@@ -5,8 +5,8 @@
 #define BUG_BUTTERFLY 4
 
 extern void respawn_bugs(void) BANKED;
-extern void draw_bugs(uint8_t *last_sprite) BANKED;
+extern void draw_bugs(void) BANKED;
 extern uint8_t grab_bug(void) BANKED;
 extern void drop_bug(uint8_t bug_type) BANKED;
 extern void setup_bugs(void) BANKED;
-extern void setup_bugs_data(void) NONBANKED;
+extern void setup_bugs_data(void) BANKED;

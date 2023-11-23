@@ -3,7 +3,7 @@
 #include <gbdk/platform.h>
 #include <gbdk/metasprites.h>
 
-#include "shared_variables.h"
+#include "common.h"
 
 #include "sprites/backgrounds/pond.h"
 #include "sprites/backgrounds/pond_night.h"
@@ -11,19 +11,16 @@
 
 static uint8_t pond_sky_anim_counter;
 
-void setup_pond_data(void) NONBANKED {
+void setup_pond_data(void) BANKED {
 	if (is_night) {
-		SWITCH_ROM(BANK(pond_night));
-		set_bkg_data(0, pond_night_TILE_COUNT, pond_night_tiles);
-		set_bkg_tiles(0, 0, 20, 18, pond_night_map);
+		set_banked_bkg_data(BANK(pond_night), 0, pond_night_TILE_COUNT, pond_night_tiles);
+		set_banked_bkg_tiles(BANK(pond_night), 0, 0, 20, 18, pond_night_map);
 
 	} else {
-		SWITCH_ROM(BANK(pond));
-		set_bkg_data(0, pond_TILE_COUNT, pond_tiles);
-		set_bkg_tiles(0, 0, 20, 18, pond_map);
+		set_banked_bkg_data(BANK(pond), 0, pond_TILE_COUNT, pond_tiles);
+		set_banked_bkg_tiles(BANK(pond), 0, 0, 20, 18, pond_map);
 
-		SWITCH_ROM(BANK(clouds));
-		set_bkg_data(0x70, clouds_TILE_COUNT, clouds_tiles);
+		set_banked_bkg_data(BANK(clouds), 0x70, clouds_TILE_COUNT, clouds_tiles);
 	}
 }
 
@@ -56,8 +53,6 @@ void update_pond(void) BANKED {
 	}
 }
 
-void restore_pond_tile(uint8_t x, uint8_t y) NONBANKED {
-	SWITCH_ROM(BANK(pond));
-	uint8_t original_tile = pond_map[y * 20 + x];
-	set_bkg_tile_xy(x, y, original_tile);
+void restore_pond_tile(uint8_t x, uint8_t y) BANKED {
+	restore_banked_bkg_tile_xy(BANK(pond), x, y, pond_map);
 }

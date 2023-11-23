@@ -1,7 +1,7 @@
 #include <gbdk/platform.h>
 #include <gbdk/metasprites.h>
 
-#include "shared_variables.h"
+#include "common.h"
 
 #include "sprites/frogs/egg.h"
 
@@ -129,239 +129,223 @@
 #include "sprites/frogs/dead_good.h"
 #include "sprites/frogs/dead_bad.h"
 
-#define FROG_VRAM_1 0x0
-#define FROG_VRAM_2 0x20
-static uint8_t frog_vram = FROG_VRAM_1;
+#define FROG_TILE_COUNT 24
 
-typedef struct frog_sprite_t {
-	uint8_t bank;
-	uint8_t tile_count;
-	uint8_t * tiles;
-	uint8_t * metasprites;
-	uint8_t flipped;
-} frog_sprite_t;
-
-static frog_sprite_t frog_sprite_data;
-static const frog_sprite_t frog_sprite_data_table[14][11] = {
-	{
-		{ BANK(egg), egg_TILE_COUNT, (uint8_t *)egg_tiles, (uint8_t *)egg_metasprites, FALSE },
-		{ BANK(egg), egg_TILE_COUNT, (uint8_t *)egg_tiles, (uint8_t *)egg_metasprites, FALSE },
-		{ BANK(egg), egg_TILE_COUNT, (uint8_t *)egg_tiles, (uint8_t *)egg_metasprites, FALSE },
-		{ BANK(egg), egg_TILE_COUNT, (uint8_t *)egg_tiles, (uint8_t *)egg_metasprites, FALSE },
-		{ BANK(egg), egg_TILE_COUNT, (uint8_t *)egg_tiles, (uint8_t *)egg_metasprites, FALSE },
-		{ BANK(egg), egg_TILE_COUNT, (uint8_t *)egg_tiles, (uint8_t *)egg_metasprites, FALSE },
-		{ BANK(egg), egg_TILE_COUNT, (uint8_t *)egg_tiles, (uint8_t *)egg_metasprites, FALSE },
-		{ BANK(egg), egg_TILE_COUNT, (uint8_t *)egg_tiles, (uint8_t *)egg_metasprites, FALSE },
-		{ BANK(egg), egg_TILE_COUNT, (uint8_t *)egg_tiles, (uint8_t *)egg_metasprites, FALSE },
-		{ BANK(egg), egg_TILE_COUNT, (uint8_t *)egg_tiles, (uint8_t *)egg_metasprites, FALSE },
-		{ BANK(egg), egg_TILE_COUNT, (uint8_t *)egg_tiles, (uint8_t *)egg_metasprites, FALSE }
-	},
-	{
-		{ BANK(tadpole_neutral), tadpole_neutral_TILE_COUNT, (uint8_t *)tadpole_neutral_tiles, (uint8_t *)tadpole_neutral_metasprites, FALSE },
-		{ BANK(tadpole_happy), tadpole_happy_TILE_COUNT, (uint8_t *)tadpole_happy_tiles, (uint8_t *)tadpole_happy_metasprites, FALSE },
-		{ BANK(tadpole_laugh), tadpole_laugh_TILE_COUNT, (uint8_t *)tadpole_laugh_tiles, (uint8_t *)tadpole_laugh_metasprites, FALSE },
-		{ BANK(tadpole_sad), tadpole_sad_TILE_COUNT, (uint8_t *)tadpole_sad_tiles, (uint8_t *)tadpole_sad_metasprites, FALSE },
-		{ BANK(tadpole_stressed), tadpole_stressed_TILE_COUNT, (uint8_t *)tadpole_stressed_tiles, (uint8_t *)tadpole_stressed_metasprites, FALSE },
-		{ BANK(tadpole_angry), tadpole_angry_TILE_COUNT, (uint8_t *)tadpole_angry_tiles, (uint8_t *)tadpole_angry_metasprites, FALSE },
-		{ BANK(tadpole_eat), tadpole_eat_TILE_COUNT, (uint8_t *)tadpole_eat_tiles, (uint8_t *)tadpole_eat_metasprites, FALSE },
-		{ BANK(tadpole_yawn), tadpole_yawn_TILE_COUNT, (uint8_t *)tadpole_yawn_tiles, (uint8_t *)tadpole_yawn_metasprites, FALSE },
-		{ BANK(tadpole_walk), tadpole_walk_TILE_COUNT, (uint8_t *)tadpole_walk_tiles, (uint8_t *)tadpole_walk_metasprites, FALSE },
-		{ BANK(tadpole_walk), tadpole_walk_TILE_COUNT, (uint8_t *)tadpole_walk_tiles, (uint8_t *)tadpole_walk_metasprites, TRUE },
-		{ BANK(tadpole_sleep), tadpole_sleep_TILE_COUNT, (uint8_t *)tadpole_sleep_tiles, (uint8_t *)tadpole_sleep_metasprites, FALSE }
-	},
-	{
-		{ BANK(froglet_neutral), froglet_neutral_TILE_COUNT, (uint8_t *)froglet_neutral_tiles, (uint8_t *)froglet_neutral_metasprites, FALSE },
-		{ BANK(froglet_happy), froglet_happy_TILE_COUNT, (uint8_t *)froglet_happy_tiles, (uint8_t *)froglet_happy_metasprites, FALSE },
-		{ BANK(froglet_laugh), froglet_laugh_TILE_COUNT, (uint8_t *)froglet_laugh_tiles, (uint8_t *)froglet_laugh_metasprites, FALSE },
-		{ BANK(froglet_sad), froglet_sad_TILE_COUNT, (uint8_t *)froglet_sad_tiles, (uint8_t *)froglet_sad_metasprites, FALSE },
-		{ BANK(froglet_stressed), froglet_stressed_TILE_COUNT, (uint8_t *)froglet_stressed_tiles, (uint8_t *)froglet_stressed_metasprites, FALSE },
-		{ BANK(froglet_angry), froglet_angry_TILE_COUNT, (uint8_t *)froglet_angry_tiles, (uint8_t *)froglet_angry_metasprites, FALSE },
-		{ BANK(froglet_eat), froglet_eat_TILE_COUNT, (uint8_t *)froglet_eat_tiles, (uint8_t *)froglet_eat_metasprites, FALSE },
-		{ BANK(froglet_yawn), froglet_yawn_TILE_COUNT, (uint8_t *)froglet_yawn_tiles, (uint8_t *)froglet_yawn_metasprites, FALSE },
-		{ BANK(froglet_walk), froglet_walk_TILE_COUNT, (uint8_t *)froglet_walk_tiles, (uint8_t *)froglet_walk_metasprites, FALSE },
-		{ BANK(froglet_walk), froglet_walk_TILE_COUNT, (uint8_t *)froglet_walk_tiles, (uint8_t *)froglet_walk_metasprites, TRUE },
-		{ BANK(froglet_sleep), froglet_sleep_TILE_COUNT, (uint8_t *)froglet_sleep_tiles, (uint8_t *)froglet_sleep_metasprites, FALSE }
-	},
-	{
-		{ BANK(teen_norm_neutral), teen_norm_neutral_TILE_COUNT, (uint8_t *)teen_norm_neutral_tiles, (uint8_t *)teen_norm_neutral_metasprites, FALSE },
-		{ BANK(teen_norm_happy), teen_norm_happy_TILE_COUNT, (uint8_t *)teen_norm_happy_tiles, (uint8_t *)teen_norm_happy_metasprites, FALSE },
-		{ BANK(teen_norm_laugh), teen_norm_laugh_TILE_COUNT, (uint8_t *)teen_norm_laugh_tiles, (uint8_t *)teen_norm_laugh_metasprites, FALSE },
-		{ BANK(teen_norm_sad), teen_norm_sad_TILE_COUNT, (uint8_t *)teen_norm_sad_tiles, (uint8_t *)teen_norm_sad_metasprites, FALSE },
-		{ BANK(teen_norm_stressed), teen_norm_stressed_TILE_COUNT, (uint8_t *)teen_norm_stressed_tiles, (uint8_t *)teen_norm_stressed_metasprites, FALSE },
-		{ BANK(teen_norm_angry), teen_norm_angry_TILE_COUNT, (uint8_t *)teen_norm_angry_tiles, (uint8_t *)teen_norm_angry_metasprites, FALSE },
-		{ BANK(teen_norm_eat), teen_norm_eat_TILE_COUNT, (uint8_t *)teen_norm_eat_tiles, (uint8_t *)teen_norm_eat_metasprites, FALSE },
-		{ BANK(teen_norm_yawn), teen_norm_yawn_TILE_COUNT, (uint8_t *)teen_norm_yawn_tiles, (uint8_t *)teen_norm_yawn_metasprites, FALSE },
-		{ BANK(teen_norm_walk), teen_norm_walk_TILE_COUNT, (uint8_t *)teen_norm_walk_tiles, (uint8_t *)teen_norm_walk_metasprites, FALSE },
-		{ BANK(teen_norm_walk), teen_norm_walk_TILE_COUNT, (uint8_t *)teen_norm_walk_tiles, (uint8_t *)teen_norm_walk_metasprites, TRUE },
-		{ BANK(teen_norm_sleep), teen_norm_sleep_TILE_COUNT, (uint8_t *)teen_norm_sleep_tiles, (uint8_t *)teen_norm_sleep_metasprites, FALSE }
-	},
-	{
-		{ BANK(teen_tail_neutral), teen_tail_neutral_TILE_COUNT, (uint8_t *)teen_tail_neutral_tiles, (uint8_t *)teen_tail_neutral_metasprites, FALSE },
-		{ BANK(teen_tail_happy), teen_tail_happy_TILE_COUNT, (uint8_t *)teen_tail_happy_tiles, (uint8_t *)teen_tail_happy_metasprites, FALSE },
-		{ BANK(teen_tail_laugh), teen_tail_laugh_TILE_COUNT, (uint8_t *)teen_tail_laugh_tiles, (uint8_t *)teen_tail_laugh_metasprites, FALSE },
-		{ BANK(teen_tail_sad), teen_tail_sad_TILE_COUNT, (uint8_t *)teen_tail_sad_tiles, (uint8_t *)teen_tail_sad_metasprites, FALSE },
-		{ BANK(teen_tail_stressed), teen_tail_stressed_TILE_COUNT, (uint8_t *)teen_tail_stressed_tiles, (uint8_t *)teen_tail_stressed_metasprites, FALSE },
-		{ BANK(teen_tail_angry), teen_tail_angry_TILE_COUNT, (uint8_t *)teen_tail_angry_tiles, (uint8_t *)teen_tail_angry_metasprites, FALSE },
-		{ BANK(teen_tail_eat), teen_tail_eat_TILE_COUNT, (uint8_t *)teen_tail_eat_tiles, (uint8_t *)teen_tail_eat_metasprites, FALSE },
-		{ BANK(teen_tail_yawn), teen_tail_yawn_TILE_COUNT, (uint8_t *)teen_tail_yawn_tiles, (uint8_t *)teen_tail_yawn_metasprites, FALSE },
-		{ BANK(teen_tail_walk), teen_tail_walk_TILE_COUNT, (uint8_t *)teen_tail_walk_tiles, (uint8_t *)teen_tail_walk_metasprites, FALSE },
-		{ BANK(teen_tail_walk), teen_tail_walk_TILE_COUNT, (uint8_t *)teen_tail_walk_tiles, (uint8_t *)teen_tail_walk_metasprites, TRUE },
-		{ BANK(teen_tail_sleep), teen_tail_sleep_TILE_COUNT, (uint8_t *)teen_tail_sleep_tiles, (uint8_t *)teen_tail_sleep_metasprites, FALSE }
-	},
-	{
-		{ BANK(teen_bw_neutral), teen_bw_neutral_TILE_COUNT, (uint8_t *)teen_bw_neutral_tiles, (uint8_t *)teen_bw_neutral_metasprites, FALSE },
-		{ BANK(teen_bw_happy), teen_bw_happy_TILE_COUNT, (uint8_t *)teen_bw_happy_tiles, (uint8_t *)teen_bw_happy_metasprites, FALSE },
-		{ BANK(teen_bw_laugh), teen_bw_laugh_TILE_COUNT, (uint8_t *)teen_bw_laugh_tiles, (uint8_t *)teen_bw_laugh_metasprites, FALSE },
-		{ BANK(teen_bw_sad), teen_bw_sad_TILE_COUNT, (uint8_t *)teen_bw_sad_tiles, (uint8_t *)teen_bw_sad_metasprites, FALSE },
-		{ BANK(teen_bw_stressed), teen_bw_stressed_TILE_COUNT, (uint8_t *)teen_bw_stressed_tiles, (uint8_t *)teen_bw_stressed_metasprites, FALSE },
-		{ BANK(teen_bw_angry), teen_bw_angry_TILE_COUNT, (uint8_t *)teen_bw_angry_tiles, (uint8_t *)teen_bw_angry_metasprites, FALSE },
-		{ BANK(teen_bw_eat), teen_bw_eat_TILE_COUNT, (uint8_t *)teen_bw_eat_tiles, (uint8_t *)teen_bw_eat_metasprites, FALSE },
-		{ BANK(teen_bw_yawn), teen_bw_yawn_TILE_COUNT, (uint8_t *)teen_bw_yawn_tiles, (uint8_t *)teen_bw_yawn_metasprites, FALSE },
-		{ BANK(teen_bw_walk), teen_bw_walk_TILE_COUNT, (uint8_t *)teen_bw_walk_tiles, (uint8_t *)teen_bw_walk_metasprites, FALSE },
-		{ BANK(teen_bw_walk), teen_bw_walk_TILE_COUNT, (uint8_t *)teen_bw_walk_tiles, (uint8_t *)teen_bw_walk_metasprites, TRUE },
-		{ BANK(teen_bw_sleep), teen_bw_sleep_TILE_COUNT, (uint8_t *)teen_bw_sleep_tiles, (uint8_t *)teen_bw_sleep_metasprites, FALSE }
-	},
-	{
-		{ BANK(norm_neutral), norm_neutral_TILE_COUNT, (uint8_t *)norm_neutral_tiles, (uint8_t *)norm_neutral_metasprites, FALSE },
-		{ BANK(norm_happy), norm_happy_TILE_COUNT, (uint8_t *)norm_happy_tiles, (uint8_t *)norm_happy_metasprites, FALSE },
-		{ BANK(norm_laugh), norm_laugh_TILE_COUNT, (uint8_t *)norm_laugh_tiles, (uint8_t *)norm_laugh_metasprites, FALSE },
-		{ BANK(norm_sad), norm_sad_TILE_COUNT, (uint8_t *)norm_sad_tiles, (uint8_t *)norm_sad_metasprites, FALSE },
-		{ BANK(norm_stressed), norm_stressed_TILE_COUNT, (uint8_t *)norm_stressed_tiles, (uint8_t *)norm_stressed_metasprites, FALSE },
-		{ BANK(norm_angry), norm_angry_TILE_COUNT, (uint8_t *)norm_angry_tiles, (uint8_t *)norm_angry_metasprites, FALSE },
-		{ BANK(norm_eat), norm_eat_TILE_COUNT, (uint8_t *)norm_eat_tiles, (uint8_t *)norm_eat_metasprites, FALSE },
-		{ BANK(norm_yawn), norm_yawn_TILE_COUNT, (uint8_t *)norm_yawn_tiles, (uint8_t *)norm_yawn_metasprites, FALSE },
-		{ BANK(norm_walk), norm_walk_TILE_COUNT, (uint8_t *)norm_walk_tiles, (uint8_t *)norm_walk_metasprites, FALSE },
-		{ BANK(norm_walk), norm_walk_TILE_COUNT, (uint8_t *)norm_walk_tiles, (uint8_t *)norm_walk_metasprites, TRUE },
-		{ BANK(norm_sleep), norm_sleep_TILE_COUNT, (uint8_t *)norm_sleep_tiles, (uint8_t *)norm_sleep_metasprites, FALSE }
-	},
-	{
-		{ BANK(mush_neutral), mush_neutral_TILE_COUNT, (uint8_t *)mush_neutral_tiles, (uint8_t *)mush_neutral_metasprites, FALSE },
-		{ BANK(mush_happy), mush_happy_TILE_COUNT, (uint8_t *)mush_happy_tiles, (uint8_t *)mush_happy_metasprites, FALSE },
-		{ BANK(mush_laugh), mush_laugh_TILE_COUNT, (uint8_t *)mush_laugh_tiles, (uint8_t *)mush_laugh_metasprites, FALSE },
-		{ BANK(mush_sad), mush_sad_TILE_COUNT, (uint8_t *)mush_sad_tiles, (uint8_t *)mush_sad_metasprites, FALSE },
-		{ BANK(mush_stressed), mush_stressed_TILE_COUNT, (uint8_t *)mush_stressed_tiles, (uint8_t *)mush_stressed_metasprites, FALSE },
-		{ BANK(mush_angry), mush_angry_TILE_COUNT, (uint8_t *)mush_angry_tiles, (uint8_t *)mush_angry_metasprites, FALSE },
-		{ BANK(mush_eat), mush_eat_TILE_COUNT, (uint8_t *)mush_eat_tiles, (uint8_t *)mush_eat_metasprites, FALSE },
-		{ BANK(mush_yawn), mush_yawn_TILE_COUNT, (uint8_t *)mush_yawn_tiles, (uint8_t *)mush_yawn_metasprites, FALSE },
-		{ BANK(mush_walk), mush_walk_TILE_COUNT, (uint8_t *)mush_walk_tiles, (uint8_t *)mush_walk_metasprites, FALSE },
-		{ BANK(mush_walk), mush_walk_TILE_COUNT, (uint8_t *)mush_walk_tiles, (uint8_t *)mush_walk_metasprites, TRUE },
-		{ BANK(mush_sleep), mush_sleep_TILE_COUNT, (uint8_t *)mush_sleep_tiles, (uint8_t *)mush_sleep_metasprites, FALSE }
-	},
-	{
-		{ BANK(axo_neutral), axo_neutral_TILE_COUNT, (uint8_t *)axo_neutral_tiles, (uint8_t *)axo_neutral_metasprites, FALSE },
-		{ BANK(axo_happy), axo_happy_TILE_COUNT, (uint8_t *)axo_happy_tiles, (uint8_t *)axo_happy_metasprites, FALSE },
-		{ BANK(axo_laugh), axo_laugh_TILE_COUNT, (uint8_t *)axo_laugh_tiles, (uint8_t *)axo_laugh_metasprites, FALSE },
-		{ BANK(axo_sad), axo_sad_TILE_COUNT, (uint8_t *)axo_sad_tiles, (uint8_t *)axo_sad_metasprites, FALSE },
-		{ BANK(axo_stressed), axo_stressed_TILE_COUNT, (uint8_t *)axo_stressed_tiles, (uint8_t *)axo_stressed_metasprites, FALSE },
-		{ BANK(axo_angry), axo_angry_TILE_COUNT, (uint8_t *)axo_angry_tiles, (uint8_t *)axo_angry_metasprites, FALSE },
-		{ BANK(axo_eat), axo_eat_TILE_COUNT, (uint8_t *)axo_eat_tiles, (uint8_t *)axo_eat_metasprites, FALSE },
-		{ BANK(axo_yawn), axo_yawn_TILE_COUNT, (uint8_t *)axo_yawn_tiles, (uint8_t *)axo_yawn_metasprites, FALSE },
-		{ BANK(axo_walk), axo_walk_TILE_COUNT, (uint8_t *)axo_walk_tiles, (uint8_t *)axo_walk_metasprites, FALSE },
-		{ BANK(axo_walk), axo_walk_TILE_COUNT, (uint8_t *)axo_walk_tiles, (uint8_t *)axo_walk_metasprites, TRUE },
-		{ BANK(axo_sleep), axo_sleep_TILE_COUNT, (uint8_t *)axo_sleep_tiles, (uint8_t *)axo_sleep_metasprites, FALSE }
-	},
-	{
-		{ BANK(dino_neutral), dino_neutral_TILE_COUNT, (uint8_t *)dino_neutral_tiles, (uint8_t *)dino_neutral_metasprites, FALSE },
-		{ BANK(dino_happy), dino_happy_TILE_COUNT, (uint8_t *)dino_happy_tiles, (uint8_t *)dino_happy_metasprites, FALSE },
-		{ BANK(dino_laugh), dino_laugh_TILE_COUNT, (uint8_t *)dino_laugh_tiles, (uint8_t *)dino_laugh_metasprites, FALSE },
-		{ BANK(dino_sad), dino_sad_TILE_COUNT, (uint8_t *)dino_sad_tiles, (uint8_t *)dino_sad_metasprites, FALSE },
-		{ BANK(dino_stressed), dino_stressed_TILE_COUNT, (uint8_t *)dino_stressed_tiles, (uint8_t *)dino_stressed_metasprites, FALSE },
-		{ BANK(dino_angry), dino_angry_TILE_COUNT, (uint8_t *)dino_angry_tiles, (uint8_t *)dino_angry_metasprites, FALSE },
-		{ BANK(dino_eat), dino_eat_TILE_COUNT, (uint8_t *)dino_eat_tiles, (uint8_t *)dino_eat_metasprites, FALSE },
-		{ BANK(dino_yawn), dino_yawn_TILE_COUNT, (uint8_t *)dino_yawn_tiles, (uint8_t *)dino_yawn_metasprites, FALSE },
-		{ BANK(dino_walk), dino_walk_TILE_COUNT, (uint8_t *)dino_walk_tiles, (uint8_t *)dino_walk_metasprites, FALSE },
-		{ BANK(dino_walk), dino_walk_TILE_COUNT, (uint8_t *)dino_walk_tiles, (uint8_t *)dino_walk_metasprites, TRUE },
-		{ BANK(dino_sleep), dino_sleep_TILE_COUNT, (uint8_t *)dino_sleep_tiles, (uint8_t *)dino_sleep_metasprites, FALSE }
-	},
-	{
-		{ BANK(apple_neutral), apple_neutral_TILE_COUNT, (uint8_t *)apple_neutral_tiles, (uint8_t *)apple_neutral_metasprites, FALSE },
-		{ BANK(apple_happy), apple_happy_TILE_COUNT, (uint8_t *)apple_happy_tiles, (uint8_t *)apple_happy_metasprites, FALSE },
-		{ BANK(apple_laugh), apple_laugh_TILE_COUNT, (uint8_t *)apple_laugh_tiles, (uint8_t *)apple_laugh_metasprites, FALSE },
-		{ BANK(apple_sad), apple_sad_TILE_COUNT, (uint8_t *)apple_sad_tiles, (uint8_t *)apple_sad_metasprites, FALSE },
-		{ BANK(apple_stressed), apple_stressed_TILE_COUNT, (uint8_t *)apple_stressed_tiles, (uint8_t *)apple_stressed_metasprites, FALSE },
-		{ BANK(apple_angry), apple_angry_TILE_COUNT, (uint8_t *)apple_angry_tiles, (uint8_t *)apple_angry_metasprites, FALSE },
-		{ BANK(apple_eat), apple_eat_TILE_COUNT, (uint8_t *)apple_eat_tiles, (uint8_t *)apple_eat_metasprites, FALSE },
-		{ BANK(apple_yawn), apple_yawn_TILE_COUNT, (uint8_t *)apple_yawn_tiles, (uint8_t *)apple_yawn_metasprites, FALSE },
-		{ BANK(apple_walk), apple_walk_TILE_COUNT, (uint8_t *)apple_walk_tiles, (uint8_t *)apple_walk_metasprites, FALSE },
-		{ BANK(apple_walk), apple_walk_TILE_COUNT, (uint8_t *)apple_walk_tiles, (uint8_t *)apple_walk_metasprites, TRUE },
-		{ BANK(apple_sleep), apple_sleep_TILE_COUNT, (uint8_t *)apple_sleep_tiles, (uint8_t *)apple_sleep_metasprites, FALSE }
-	},
-	{
-		{ BANK(panda_neutral), panda_neutral_TILE_COUNT, (uint8_t *)panda_neutral_tiles, (uint8_t *)panda_neutral_metasprites, FALSE },
-		{ BANK(panda_happy), panda_happy_TILE_COUNT, (uint8_t *)panda_happy_tiles, (uint8_t *)panda_happy_metasprites, FALSE },
-		{ BANK(panda_laugh), panda_laugh_TILE_COUNT, (uint8_t *)panda_laugh_tiles, (uint8_t *)panda_laugh_metasprites, FALSE },
-		{ BANK(panda_sad), panda_sad_TILE_COUNT, (uint8_t *)panda_sad_tiles, (uint8_t *)panda_sad_metasprites, FALSE },
-		{ BANK(panda_stressed), panda_stressed_TILE_COUNT, (uint8_t *)panda_stressed_tiles, (uint8_t *)panda_stressed_metasprites, FALSE },
-		{ BANK(panda_angry), panda_angry_TILE_COUNT, (uint8_t *)panda_angry_tiles, (uint8_t *)panda_angry_metasprites, FALSE },
-		{ BANK(panda_eat), panda_eat_TILE_COUNT, (uint8_t *)panda_eat_tiles, (uint8_t *)panda_eat_metasprites, FALSE },
-		{ BANK(panda_yawn), panda_yawn_TILE_COUNT, (uint8_t *)panda_yawn_tiles, (uint8_t *)panda_yawn_metasprites, FALSE },
-		{ BANK(panda_walk), panda_walk_TILE_COUNT, (uint8_t *)panda_walk_tiles, (uint8_t *)panda_walk_metasprites, FALSE },
-		{ BANK(panda_walk), panda_walk_TILE_COUNT, (uint8_t *)panda_walk_tiles, (uint8_t *)panda_walk_metasprites, TRUE },
-		{ BANK(panda_sleep), panda_sleep_TILE_COUNT, (uint8_t *)panda_sleep_tiles, (uint8_t *)panda_sleep_metasprites, FALSE }
-	},
-	{
-		{ BANK(dead_good), dead_good_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)dead_good_metasprites, FALSE },
-		{ BANK(dead_good), dead_good_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)dead_good_metasprites, FALSE },
-		{ BANK(dead_good), dead_good_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)dead_good_metasprites, FALSE },
-		{ BANK(dead_good), dead_good_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)dead_good_metasprites, FALSE },
-		{ BANK(dead_good), dead_good_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)dead_good_metasprites, FALSE },
-		{ BANK(dead_good), dead_good_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)dead_good_metasprites, FALSE },
-		{ BANK(dead_good), dead_good_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)dead_good_metasprites, FALSE },
-		{ BANK(dead_good), dead_good_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)dead_good_metasprites, FALSE },
-		{ BANK(dead_good), dead_good_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)dead_good_metasprites, FALSE },
-		{ BANK(dead_good), dead_good_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)dead_good_metasprites, FALSE },
-		{ BANK(dead_good), dead_good_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)dead_good_metasprites, FALSE }
-	},
-	{
-		{ BANK(dead_bad), dead_bad_TILE_COUNT, (uint8_t *)dead_bad_tiles, (uint8_t *)dead_bad_metasprites, FALSE },
-		{ BANK(dead_bad), dead_bad_TILE_COUNT, (uint8_t *)dead_bad_tiles, (uint8_t *)dead_bad_metasprites, FALSE },
-		{ BANK(dead_bad), dead_bad_TILE_COUNT, (uint8_t *)dead_bad_tiles, (uint8_t *)dead_bad_metasprites, FALSE },
-		{ BANK(dead_bad), dead_bad_TILE_COUNT, (uint8_t *)dead_bad_tiles, (uint8_t *)dead_bad_metasprites, FALSE },
-		{ BANK(dead_bad), dead_bad_TILE_COUNT, (uint8_t *)dead_bad_tiles, (uint8_t *)dead_bad_metasprites, FALSE },
-		{ BANK(dead_bad), dead_bad_TILE_COUNT, (uint8_t *)dead_bad_tiles, (uint8_t *)dead_bad_metasprites, FALSE },
-		{ BANK(dead_bad), dead_bad_TILE_COUNT, (uint8_t *)dead_bad_tiles, (uint8_t *)dead_bad_metasprites, FALSE },
-		{ BANK(dead_bad), dead_bad_TILE_COUNT, (uint8_t *)dead_bad_tiles, (uint8_t *)dead_bad_metasprites, FALSE },
-		{ BANK(dead_bad), dead_bad_TILE_COUNT, (uint8_t *)dead_bad_tiles, (uint8_t *)dead_bad_metasprites, FALSE },
-		{ BANK(dead_bad), dead_bad_TILE_COUNT, (uint8_t *)dead_bad_tiles, (uint8_t *)dead_bad_metasprites, FALSE },
-		{ BANK(dead_bad), dead_bad_TILE_COUNT, (uint8_t *)dead_bad_tiles, (uint8_t *)dead_bad_metasprites, FALSE }
-	}
+static const metasprite_t frog_metasprite0[] = {
+	METASPR_ITEM(0, 0, 0x00, S_PAL(0)),
+	METASPR_ITEM(0, 8, 0x01, S_PAL(0)),
+	METASPR_ITEM(0, 8, 0x02, S_PAL(0)),
+	METASPR_ITEM(0, 8, 0x03, S_PAL(0)),
+	METASPR_ITEM(8, -24, 0x08, S_PAL(0)),
+	METASPR_ITEM(0, 8, 0x09, S_PAL(0)),
+	METASPR_ITEM(0, 8, 0x0a, S_PAL(0)),
+	METASPR_ITEM(0, 8, 0x0b, S_PAL(0)),
+	METASPR_ITEM(8, -24, 0x10, S_PAL(0)),
+	METASPR_ITEM(0, 8, 0x11, S_PAL(0)),
+	METASPR_ITEM(0, 8, 0x12, S_PAL(0)),
+	METASPR_ITEM(0, 8, 0x13, S_PAL(0)),
+	METASPR_TERM
 };
 
-void swap_frog_vram(void) {
-	if (frog_vram == FROG_VRAM_1) {
-		frog_vram = FROG_VRAM_2;
-	} else {
-		frog_vram = FROG_VRAM_1;
+static const metasprite_t frog_metasprite1[] = {
+	METASPR_ITEM(0, 0, 0x04, S_PAL(0)),
+	METASPR_ITEM(0, 8, 0x05, S_PAL(0)),
+	METASPR_ITEM(0, 8, 0x06, S_PAL(0)),
+	METASPR_ITEM(0, 8, 0x07, S_PAL(0)),
+	METASPR_ITEM(8, -24, 0x0c, S_PAL(0)),
+	METASPR_ITEM(0, 8, 0x0d, S_PAL(0)),
+	METASPR_ITEM(0, 8, 0x0e, S_PAL(0)),
+	METASPR_ITEM(0, 8, 0x0f, S_PAL(0)),
+	METASPR_ITEM(8, -24, 0x14, S_PAL(0)),
+	METASPR_ITEM(0, 8, 0x15, S_PAL(0)),
+	METASPR_ITEM(0, 8, 0x16, S_PAL(0)),
+	METASPR_ITEM(0, 8, 0x17, S_PAL(0)),
+	METASPR_TERM
+};
+
+static const metasprite_t* const frog_metasprites[2] = { frog_metasprite0, frog_metasprite1 };
+
+const sprite_data_t frog_sprite_table[14][11] = {
+	{
+		{ BANK(egg), FROG_TILE_COUNT, (uint8_t *)egg_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(egg), FROG_TILE_COUNT, (uint8_t *)egg_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(egg), FROG_TILE_COUNT, (uint8_t *)egg_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(egg), FROG_TILE_COUNT, (uint8_t *)egg_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(egg), FROG_TILE_COUNT, (uint8_t *)egg_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(egg), FROG_TILE_COUNT, (uint8_t *)egg_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(egg), FROG_TILE_COUNT, (uint8_t *)egg_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(egg), FROG_TILE_COUNT, (uint8_t *)egg_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(egg), FROG_TILE_COUNT, (uint8_t *)egg_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(egg), FROG_TILE_COUNT, (uint8_t *)egg_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(egg), FROG_TILE_COUNT, (uint8_t *)egg_tiles, (uint8_t *)frog_metasprites }
+	},
+	{
+		{ BANK(tadpole_neutral), FROG_TILE_COUNT, (uint8_t *)tadpole_neutral_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(tadpole_happy), FROG_TILE_COUNT, (uint8_t *)tadpole_happy_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(tadpole_laugh), FROG_TILE_COUNT, (uint8_t *)tadpole_laugh_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(tadpole_sad), FROG_TILE_COUNT, (uint8_t *)tadpole_sad_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(tadpole_stressed), FROG_TILE_COUNT, (uint8_t *)tadpole_stressed_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(tadpole_angry), FROG_TILE_COUNT, (uint8_t *)tadpole_angry_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(tadpole_eat), FROG_TILE_COUNT, (uint8_t *)tadpole_eat_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(tadpole_yawn), FROG_TILE_COUNT, (uint8_t *)tadpole_yawn_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(tadpole_walk), FROG_TILE_COUNT, (uint8_t *)tadpole_walk_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(tadpole_walk), FROG_TILE_COUNT, (uint8_t *)tadpole_walk_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(tadpole_sleep), FROG_TILE_COUNT, (uint8_t *)tadpole_sleep_tiles, (uint8_t *)frog_metasprites }
+	},
+	{
+		{ BANK(froglet_neutral), FROG_TILE_COUNT, (uint8_t *)froglet_neutral_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(froglet_happy), FROG_TILE_COUNT, (uint8_t *)froglet_happy_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(froglet_laugh), FROG_TILE_COUNT, (uint8_t *)froglet_laugh_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(froglet_sad), FROG_TILE_COUNT, (uint8_t *)froglet_sad_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(froglet_stressed), FROG_TILE_COUNT, (uint8_t *)froglet_stressed_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(froglet_angry), FROG_TILE_COUNT, (uint8_t *)froglet_angry_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(froglet_eat), FROG_TILE_COUNT, (uint8_t *)froglet_eat_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(froglet_yawn), FROG_TILE_COUNT, (uint8_t *)froglet_yawn_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(froglet_walk), FROG_TILE_COUNT, (uint8_t *)froglet_walk_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(froglet_walk), FROG_TILE_COUNT, (uint8_t *)froglet_walk_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(froglet_sleep), FROG_TILE_COUNT, (uint8_t *)froglet_sleep_tiles, (uint8_t *)frog_metasprites }
+	},
+	{
+		{ BANK(teen_norm_neutral), FROG_TILE_COUNT, (uint8_t *)teen_norm_neutral_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(teen_norm_happy), FROG_TILE_COUNT, (uint8_t *)teen_norm_happy_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(teen_norm_laugh), FROG_TILE_COUNT, (uint8_t *)teen_norm_laugh_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(teen_norm_sad), FROG_TILE_COUNT, (uint8_t *)teen_norm_sad_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(teen_norm_stressed), FROG_TILE_COUNT, (uint8_t *)teen_norm_stressed_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(teen_norm_angry), FROG_TILE_COUNT, (uint8_t *)teen_norm_angry_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(teen_norm_eat), FROG_TILE_COUNT, (uint8_t *)teen_norm_eat_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(teen_norm_yawn), FROG_TILE_COUNT, (uint8_t *)teen_norm_yawn_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(teen_norm_walk), FROG_TILE_COUNT, (uint8_t *)teen_norm_walk_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(teen_norm_walk), FROG_TILE_COUNT, (uint8_t *)teen_norm_walk_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(teen_norm_sleep), FROG_TILE_COUNT, (uint8_t *)teen_norm_sleep_tiles, (uint8_t *)frog_metasprites }
+	},
+	{
+		{ BANK(teen_tail_neutral), FROG_TILE_COUNT, (uint8_t *)teen_tail_neutral_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(teen_tail_happy), FROG_TILE_COUNT, (uint8_t *)teen_tail_happy_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(teen_tail_laugh), FROG_TILE_COUNT, (uint8_t *)teen_tail_laugh_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(teen_tail_sad), FROG_TILE_COUNT, (uint8_t *)teen_tail_sad_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(teen_tail_stressed), FROG_TILE_COUNT, (uint8_t *)teen_tail_stressed_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(teen_tail_angry), FROG_TILE_COUNT, (uint8_t *)teen_tail_angry_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(teen_tail_eat), FROG_TILE_COUNT, (uint8_t *)teen_tail_eat_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(teen_tail_yawn), FROG_TILE_COUNT, (uint8_t *)teen_tail_yawn_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(teen_tail_walk), FROG_TILE_COUNT, (uint8_t *)teen_tail_walk_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(teen_tail_walk), FROG_TILE_COUNT, (uint8_t *)teen_tail_walk_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(teen_tail_sleep), FROG_TILE_COUNT, (uint8_t *)teen_tail_sleep_tiles, (uint8_t *)frog_metasprites }
+	},
+	{
+		{ BANK(teen_bw_neutral), FROG_TILE_COUNT, (uint8_t *)teen_bw_neutral_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(teen_bw_happy), FROG_TILE_COUNT, (uint8_t *)teen_bw_happy_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(teen_bw_laugh), FROG_TILE_COUNT, (uint8_t *)teen_bw_laugh_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(teen_bw_sad), FROG_TILE_COUNT, (uint8_t *)teen_bw_sad_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(teen_bw_stressed), FROG_TILE_COUNT, (uint8_t *)teen_bw_stressed_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(teen_bw_angry), FROG_TILE_COUNT, (uint8_t *)teen_bw_angry_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(teen_bw_eat), FROG_TILE_COUNT, (uint8_t *)teen_bw_eat_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(teen_bw_yawn), FROG_TILE_COUNT, (uint8_t *)teen_bw_yawn_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(teen_bw_walk), FROG_TILE_COUNT, (uint8_t *)teen_bw_walk_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(teen_bw_walk), FROG_TILE_COUNT, (uint8_t *)teen_bw_walk_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(teen_bw_sleep), FROG_TILE_COUNT, (uint8_t *)teen_bw_sleep_tiles, (uint8_t *)frog_metasprites }
+	},
+	{
+		{ BANK(norm_neutral), FROG_TILE_COUNT, (uint8_t *)norm_neutral_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(norm_happy), FROG_TILE_COUNT, (uint8_t *)norm_happy_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(norm_laugh), FROG_TILE_COUNT, (uint8_t *)norm_laugh_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(norm_sad), FROG_TILE_COUNT, (uint8_t *)norm_sad_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(norm_stressed), FROG_TILE_COUNT, (uint8_t *)norm_stressed_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(norm_angry), FROG_TILE_COUNT, (uint8_t *)norm_angry_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(norm_eat), FROG_TILE_COUNT, (uint8_t *)norm_eat_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(norm_yawn), FROG_TILE_COUNT, (uint8_t *)norm_yawn_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(norm_walk), FROG_TILE_COUNT, (uint8_t *)norm_walk_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(norm_walk), FROG_TILE_COUNT, (uint8_t *)norm_walk_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(norm_sleep), FROG_TILE_COUNT, (uint8_t *)norm_sleep_tiles, (uint8_t *)frog_metasprites }
+	},
+	{
+		{ BANK(mush_neutral), FROG_TILE_COUNT, (uint8_t *)mush_neutral_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(mush_happy), FROG_TILE_COUNT, (uint8_t *)mush_happy_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(mush_laugh), FROG_TILE_COUNT, (uint8_t *)mush_laugh_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(mush_sad), FROG_TILE_COUNT, (uint8_t *)mush_sad_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(mush_stressed), FROG_TILE_COUNT, (uint8_t *)mush_stressed_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(mush_angry), FROG_TILE_COUNT, (uint8_t *)mush_angry_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(mush_eat), FROG_TILE_COUNT, (uint8_t *)mush_eat_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(mush_yawn), FROG_TILE_COUNT, (uint8_t *)mush_yawn_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(mush_walk), FROG_TILE_COUNT, (uint8_t *)mush_walk_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(mush_walk), FROG_TILE_COUNT, (uint8_t *)mush_walk_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(mush_sleep), FROG_TILE_COUNT, (uint8_t *)mush_sleep_tiles, (uint8_t *)frog_metasprites }
+	},
+	{
+		{ BANK(axo_neutral), FROG_TILE_COUNT, (uint8_t *)axo_neutral_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(axo_happy), FROG_TILE_COUNT, (uint8_t *)axo_happy_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(axo_laugh), FROG_TILE_COUNT, (uint8_t *)axo_laugh_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(axo_sad), FROG_TILE_COUNT, (uint8_t *)axo_sad_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(axo_stressed), FROG_TILE_COUNT, (uint8_t *)axo_stressed_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(axo_angry), FROG_TILE_COUNT, (uint8_t *)axo_angry_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(axo_eat), FROG_TILE_COUNT, (uint8_t *)axo_eat_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(axo_yawn), FROG_TILE_COUNT, (uint8_t *)axo_yawn_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(axo_walk), FROG_TILE_COUNT, (uint8_t *)axo_walk_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(axo_walk), FROG_TILE_COUNT, (uint8_t *)axo_walk_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(axo_sleep), FROG_TILE_COUNT, (uint8_t *)axo_sleep_tiles, (uint8_t *)frog_metasprites }
+	},
+	{
+		{ BANK(dino_neutral), FROG_TILE_COUNT, (uint8_t *)dino_neutral_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dino_happy), FROG_TILE_COUNT, (uint8_t *)dino_happy_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dino_laugh), FROG_TILE_COUNT, (uint8_t *)dino_laugh_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dino_sad), FROG_TILE_COUNT, (uint8_t *)dino_sad_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dino_stressed), FROG_TILE_COUNT, (uint8_t *)dino_stressed_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dino_angry), FROG_TILE_COUNT, (uint8_t *)dino_angry_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dino_eat), FROG_TILE_COUNT, (uint8_t *)dino_eat_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dino_yawn), FROG_TILE_COUNT, (uint8_t *)dino_yawn_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dino_walk), FROG_TILE_COUNT, (uint8_t *)dino_walk_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dino_walk), FROG_TILE_COUNT, (uint8_t *)dino_walk_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dino_sleep), FROG_TILE_COUNT, (uint8_t *)dino_sleep_tiles, (uint8_t *)frog_metasprites }
+	},
+	{
+		{ BANK(apple_neutral), FROG_TILE_COUNT, (uint8_t *)apple_neutral_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(apple_happy), FROG_TILE_COUNT, (uint8_t *)apple_happy_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(apple_laugh), FROG_TILE_COUNT, (uint8_t *)apple_laugh_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(apple_sad), FROG_TILE_COUNT, (uint8_t *)apple_sad_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(apple_stressed), FROG_TILE_COUNT, (uint8_t *)apple_stressed_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(apple_angry), FROG_TILE_COUNT, (uint8_t *)apple_angry_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(apple_eat), FROG_TILE_COUNT, (uint8_t *)apple_eat_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(apple_yawn), FROG_TILE_COUNT, (uint8_t *)apple_yawn_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(apple_walk), FROG_TILE_COUNT, (uint8_t *)apple_walk_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(apple_walk), FROG_TILE_COUNT, (uint8_t *)apple_walk_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(apple_sleep), FROG_TILE_COUNT, (uint8_t *)apple_sleep_tiles, (uint8_t *)frog_metasprites }
+	},
+	{
+		{ BANK(panda_neutral), FROG_TILE_COUNT, (uint8_t *)panda_neutral_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(panda_happy), FROG_TILE_COUNT, (uint8_t *)panda_happy_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(panda_laugh), FROG_TILE_COUNT, (uint8_t *)panda_laugh_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(panda_sad), FROG_TILE_COUNT, (uint8_t *)panda_sad_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(panda_stressed), FROG_TILE_COUNT, (uint8_t *)panda_stressed_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(panda_angry), FROG_TILE_COUNT, (uint8_t *)panda_angry_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(panda_eat), FROG_TILE_COUNT, (uint8_t *)panda_eat_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(panda_yawn), FROG_TILE_COUNT, (uint8_t *)panda_yawn_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(panda_walk), FROG_TILE_COUNT, (uint8_t *)panda_walk_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(panda_walk), FROG_TILE_COUNT, (uint8_t *)panda_walk_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(panda_sleep), FROG_TILE_COUNT, (uint8_t *)panda_sleep_tiles, (uint8_t *)frog_metasprites }
+	},
+	{
+		{ BANK(dead_good), FROG_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dead_good), FROG_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dead_good), FROG_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dead_good), FROG_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dead_good), FROG_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dead_good), FROG_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dead_good), FROG_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dead_good), FROG_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dead_good), FROG_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dead_good), FROG_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dead_good), FROG_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)frog_metasprites }
+	},
+	{
+		{ BANK(dead_bad), FROG_TILE_COUNT, (uint8_t *)dead_bad_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dead_bad), FROG_TILE_COUNT, (uint8_t *)dead_bad_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dead_bad), FROG_TILE_COUNT, (uint8_t *)dead_bad_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dead_bad), FROG_TILE_COUNT, (uint8_t *)dead_bad_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dead_bad), FROG_TILE_COUNT, (uint8_t *)dead_bad_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dead_bad), FROG_TILE_COUNT, (uint8_t *)dead_bad_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dead_bad), FROG_TILE_COUNT, (uint8_t *)dead_bad_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dead_bad), FROG_TILE_COUNT, (uint8_t *)dead_bad_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dead_bad), FROG_TILE_COUNT, (uint8_t *)dead_bad_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dead_bad), FROG_TILE_COUNT, (uint8_t *)dead_bad_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dead_bad), FROG_TILE_COUNT, (uint8_t *)dead_bad_tiles, (uint8_t *)frog_metasprites }
 	}
-}
-
-void set_frog_sprite_data(void) {
-	saved_bank = _current_bank;
-
-	frog_sprite_data = frog_sprite_data_table[stage][anim];
-	SWITCH_ROM(frog_sprite_data.bank);
-	set_sprite_data(frog_vram, frog_sprite_data.tile_count, frog_sprite_data.tiles);
-
-	SWITCH_ROM(saved_bank);
-}
-
-void draw_frog_sprite(uint8_t x, uint8_t y, uint8_t frame, uint8_t *last_sprite) {
-	saved_bank = _current_bank;
-	SWITCH_ROM(frog_sprite_data.bank);
-
-	if (frog_sprite_data.flipped) {
-		*last_sprite += move_metasprite_flipx(
-			((metasprite_t**)frog_sprite_data.metasprites)[frame],
-			frog_vram, 0, *last_sprite,
-			x + 32, y
-		);
-	} else {
-		*last_sprite += move_metasprite_ex(
-			((metasprite_t**)frog_sprite_data.metasprites)[frame],
-			frog_vram, 0, *last_sprite,
-			x, y
-		);
-	}
-
-	SWITCH_ROM(saved_bank);
-}
+};

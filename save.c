@@ -2,7 +2,7 @@
 
 #include <gbdk/platform.h>
 
-#include "shared_variables.h"
+#include "common.h"
 
 typedef struct save_slot_t {
 	uint16_t save_flag_start;

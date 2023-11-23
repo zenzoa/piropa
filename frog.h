@@ -1,6 +1,6 @@
 extern void update_stats(void) BANKED;
 extern void setup_frog(uint8_t reset) BANKED;
-extern void draw_frog(uint8_t *last_sprite) BANKED;
+extern void draw_frog(void) BANKED;
 extern void update_frog(void) BANKED;
 
 extern void start_feed(uint8_t bug_type) BANKED;

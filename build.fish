@@ -35,36 +35,45 @@ if test $sprites
 
 	aseprite -b sprites/frogs.aseprite --save-as sprites/frogs/{slice}.png
 	aseprite -b sprites/hand.aseprite --save-as sprites/hand/{slice}.png
-	aseprite -b sprites/misc_8x8.aseprite --save-as sprites/misc_8x8/{slice}.png
-	aseprite -b sprites/misc_16x8.aseprite --save-as sprites/misc_16x8/{slice}.png
+	aseprite -b sprites/emotes.aseprite --save-as sprites/emotes/{slice}.png
+	aseprite -b sprites/bugs_small.aseprite --save-as sprites/bugs_small/{slice}.png
+	aseprite -b sprites/bugs_big.aseprite --save-as sprites/bugs_big/{slice}.png
+	aseprite -b sprites/arrows.aseprite --save-as sprites/arrows/{slice}.png
 
 	aseprite -b sprites/bg_bits.aseprite --save-as sprites/backgrounds/{slice}.png
 	aseprite -b --all-layers sprites/backgrounds.aseprite --save-as sprites/backgrounds/{layer}.png
 
 	set_color $text_color; echo ">> convert png files to gbdk assets..."; set_color normal
 
-	set sprite_args -spr8x8 -px 0 -py 0 -b 255 -keep_palette_order
+	set sprite_map_args -map -noflip -keep_duplicate_tiles -keep_palette_order -b 255
+	set sprite_args -spr8x8 -px 0 -py 0 -keep_palette_order -b 255
 
 	for file in sprites/frogs/*
-		png2asset $file $sprite_args -sw 32 -sh 24
+		png2asset $file $sprite_map_args
 	end
 
 	for file in sprites/hand/*
-		png2asset $file $sprite_args -sw 24 -sh 16
+		png2asset $file $sprite_map_args
 	end
 
-	for file in sprites/misc_8x8/*
-		png2asset $file $sprite_args -sw 8 -sh 8 -keep_duplicate_tiles
+	for file in sprites/emotes/*
+		png2asset $file $sprite_map_args
 	end
 
-	for file in sprites/misc_16x8/*
-		png2asset $file $sprite_args -sw 16 -sh 8 -keep_duplicate_tiles
+	for file in sprites/bugs_small/*
+		png2asset $file $sprite_args -sw 8 -sh 8
 	end
 
-	set bg_args -map -noflip -b 255 -keep_palette_order
+	for file in sprites/bugs_big/*
+		png2asset $file $sprite_args -sw 16 -sh 8
+	end
+
+	for file in sprites/arrows/*
+		png2asset $file $sprite_args -sw 8 -sh 8
+	end
 
 	for file in sprites/backgrounds/*
-		png2asset $file $bg_args
+		png2asset $file -map -noflip -keep_palette_order -b 255
 	end
 end
 

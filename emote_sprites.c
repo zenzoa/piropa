@@ -1,20 +1,23 @@
+#pragma bank 255
+
 #include <gbdk/platform.h>
 #include <gbdk/metasprites.h>
 
-#include "sprites/misc_8x8/emote_sun.h"
-#include "sprites/misc_8x8/emote_sad.h"
-#include "sprites/misc_8x8/emote_angry.h"
-#include "sprites/misc_8x8/emote_bubbles.h"
-#include "sprites/misc_8x8/emote_sparkle.h"
-#include "sprites/misc_8x8/emote_heart.h"
-#include "sprites/misc_8x8/emote_heartbreak.h"
-#include "sprites/misc_8x8/emote_sleep.h"
-#include "sprites/misc_8x8/emote_skull.h"
-#include "sprites/misc_8x8/emote_heal.h"
+#include "common.h"
 
-#include "sprites/misc_16x8/dirt.h"
-#include "sprites/misc_16x8/bath.h"
-#include "sprites/misc_16x8/watering_can.h"
+#include "sprites/emotes/emote_sun.h"
+#include "sprites/emotes/emote_sad.h"
+#include "sprites/emotes/emote_angry.h"
+#include "sprites/emotes/emote_bubbles.h"
+#include "sprites/emotes/emote_sparkle.h"
+#include "sprites/emotes/emote_heart.h"
+#include "sprites/emotes/emote_heartbreak.h"
+#include "sprites/emotes/emote_sleep.h"
+#include "sprites/emotes/emote_skull.h"
+#include "sprites/emotes/emote_heal.h"
+#include "sprites/emotes/dirt.h"
+#include "sprites/emotes/bath.h"
+#include "sprites/emotes/watering_can.h"
 
 #define EMOTE_NONE 0
 #define EMOTE_SUN 1
@@ -28,39 +31,41 @@
 #define EMOTE_SKULL 9
 #define EMOTE_HEAL 10
 
-#define EMOTE_TILE_COUNT 2
+#define EMOTE_TILE_COUNT 4
 
-const metasprite_t emote_metasprite0[] = {
+static const metasprite_t emote_metasprite0[] = {
 	METASPR_ITEM(0, 0, 0, S_PAL(0)),
+	METASPR_ITEM(0, 8, 1, S_PAL(0)),
 	METASPR_TERM
 };
 
-const metasprite_t emote_metasprite1[] = {
-	METASPR_ITEM(0, 0, 1, S_PAL(0)),
+static const metasprite_t emote_metasprite1[] = {
+	METASPR_ITEM(0, 0, 2, S_PAL(0)),
+	METASPR_ITEM(0, 8, 3, S_PAL(0)),
 	METASPR_TERM
 };
 
-const metasprite_t* const emote_metasprites[2] = {
+static const metasprite_t* const emote_metasprites[2] = {
 	emote_metasprite0, emote_metasprite1
 };
 
-#define EMOTE_VRAM_1 0x40
-#define EMOTE_VRAM_2 0x42
-uint8_t emote_vram = EMOTE_VRAM_1;
+#define EMOTE_VRAM_1 0xa0
+#define EMOTE_VRAM_2 0xa4
+static uint8_t emote_vram = EMOTE_VRAM_1;
 
-#define DIRT_VRAM 0xc0
-uint8_t dirt_anim_counter = 0;
-uint8_t dirt_frame = 0;
+#define DIRT_VRAM 0xa8
+static uint8_t dirt_anim_counter = 0;
+static uint8_t dirt_frame = 0;
 
-#define BATH_VRAM 0xc4
-uint8_t bath_anim_counter = 0;
-uint8_t bath_frame = 0;
+#define BATH_VRAM 0xac
+static uint8_t bath_anim_counter = 0;
+static uint8_t bath_frame = 0;
 
 #define WATERING_CAN_VRAM 0xb0
-uint8_t watering_anim_counter = 0;
-uint8_t watering_frame = 0;
+static uint8_t watering_anim_counter = 0;
+static uint8_t watering_frame = 0;
 
-void swap_emote_vram(void) {
+static void swap_emote_vram(void) {
 	if (emote_vram == EMOTE_VRAM_1) {
 		emote_vram = EMOTE_VRAM_2;
 	} else {
@@ -68,127 +73,85 @@ void swap_emote_vram(void) {
 	}
 }
 
-void set_emote_sprite_data(uint8_t emote) {
-	uint8_t saved_bank = _current_bank;
-
+void set_emote_sprite_data(uint8_t emote) BANKED {
+	swap_emote_vram();
 	switch(emote) {
-
 		case EMOTE_SUN:
-			SWITCH_ROM(BANK(emote_sun));
-			set_sprite_data(emote_vram, EMOTE_TILE_COUNT, emote_sun_tiles);
+			set_banked_sprite_data(BANK(emote_sun), emote_vram, emote_sun_TILE_COUNT, emote_sun_tiles);
 			break;
 
 		case EMOTE_SAD:
-			SWITCH_ROM(BANK(emote_sad));
-			set_sprite_data(emote_vram, EMOTE_TILE_COUNT, emote_sad_tiles);
+			set_banked_sprite_data(BANK(emote_sad), emote_vram, emote_sad_TILE_COUNT, emote_sad_tiles);
 			break;
 
 		case EMOTE_ANGRY:
-			SWITCH_ROM(BANK(emote_angry));
-			set_sprite_data(emote_vram, EMOTE_TILE_COUNT, emote_angry_tiles);
+			set_banked_sprite_data(BANK(emote_angry), emote_vram, emote_angry_TILE_COUNT, emote_angry_tiles);
 			break;
 
 		case EMOTE_BUBBLES:
-			SWITCH_ROM(BANK(emote_bubbles));
-			set_sprite_data(emote_vram, EMOTE_TILE_COUNT, emote_bubbles_tiles);
+			set_banked_sprite_data(BANK(emote_bubbles), emote_vram, emote_bubbles_TILE_COUNT, emote_bubbles_tiles);
 			break;
 
 		case EMOTE_SPARKLE:
-			SWITCH_ROM(BANK(emote_sparkle));
-			set_sprite_data(emote_vram, EMOTE_TILE_COUNT, emote_sparkle_tiles);
+			set_banked_sprite_data(BANK(emote_sparkle), emote_vram, emote_sparkle_TILE_COUNT, emote_sparkle_tiles);
 			break;
 
 		case EMOTE_HEART:
-			SWITCH_ROM(BANK(emote_heart));
-			set_sprite_data(emote_vram, EMOTE_TILE_COUNT, emote_heart_tiles);
+			set_banked_sprite_data(BANK(emote_heart), emote_vram, emote_heart_TILE_COUNT, emote_heart_tiles);
 			break;
 
 		case EMOTE_HEARTBREAK:
-			SWITCH_ROM(BANK(emote_heartbreak));
-			set_sprite_data(emote_vram, EMOTE_TILE_COUNT, emote_heartbreak_tiles);
+			set_banked_sprite_data(BANK(emote_heartbreak), emote_vram, emote_heartbreak_TILE_COUNT, emote_heartbreak_tiles);
 			break;
 
 		case EMOTE_SLEEP:
-			SWITCH_ROM(BANK(emote_sleep));
-			set_sprite_data(emote_vram, EMOTE_TILE_COUNT, emote_sleep_tiles);
+			set_banked_sprite_data(BANK(emote_sleep), emote_vram, emote_sleep_TILE_COUNT, emote_sleep_tiles);
 			break;
 
 		case EMOTE_SKULL:
-			SWITCH_ROM(BANK(emote_skull));
-			set_sprite_data(emote_vram, EMOTE_TILE_COUNT, emote_skull_tiles);
+			set_banked_sprite_data(BANK(emote_skull), emote_vram, emote_skull_TILE_COUNT, emote_skull_tiles);
 			break;
 
 		case EMOTE_HEAL:
-			SWITCH_ROM(BANK(emote_heal));
-			set_sprite_data(emote_vram, EMOTE_TILE_COUNT, emote_heal_tiles);
+			set_banked_sprite_data(BANK(emote_heal), emote_vram, emote_heal_TILE_COUNT, emote_heal_tiles);
 			break;
-
 	}
-
-	SWITCH_ROM(saved_bank);
 }
 
-void draw_emote_sprite(uint8_t x, uint8_t y, uint8_t frame, uint8_t *last_sprite) {
-	*last_sprite += move_metasprite_ex(emote_metasprites[frame], emote_vram, 0, *last_sprite, x, y);
+void draw_emote_sprite(uint8_t x, uint8_t y, uint8_t frame) BANKED {
+	last_sprite += move_metasprite_ex(emote_metasprites[frame], emote_vram, 0, last_sprite, x, y);
 }
 
-void setup_emote_sprites(void) {
-	uint8_t saved_bank = _current_bank;
-
-	SWITCH_ROM(BANK(dirt));
-	set_sprite_data(DIRT_VRAM, dirt_TILE_COUNT, dirt_tiles);
-
-	SWITCH_ROM(BANK(bath));
-	set_sprite_data(BATH_VRAM, bath_TILE_COUNT, bath_tiles);
-
-	SWITCH_ROM(BANK(watering_can));
-	set_sprite_data(WATERING_CAN_VRAM, watering_can_TILE_COUNT, watering_can_tiles);
-
-	SWITCH_ROM(saved_bank);
+void setup_emote_sprites(void) BANKED {
+	set_banked_sprite_data(BANK(dirt), DIRT_VRAM, dirt_TILE_COUNT, dirt_tiles);
+	set_banked_sprite_data(BANK(bath), BATH_VRAM, bath_TILE_COUNT, bath_tiles);
+	set_banked_sprite_data(BANK(watering_can), WATERING_CAN_VRAM, watering_can_TILE_COUNT, watering_can_tiles);
 }
 
-void draw_dirt_sprite(uint8_t x, uint8_t y, uint8_t *last_sprite) {
-	uint8_t saved_bank = _current_bank;
-
+void draw_dirt_sprite(uint8_t x, uint8_t y) BANKED {
 	dirt_anim_counter += 1;
 	if (dirt_anim_counter > 24) {
 		dirt_anim_counter = 0;
 		dirt_frame = !dirt_frame;
 	}
-
-	SWITCH_ROM(BANK(dirt));
-	*last_sprite += move_metasprite_ex(dirt_metasprites[dirt_frame], DIRT_VRAM, 0, *last_sprite, x + 8, y + 18);
-
-	SWITCH_ROM(saved_bank);
+	draw_banked_sprite(BANK(dirt), emote_metasprites, dirt_frame, DIRT_VRAM, x + 8, y + 18);
 }
 
-void draw_bath_sprite(uint8_t x, uint8_t y, int8_t y_offset, uint8_t *last_sprite) {
-	uint8_t saved_bank = _current_bank;
-
+void draw_bath_sprite(uint8_t x, uint8_t y, int8_t y_offset) BANKED {
 	bath_anim_counter += 1;
 	if (bath_anim_counter > 24) {
 		bath_anim_counter = 0;
 		bath_frame = !bath_frame;
 	}
-
-	SWITCH_ROM(BANK(bath));
-	*last_sprite += move_metasprite_ex(bath_metasprites[bath_frame], BATH_VRAM, 0, *last_sprite, x + 8, y + y_offset);
-	*last_sprite += move_metasprite_ex(bath_metasprites[!bath_frame], BATH_VRAM, 0, *last_sprite, x + 8, y + 18);
-
-	SWITCH_ROM(saved_bank);
+	draw_banked_sprite(BANK(bath), emote_metasprites, bath_frame, BATH_VRAM, x + 8, y + y_offset);
+	draw_banked_sprite(BANK(bath), emote_metasprites, bath_frame, BATH_VRAM, x + 8, y + 18);
 }
 
-void draw_watering_sprite(uint8_t x, uint8_t y, uint8_t *last_sprite) {
-	uint8_t saved_bank = _current_bank;
-
+void draw_watering_sprite(uint8_t x, uint8_t y) BANKED {
 	watering_anim_counter += 1;
 	if (watering_anim_counter > 16) {
 		watering_anim_counter = 0;
 		watering_frame = !watering_frame;
 	}
-
-	SWITCH_ROM(BANK(watering_can));
-	*last_sprite += move_metasprite_ex(watering_can_metasprites[watering_frame], WATERING_CAN_VRAM, 0, *last_sprite, x + 16, y + 12);
-
-	SWITCH_ROM(saved_bank);
+	draw_banked_sprite(BANK(watering_can), emote_metasprites, watering_frame, WATERING_CAN_VRAM, x + 16, y + 12);
 }

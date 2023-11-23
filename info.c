@@ -4,7 +4,7 @@
 
 #include "frog.h"
 #include "scene.h"
-#include "shared_variables.h"
+#include "common.h"
 
 #include "sprites/backgrounds/info.h"
 #include "sprites/backgrounds/numbers.h"
@@ -113,19 +113,13 @@ static void draw_speed(void) {
 	}
 }
 
-void setup_info_data(void) NONBANKED {
-	SWITCH_ROM(BANK(info));
-	set_bkg_data(0, info_TILE_COUNT, info_tiles);
-	set_bkg_tiles(0, 0, 20, 18, info_map);
+void setup_info_data(void) BANKED {
+	set_banked_bkg_data(BANK(info), 0, info_TILE_COUNT, info_tiles);
+	set_banked_bkg_tiles(BANK(info), 0, 0, 20, 18, info_map);
 
-	SWITCH_ROM(BANK(numbers));
-	set_bkg_data(0x30, numbers_TILE_COUNT, numbers_tiles);
-
-	SWITCH_ROM(BANK(lilypads));
-	set_bkg_data(0x40, lilypads_TILE_COUNT, lilypads_tiles);
-
-	SWITCH_ROM(BANK(speed_icons));
-	set_bkg_data(0x50, speed_icons_TILE_COUNT, speed_icons_tiles);
+	set_banked_bkg_data(BANK(numbers), 0x30, numbers_TILE_COUNT, numbers_tiles);
+	set_banked_bkg_data(BANK(lilypads), 0x40, lilypads_TILE_COUNT, lilypads_tiles);
+	set_banked_bkg_data(BANK(speed_icons), 0x50, speed_icons_TILE_COUNT, speed_icons_tiles);
 }
 
 void setup_info(void) BANKED {

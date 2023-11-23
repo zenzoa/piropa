@@ -16,15 +16,13 @@
 #include "info.h"
 // #include "inventory.h"
 
-#include "shared_variables.h"
+#include "common.h"
 
 static uint8_t is_transitioning;
 static uint8_t transition_counter;
 static uint8_t transition_frame;
 static uint8_t next_scene;
 static uint8_t next_is_night;
-
-static uint8_t last_sprite;
 
 static time_t last_time;
 static time_t current_time;
@@ -142,17 +140,17 @@ static void draw_sprites(void) {
 
 	switch(current_scene) {
 		case TITLE:
-			draw_title_sprites(&last_sprite);
+			draw_title_sprites();
 			break;
 
 		case FIELD:
 		case POND:
 		case GARDEN:
-			draw_hand(&last_sprite);
+			draw_hand();
 			if (current_scene == FIELD || (!is_night && life_stage != EGG && life_stage != DEAD)) {
-				draw_frog(&last_sprite);
+				draw_frog();
 			}
-			draw_bugs(&last_sprite);
+			draw_bugs();
 			break;
 	}
 

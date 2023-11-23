@@ -1,6 +1,7 @@
 #include <gbdk/platform.h>
+#include <gbdk/metasprites.h>
 
-uint8_t saved_bank;
+static uint8_t saved_bank;
 
 uint8_t has_save;
 uint8_t is_time_to_save;
@@ -150,3 +151,55 @@ const unsigned char big_cloud_1_tile_map[3] = { 0x70, 0x71, 0x72 };
 const unsigned char big_cloud_2_tile_map[3] = { 0x73, 0x74, 0x75 };
 const unsigned char small_cloud_1_tile_map[2] = { 0x70, 0x72 };
 const unsigned char small_cloud_2_tile_map[2] = { 0x73, 0x75 };
+
+typedef struct sprite_data_t {
+	uint8_t bank;
+	uint8_t tile_count;
+	uint8_t * tiles;
+	uint8_t * metasprites;
+} sprite_data_t;
+
+uint8_t last_sprite;
+
+void set_banked_sprite_data(uint8_t bank, uint8_t vram, uint8_t tile_count, uint8_t * tiles) {
+	saved_bank = _current_bank;
+	SWITCH_ROM(bank);
+	set_sprite_data(vram, tile_count, tiles);
+	SWITCH_ROM(saved_bank);
+}
+
+void draw_banked_sprite(uint8_t bank, uint8_t * metasprites, uint8_t frame, uint8_t vram, uint8_t x, uint8_t y) {
+	saved_bank = _current_bank;
+	SWITCH_ROM(bank);
+	last_sprite += move_metasprite_ex(((metasprite_t**)metasprites)[frame], vram, 0, last_sprite, x, y);
+	SWITCH_ROM(saved_bank);
+}
+
+void draw_banked_sprite_flip(uint8_t bank, uint8_t * metasprites, uint8_t frame, uint8_t vram, uint8_t x, uint8_t y) {
+	saved_bank = _current_bank;
+	SWITCH_ROM(bank);
+	last_sprite += move_metasprite_flipx(((metasprite_t**)metasprites)[frame], vram, 0, last_sprite, x, y);
+	SWITCH_ROM(saved_bank);
+}
+
+void set_banked_bkg_data(uint8_t bank, uint8_t vram, uint8_t tile_count, uint8_t * tiles) {
+	saved_bank = _current_bank;
+	SWITCH_ROM(bank);
+	set_bkg_data(vram, tile_count, tiles);
+	SWITCH_ROM(saved_bank);
+}
+
+void set_banked_bkg_tiles(uint8_t bank, uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t * tile_map) {
+	saved_bank = _current_bank;
+	SWITCH_ROM(bank);
+	set_bkg_tiles(x, y, w, h, (const unsigned char **)tile_map);
+	SWITCH_ROM(saved_bank);
+}
+
+void restore_banked_bkg_tile_xy(uint8_t bank, uint8_t x, uint8_t y, uint8_t * tile_map) {
+	saved_bank = _current_bank;
+	SWITCH_ROM(bank);
+	uint8_t tile = tile_map[y * 20 + x];
+	set_bkg_tile_xy(x, y, tile);
+	SWITCH_ROM(saved_bank);
+}

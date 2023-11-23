@@ -1,3 +1,5 @@
+#pragma bank 255
+
 #include <gbdk/platform.h>
 
 #include "save.h"
@@ -10,14 +12,14 @@
 #include "field.h"
 #include "garden.h"
 #include "info.h"
-#include "shared_variables.h"
+#include "common.h"
 
 static uint8_t joypad_value;
 static uint8_t a_button_pressed;
 static uint8_t b_button_pressed;
 static uint8_t dpad_button_pressed;
 
-void handle_dpad(void) {
+static void handle_dpad(void) {
 	switch(current_scene) {
 		case TITLE:
 			if ((joypad_value & J_UP) && !dpad_button_pressed) {
@@ -51,7 +53,7 @@ void handle_dpad(void) {
 	}
 }
 
-void handle_a_button(void) {
+static void handle_a_button(void) {
 	if (joypad_value & J_A && !a_button_pressed) {
 		a_button_pressed = TRUE;
 
@@ -153,7 +155,7 @@ void handle_a_button(void) {
 	}
 }
 
-void handle_b_button(void) {
+static void handle_b_button(void) {
 	if (joypad_value & J_B && !b_button_pressed) {
 		b_button_pressed = TRUE;
 		switch(current_scene) {
@@ -192,7 +194,7 @@ void handle_b_button(void) {
 	}
 }
 
-void handle_input(void) {
+void handle_input(void) BANKED {
 	joypad_value = joypad();
 
 	handle_dpad();

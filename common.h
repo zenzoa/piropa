@@ -1,5 +1,3 @@
-extern uint8_t saved_bank;
-
 extern uint8_t has_save;
 extern uint8_t is_time_to_save;
 
@@ -148,3 +146,20 @@ extern const unsigned char big_cloud_1_tile_map[3];
 extern const unsigned char big_cloud_2_tile_map[3];
 extern const unsigned char small_cloud_1_tile_map[2];
 extern const unsigned char small_cloud_2_tile_map[2];
+
+extern typedef struct sprite_data_t {
+	uint8_t bank;
+	uint8_t tile_count;
+	uint8_t * tiles;
+	uint8_t * metasprites;
+} sprite_data_t;
+
+extern uint8_t last_sprite;
+
+extern void set_banked_sprite_data(uint8_t bank, uint8_t vram, uint8_t tile_count, uint8_t * tiles);
+extern void draw_banked_sprite(uint8_t bank, uint8_t * metasprites, uint8_t frame, uint8_t vram, uint8_t x, uint8_t y);
+extern void draw_banked_sprite_flip(uint8_t bank, uint8_t * metasprites, uint8_t frame, uint8_t vram, uint8_t x, uint8_t y);
+
+extern void set_banked_bkg_data(uint8_t bank, uint8_t vram, uint8_t tile_count, uint8_t * tiles);
+extern void set_banked_bkg_tiles(uint8_t bank, uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t * tile_map);
+extern void restore_banked_bkg_tile_xy(uint8_t bank, uint8_t x, uint8_t y, uint8_t * tile_map);

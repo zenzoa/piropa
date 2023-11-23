@@ -2,5 +2,7 @@
 A virtual frog friend for your game boy.
 
 ## Credits
-Thanks to CasualPokePlayer, NanoCodeBug, zlago, and calc84maniac for help with the real-time clock!
-Thanks to Olivia and toxa for help with save states!
+- [GBDK-2020](https://gbdk-2020.github.io/gbdk-2020/)
+- [hUGEDriver](https://github.com/SuperDisk/hUGEDriver)
+- [Beatscribe's Gameboy Adventure RPG Music Assets](https://beatscribe.itch.io/gameboy-adventure-rpg-music-assets-uge)
+- Thanks to toxa, bbbbbr, Olivia, and  for help with figuring out save states, memory banks, and much more!

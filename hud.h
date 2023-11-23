@@ -1,4 +1,4 @@
-extern void setup_hud_data(void) NONBANKED;
+extern void setup_hud_data(void) BANKED;
 extern void draw_hud(void) BANKED;
 
 extern void drop_all(uint8_t except) BANKED;

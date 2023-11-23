@@ -2,15 +2,14 @@
 
 #include <gbdk/platform.h>
 
-#include "shared_variables.h"
+#include "common.h"
 
 #include "sprites/backgrounds/poo.h"
 
 #define POOP_VRAM 0xfe
 
-void setup_poop_data(void) NONBANKED {
-	SWITCH_ROM(BANK(poo));
-	set_bkg_data(POOP_VRAM, poo_TILE_COUNT, poo_tiles);
+void setup_poop_data(void) BANKED {
+	set_banked_bkg_data(BANK(poo), POOP_VRAM, poo_TILE_COUNT, poo_tiles);
 }
 
 void reset_poops(void) BANKED {
@@ -76,7 +75,7 @@ void add_poop(uint8_t x, uint8_t y) BANKED {
 	}
 }
 
-void clean_poop_at(uint8_t x, uint8_t y) NONBANKED {
+void clean_poop_at(uint8_t x, uint8_t y) BANKED {
 	for (uint8_t i = 0; i < MAX_POOPS; i++) {
 		if (poops_scene[i] == current_scene &&
 			(poops_x[i] == x || poops_x[i] == x + 1 || poops_x[i] == x - 1) &&
