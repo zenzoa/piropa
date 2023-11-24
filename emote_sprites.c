@@ -1,5 +1,3 @@
-#pragma bank 255
-
 #include <gbdk/platform.h>
 #include <gbdk/metasprites.h>
 
@@ -73,7 +71,7 @@ static void swap_emote_vram(void) {
 	}
 }
 
-void set_emote_sprite_data(uint8_t emote) BANKED {
+void set_emote_sprite_data(uint8_t emote) {
 	swap_emote_vram();
 	switch(emote) {
 		case EMOTE_SUN:
@@ -118,17 +116,17 @@ void set_emote_sprite_data(uint8_t emote) BANKED {
 	}
 }
 
-void draw_emote_sprite(uint8_t x, uint8_t y, uint8_t frame) BANKED {
+void draw_emote_sprite(uint8_t x, uint8_t y, uint8_t frame) {
 	last_sprite += move_metasprite_ex(emote_metasprites[frame], emote_vram, 0, last_sprite, x, y);
 }
 
-void setup_emote_sprites(void) BANKED {
+void setup_emote_sprites(void) {
 	set_banked_sprite_data(BANK(dirt), DIRT_VRAM, dirt_TILE_COUNT, dirt_tiles);
 	set_banked_sprite_data(BANK(bath), BATH_VRAM, bath_TILE_COUNT, bath_tiles);
 	set_banked_sprite_data(BANK(watering_can), WATERING_CAN_VRAM, watering_can_TILE_COUNT, watering_can_tiles);
 }
 
-void draw_dirt_sprite(uint8_t x, uint8_t y) BANKED {
+void draw_dirt_sprite(uint8_t x, uint8_t y) {
 	dirt_anim_counter += 1;
 	if (dirt_anim_counter > 24) {
 		dirt_anim_counter = 0;
@@ -137,7 +135,7 @@ void draw_dirt_sprite(uint8_t x, uint8_t y) BANKED {
 	draw_banked_sprite(BANK(dirt), emote_metasprites, dirt_frame, DIRT_VRAM, x + 8, y + 18);
 }
 
-void draw_bath_sprite(uint8_t x, uint8_t y, int8_t y_offset) BANKED {
+void draw_bath_sprite(uint8_t x, uint8_t y, int8_t y_offset) {
 	bath_anim_counter += 1;
 	if (bath_anim_counter > 24) {
 		bath_anim_counter = 0;
@@ -147,7 +145,7 @@ void draw_bath_sprite(uint8_t x, uint8_t y, int8_t y_offset) BANKED {
 	draw_banked_sprite(BANK(bath), emote_metasprites, bath_frame, BATH_VRAM, x + 8, y + 18);
 }
 
-void draw_watering_sprite(uint8_t x, uint8_t y) BANKED {
+void draw_watering_sprite(uint8_t x, uint8_t y) {
 	watering_anim_counter += 1;
 	if (watering_anim_counter > 16) {
 		watering_anim_counter = 0;

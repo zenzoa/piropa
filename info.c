@@ -113,16 +113,14 @@ static void draw_speed(void) {
 	}
 }
 
-void setup_info_data(void) BANKED {
+void setup_info(void) BANKED {
 	set_banked_bkg_data(BANK(info), 0, info_TILE_COUNT, info_tiles);
 	set_banked_bkg_tiles(BANK(info), 0, 0, 20, 18, info_map);
 
 	set_banked_bkg_data(BANK(numbers), 0x30, numbers_TILE_COUNT, numbers_tiles);
 	set_banked_bkg_data(BANK(lilypads), 0x40, lilypads_TILE_COUNT, lilypads_tiles);
 	set_banked_bkg_data(BANK(speed_icons), 0x50, speed_icons_TILE_COUNT, speed_icons_tiles);
-}
 
-void setup_info(void) BANKED {
 	draw_stat(love, 0x05);
 	draw_stat(stomach, 0x08);
 	draw_stat(energy, 0x0B);

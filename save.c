@@ -39,6 +39,11 @@ typedef struct save_slot_t {
 	uint8_t butterfly_alive[BUTTERFLY_COUNT];
 	uint8_t butterfly_respawn[BUTTERFLY_COUNT];
 
+	uint8_t inventory_flies;
+	uint8_t inventory_dragonflies;
+	uint8_t inventory_fireflies;
+	uint8_t inventory_butterflies;
+
 	uint8_t plant_age[PLANT_COUNT];
 	uint8_t plant_stage[PLANT_COUNT];
 	uint8_t plant_is_watered[PLANT_COUNT];
@@ -97,6 +102,11 @@ static void save_data_to_slot(uint8_t i) {
 		save_slots[i].butterfly_alive[j] = butterfly_alive[j];
 		save_slots[i].butterfly_respawn[j] = butterfly_respawn[j];
 	}
+
+	save_slots[i].inventory_flies = inventory_flies;
+	save_slots[i].inventory_dragonflies = inventory_dragonflies;
+	save_slots[i].inventory_fireflies = inventory_fireflies;
+	save_slots[i].inventory_butterflies = inventory_butterflies;
 
 	for (uint8_t j = 0; j < PLANT_COUNT; j++) {
 		save_slots[i].plant_age[j] = plant_age[j];
@@ -164,6 +174,11 @@ static uint8_t load_data_from_slot(uint8_t i) {
 			butterfly_alive[j] = save_slots[i].butterfly_alive[j];
 			butterfly_respawn[j] = save_slots[i].butterfly_respawn[j];
 		}
+
+		inventory_flies = save_slots[i].inventory_flies;
+		inventory_dragonflies = save_slots[i].inventory_dragonflies;
+		inventory_fireflies = save_slots[i].inventory_fireflies;
+		inventory_butterflies = save_slots[i].inventory_butterflies;
 
 		for (uint8_t j = 0; j < PLANT_COUNT; j++) {
 			plant_age[j] = save_slots[i].plant_age[j];

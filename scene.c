@@ -14,7 +14,7 @@
 #include "pond.h"
 #include "garden.h"
 #include "info.h"
-// #include "inventory.h"
+#include "inventory.h"
 
 #include "common.h"
 
@@ -27,6 +27,8 @@ static uint8_t next_is_night;
 static time_t last_time;
 static time_t current_time;
 
+static void draw_sprites(void);
+
 void setup_scene(uint8_t new_scene) {
 	uint8_t skip_save = last_scene == TITLE && new_scene == TITLE;
 	last_scene = (current_scene == TITLE ? FIELD : current_scene);
@@ -34,33 +36,28 @@ void setup_scene(uint8_t new_scene) {
 
 	switch(current_scene) {
 		case TITLE:
-			setup_title_data();
 			setup_title();
 			break;
 
 		case FIELD:
-			setup_field_data();
 			setup_field(hand_state == HAND_MOON);
 			break;
 
 		case POND:
-			setup_pond_data();
 			setup_pond();
 			break;
 
 		case GARDEN:
-			setup_garden_data();
 			setup_garden();
 			break;
 
 		case INFO:
-			setup_info_data();
 			setup_info();
 			break;
 
-		// case INVENTORY:
-			// setup_inventory();
-			// break;
+		case INVENTORY:
+			setup_inventory();
+			break;
 	}
 
 	if (current_scene == FIELD || current_scene == POND || current_scene == GARDEN) {
@@ -81,6 +78,8 @@ void setup_scene(uint8_t new_scene) {
 	if (!skip_save) {
 		save_data();
 	}
+
+	draw_sprites();
 }
 
 static void update_transition(void) {
@@ -152,6 +151,10 @@ static void draw_sprites(void) {
 			}
 			draw_bugs();
 			break;
+
+		case INVENTORY:
+			draw_inventory_sprites();
+			break;
 	}
 
 	hide_sprites_range(last_sprite, MAX_HARDWARE_SPRITES);
@@ -192,7 +195,7 @@ void update_scene(void) {
 		switch(current_scene) {
 			case FIELD:
 				update_field();
-				if (hand_x + 16 >= 120 && hand_x < 136 && hand_y + 16 >= 80 && hand_y < 96) {
+				if (is_hand_over_basket()) {
 					set_basket(TRUE);
 				} else {
 					set_basket(FALSE);
@@ -222,10 +225,6 @@ void update_scene(void) {
 					restore_y = 0;
 				}
 				break;
-
-			// case INVENTORY:
-				// update_inventory();
-				// break;
 		}
 	}
 
@@ -236,9 +235,6 @@ void setup_data(uint8_t reset) {
 	setup_bugs_data();
 
 	setup_poop_data();
-	if (reset) {
-		reset_poops();
-	}
 
 	setup_frog(reset);
 
@@ -248,6 +244,10 @@ void setup_data(uint8_t reset) {
 }
 
 void reset_data(void) {
+	reset_bugs();
+	reset_plants();
+	reset_poops();
+	reset_inventory();
 	setup_data(TRUE);
 	transition_to_scene(FIELD, FALSE);
 }

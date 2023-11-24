@@ -113,18 +113,29 @@ extern uint8_t poops_scene[MAX_POOPS];
 extern uint8_t poops_x[MAX_POOPS];
 extern uint8_t poops_y[MAX_POOPS];
 
-#define FLY_COUNT 5
+#define BUG_NONE 0
+#define BUG_FLY 1
+#define BUG_DRAGONFLY 2
+#define BUG_FIREFLY 3
+#define BUG_BUTTERFLY 4
+
+#define FLY_COUNT 6
 extern uint8_t fly_alive[FLY_COUNT];
 extern uint8_t fly_respawn[FLY_COUNT];
-#define DRAGONFLY_COUNT 1
+#define DRAGONFLY_COUNT 2
 extern uint8_t dragonfly_alive[DRAGONFLY_COUNT];
 extern uint8_t dragonfly_respawn[DRAGONFLY_COUNT];
-#define FIREFLY_COUNT 3
+#define FIREFLY_COUNT 4
 extern uint8_t firefly_alive[FIREFLY_COUNT];
 extern uint8_t firefly_respawn[FIREFLY_COUNT];
-#define BUTTERFLY_COUNT 3
+#define BUTTERFLY_COUNT 4
 extern uint8_t butterfly_alive[BUTTERFLY_COUNT];
 extern uint8_t butterfly_respawn[BUTTERFLY_COUNT];
+
+extern uint8_t inventory_flies;
+extern uint8_t inventory_dragonflies;
+extern uint8_t inventory_fireflies;
+extern uint8_t inventory_butterflies;
 
 #define PLANT_COUNT 3
 extern uint8_t plant_age[PLANT_COUNT];

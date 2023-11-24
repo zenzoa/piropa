@@ -88,7 +88,7 @@ void update_plants(void) BANKED {
 	}
 }
 
-void setup_garden_data(void) BANKED {
+void setup_garden(void) BANKED {
 	if (is_night) {
 		set_banked_bkg_data(BANK(garden_night), 0, garden_night_TILE_COUNT, garden_night_tiles);
 		set_banked_bkg_tiles(BANK(garden_night), 0, 0, 20, 18, garden_night_map);
@@ -101,9 +101,7 @@ void setup_garden_data(void) BANKED {
 	}
 
 	set_banked_bkg_data(BANK(plants), 0x50, plants_TILE_COUNT, plants_tiles);
-}
 
-void setup_garden(void) BANKED {
 	if (!is_night) {
 		garden_sky_anim_counter = 0;
 		set_bkg_tiles(11, 4, 2, 1, small_cloud_1_tile_map);
@@ -170,4 +168,12 @@ void update_garden(void) BANKED {
 
 void restore_garden_tile(uint8_t x, uint8_t y) BANKED {
 	restore_banked_bkg_tile_xy(BANK(garden), x, y, garden_map);
+}
+
+void reset_plants(void) BANKED {
+	for (uint8_t i = 0; i < PLANT_COUNT; i++) {
+		plant_age[i] = 0;
+		plant_stage[i] = 0;
+		plant_is_watered[i] = FALSE;
+	}
 }

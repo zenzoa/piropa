@@ -62,7 +62,6 @@ void draw_title_sprites(void) BANKED {
 			}
 		}
 	}
-
 	last_sprite = 2;
 }
 
@@ -89,7 +88,7 @@ static void select_title_item(uint8_t new_item) {
 	arrow_anim_frame = 1;
 }
 
-void setup_title_data(void) BANKED {
+void setup_title(void) BANKED {
 	set_banked_bkg_data(BANK(title), 0, title_TILE_COUNT, title_tiles);
 	set_banked_bkg_tiles(BANK(title), 0, 0, 20, 18, title_map);
 
@@ -103,9 +102,7 @@ void setup_title_data(void) BANKED {
 	}
 
 	set_banked_sprite_data(BANK(select_arrow), 0xff, select_arrow_TILE_COUNT, select_arrow_tiles);
-}
 
-void setup_title(void) BANKED {
 	if (has_save) {
 		set_bkg_tiles(0x0d, 0x0d, 5, 1, continue_tile_map);
 		set_bkg_tiles(0x0d, 0x0f, 5, 1, reset_tile_map);

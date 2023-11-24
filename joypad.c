@@ -12,6 +12,7 @@
 #include "field.h"
 #include "garden.h"
 #include "info.h"
+#include "inventory.h"
 #include "common.h"
 
 static uint8_t joypad_value;
@@ -47,6 +48,24 @@ static void handle_dpad(void) {
 				dpad_button_pressed = TRUE;
 				handle_info_input(RIGHT_BUTTON);
 			} else if (!(joypad_value & J_LEFT) && !(joypad_value & J_RIGHT)) {
+				dpad_button_pressed = FALSE;
+			}
+			break;
+
+		case INVENTORY:
+			if ((joypad_value & J_LEFT) && !dpad_button_pressed) {
+				dpad_button_pressed = TRUE;
+				handle_inventory_input(LEFT_BUTTON);
+			} else if ((joypad_value & J_RIGHT) && !dpad_button_pressed) {
+				dpad_button_pressed = TRUE;
+				handle_inventory_input(RIGHT_BUTTON);
+			} else if ((joypad_value & J_UP) && !dpad_button_pressed) {
+				dpad_button_pressed = TRUE;
+				handle_inventory_input(UP_BUTTON);
+			} else if ((joypad_value & J_DOWN) && !dpad_button_pressed) {
+				dpad_button_pressed = TRUE;
+				handle_inventory_input(DOWN_BUTTON);
+			} else if (!(joypad_value & J_LEFT) && !(joypad_value & J_RIGHT) && !(joypad_value & J_UP) && !(joypad_value & J_DOWN)) {
 				dpad_button_pressed = FALSE;
 			}
 			break;
@@ -110,6 +129,23 @@ static void handle_a_button(void) {
 							start_feed(BUG_BUTTERFLY);
 						}
 
+					} else if (is_hand_over_basket() && current_scene == FIELD && (hand_state == HAND_FLY || hand_state == HAND_DRAGONFLY || hand_state == HAND_FIREFLY || hand_state == HAND_BUTTERFLY)) {
+						switch(hand_state) {
+							case HAND_FLY:
+								put_bug_in_inventory(BUG_FLY);
+								break;
+							case HAND_DRAGONFLY:
+								put_bug_in_inventory(BUG_DRAGONFLY);
+								break;
+							case HAND_FIREFLY:
+								put_bug_in_inventory(BUG_FIREFLY);
+								break;
+							case HAND_BUTTERFLY:
+								put_bug_in_inventory(BUG_BUTTERFLY);
+								break;
+						}
+						set_hand_state(HAND_DEFAULT);
+
 					} else if (is_hand_empty()) {
 						uint8_t bug_type = grab_bug();
 						switch(bug_type) {
@@ -128,7 +164,10 @@ static void handle_a_button(void) {
 								break;
 
 							default:
-								if (current_scene == GARDEN && !is_night) {
+								if (current_scene == FIELD && is_hand_over_basket()) {
+									transition_to_scene(INVENTORY, is_night);
+
+								} else if (current_scene == GARDEN && !is_night) {
 									if (hand_x >= PLANT_0_X*8 && hand_x < PLANT_0_X*8+24 && hand_y >= PLANT_0_Y*8+4 && hand_y < PLANT_0_Y*8+28) {
 										start_walk_to_plant(0);
 									} else if (hand_x >= PLANT_1_X*8 && hand_x < PLANT_1_X*8+24 && hand_y >= PLANT_1_Y*8+4 && hand_y < PLANT_1_Y*8+28) {
@@ -146,6 +185,10 @@ static void handle_a_button(void) {
 
 			case INFO:
 				handle_info_input(A_BUTTON);
+				break;
+
+			case INVENTORY:
+				handle_inventory_input(A_BUTTON);
 				break;
 
 		}
@@ -168,16 +211,32 @@ static void handle_b_button(void) {
 			case GARDEN:
 				switch(hand_state) {
 					case HAND_FLY:
-						drop_bug(BUG_FLY);
+						if (is_hand_over_basket() && current_scene == FIELD) {
+							put_bug_in_inventory(BUG_FLY);
+						} else {
+							drop_bug(BUG_FLY);
+						}
 						break;
 					case HAND_DRAGONFLY:
-						drop_bug(BUG_DRAGONFLY);
+						if (is_hand_over_basket() && current_scene == FIELD) {
+							put_bug_in_inventory(BUG_DRAGONFLY);
+						} else {
+							drop_bug(BUG_DRAGONFLY);
+						}
 						break;
 					case HAND_FIREFLY:
-						drop_bug(BUG_FIREFLY);
+						if (is_hand_over_basket() && current_scene == FIELD) {
+							put_bug_in_inventory(BUG_FIREFLY);
+						} else {
+							drop_bug(BUG_FIREFLY);
+						}
 						break;
 					case HAND_BUTTERFLY:
-						drop_bug(BUG_BUTTERFLY);
+						if (is_hand_over_basket() && current_scene == FIELD) {
+							put_bug_in_inventory(BUG_BUTTERFLY);
+						} else {
+							drop_bug(BUG_BUTTERFLY);
+						}
 						break;
 				}
 				drop_all(0);
@@ -186,6 +245,10 @@ static void handle_b_button(void) {
 
 			case INFO:
 				handle_info_input(B_BUTTON);
+				break;
+
+			case INVENTORY:
+				handle_inventory_input(B_BUTTON);
 				break;
 		}
 

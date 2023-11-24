@@ -24,6 +24,10 @@ static uint8_t moon_in_sky;
 static uint8_t sky_anim_counter;
 static uint8_t basket_is_open;
 
+uint8_t is_hand_over_basket(void) BANKED {
+	return hand_x + 16 >= 120 && hand_x < 136 && hand_y + 16 >= 80 && hand_y < 96;
+}
+
 void set_basket(uint8_t is_open) BANKED {
 	if (is_open != basket_is_open) {
 		if (is_open) {
@@ -35,25 +39,13 @@ void set_basket(uint8_t is_open) BANKED {
 	}
 }
 
-void setup_field_data(void) BANKED {
+void setup_field(uint8_t hand_has_moon) BANKED {
 	if (is_night) {
 		set_banked_bkg_data(BANK(field_night), 0, field_night_TILE_COUNT, field_night_tiles);
 		set_banked_bkg_tiles(BANK(field_night), 0, 0, 20, 18, field_night_map);
 
 		set_banked_bkg_data(BANK(moon), 0x6a, moon_TILE_COUNT, moon_tiles);
 
-	} else {
-		set_banked_bkg_data(BANK(field), 0, field_TILE_COUNT, field_tiles);
-		set_banked_bkg_tiles(BANK(field), 0, 0, 20, 18, field_map);
-
-		set_banked_bkg_data(BANK(clouds), 0x70, clouds_TILE_COUNT, clouds_tiles);
-	}
-
-	set_banked_bkg_data(BANK(basket), 0xf8, basket_TILE_COUNT, basket_tiles);
-}
-
-void setup_field(uint8_t hand_has_moon) BANKED {
-	if (is_night) {
 		if (hand_has_moon) {
 			moon_in_sky = FALSE;
 			set_bkg_tiles(9, 5, 2, 2, no_moon_tile_map);
@@ -67,12 +59,19 @@ void setup_field(uint8_t hand_has_moon) BANKED {
 		}
 
 	} else {
+		set_banked_bkg_data(BANK(field), 0, field_TILE_COUNT, field_tiles);
+		set_banked_bkg_tiles(BANK(field), 0, 0, 20, 18, field_map);
+
+		set_banked_bkg_data(BANK(clouds), 0x70, clouds_TILE_COUNT, clouds_tiles);
+
 		moon_in_sky = FALSE;
 		sky_anim_counter = 0;
 		set_bkg_tiles(6, 5, 3, 1, big_cloud_2_tile_map);
 		set_bkg_tiles(8, 4, 2, 1, small_cloud_1_tile_map);
 		set_bkg_tiles(12, 5, 2, 1, small_cloud_2_tile_map);
 	}
+
+	set_banked_bkg_data(BANK(basket), 0xf8, basket_TILE_COUNT, basket_tiles);
 
 	set_bkg_tiles(13, 8, 3, 1, basket_closed_tile_map);
 }

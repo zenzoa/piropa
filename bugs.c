@@ -11,12 +11,6 @@
 #include "sprites/bugs_small/butterfly.h"
 #include "sprites/bugs_big/dragonfly.h"
 
-#define BUG_NONE 0
-#define BUG_FLY 1
-#define BUG_DRAGONFLY 2
-#define BUG_FIREFLY 3
-#define BUG_BUTTERFLY 4
-
 #define FLY_VRAM 0xc0
 #define DRAGONFLY_VRAM 0xc2
 #define FIREFLY_VRAM 0xc6
@@ -61,10 +55,13 @@ static uint8_t butterfly_flip_x[BUTTERFLY_COUNT];
 static uint8_t butterfly_flip_y[BUTTERFLY_COUNT];
 static uint8_t butterfly_anim_counter[BUTTERFLY_COUNT];
 static uint8_t butterfly_anim_frame[BUTTERFLY_COUNT];
+static uint8_t butterfly_run_away[BUTTERFLY_COUNT];
 
 static uint8_t hand_is_near;
 static uint8_t chance_to_move_left;
 static uint8_t chance_to_move_up;
+
+static uint8_t alive_count;
 
 static void spawn_fly(uint8_t i, uint8_t is_setup) {
 	fly_alive[i] = TRUE;
@@ -123,29 +120,45 @@ static void spawn_butterfly(uint8_t i, uint8_t is_setup) {
 	butterfly_goal_x[i] = 0;
 	butterfly_goal_y[i] = 0;
 	butterfly_goal_plant[i] = 0;
+	butterfly_run_away[i] = FALSE;
 }
 
 void respawn_bugs(void) BANKED {
+	alive_count = 0;
 	for (uint8_t i = 0; i < FLY_COUNT; i++) {
-		if (!fly_alive[i] && fly_respawn[i] > 0) {
+		if (fly_alive[i]) {
+			alive_count += 1;
+		} else if (fly_respawn[i] > 0 && alive_count < FLY_COUNT - 1) {
 			fly_respawn[i] -= 1;
 			break;
 		}
 	}
+
+	alive_count = 0;
 	for (uint8_t i = 0; i < DRAGONFLY_COUNT; i++) {
-		if (!dragonfly_alive[i] && dragonfly_respawn[i] > 0) {
+		if (dragonfly_alive[i]) {
+			alive_count += 1;
+		} else if (dragonfly_respawn[i] > 0 && alive_count < DRAGONFLY_COUNT - 1) {
 			dragonfly_respawn[i] -= 1;
 			break;
 		}
 	}
+
+	alive_count = 0;
 	for (uint8_t i = 0; i < FIREFLY_COUNT; i++) {
-		if (!firefly_alive[i] && firefly_respawn[i] > 0) {
+		if (firefly_alive[i]) {
+			alive_count += 1;
+		} else if (firefly_respawn[i] > 0 && alive_count < FIREFLY_COUNT - 1) {
 			firefly_respawn[i] -= 1;
 			break;
 		}
 	}
+
+	alive_count = 0;
 	for (uint8_t i = 0; i < BUTTERFLY_COUNT; i++) {
-		if (!butterfly_alive[i] && butterfly_respawn[i] > 0) {
+		if (butterfly_alive[i]) {
+			alive_count += 1;
+		} else if (butterfly_respawn[i] > 0 && alive_count < BUTTERFLY_COUNT - 1) {
 			butterfly_respawn[i] -= 1;
 			break;
 		}
@@ -331,12 +344,18 @@ static void update_firefly(uint8_t i) {
 
 static void update_butterfly(uint8_t i) {
 	butterfly_anim_counter[i] += 1;
-	uint8_t frame_rate = (butterfly_x[i] == butterfly_goal_x[i] && butterfly_y[i] == butterfly_goal_y[i]) ? 48 : 12;
+	uint8_t frame_rate = 12;
+	if (butterfly_x[i] == butterfly_goal_x[i] && butterfly_y[i] == butterfly_goal_y[i]) {
+		frame_rate = 48;
+	} else if (butterfly_run_away[i]) {
+		frame_rate = 8;
+	}
+
 	if (butterfly_anim_counter[i] >= frame_rate) {
 		butterfly_anim_counter[i] = 0;
 		butterfly_anim_frame[i] = !butterfly_anim_frame[i];
 
-		if (current_scene == GARDEN && !is_night) {
+		if (current_scene == GARDEN && !is_night && !butterfly_run_away[i]) {
 			if (butterfly_goal_x[i] && butterfly_goal_y[i]) {
 				if (butterfly_y[i] == butterfly_goal_y[i] || rand() < 128) {
 					if (butterfly_x[i] < butterfly_goal_x[i]) {
@@ -425,7 +444,8 @@ void draw_bugs(void) BANKED {
 			fly_scene[i] == current_scene) {
 				update_fly(i);
 				draw_fly(fly_x[i], fly_y[i], fly_anim_frame[i], fly_flip[i]);
-		} else if (!fly_alive[i] && !fly_respawn[i] &&
+		} else if (i < FLY_COUNT - 1 &&
+			!fly_alive[i] && !fly_respawn[i] &&
 			current_scene == POND && !is_night) {
 				spawn_fly(i, FALSE);
 		}
@@ -436,7 +456,8 @@ void draw_bugs(void) BANKED {
 			dragonfly_scene[i] == current_scene) {
 				update_dragonfly(i);
 				draw_dragonfly(dragonfly_x[i], dragonfly_y[i], dragonfly_anim_frame[i], dragonfly_flip_x[i]);
-		} else if (!dragonfly_alive[i] && !dragonfly_respawn[i] &&
+		} else if (i < DRAGONFLY_COUNT - 1 &&
+			!dragonfly_alive[i] && !dragonfly_respawn[i] &&
 			current_scene == POND && !is_night) {
 				spawn_dragonfly(i, FALSE);
 		}
@@ -447,7 +468,8 @@ void draw_bugs(void) BANKED {
 			firefly_scene[i] == current_scene) {
 				update_firefly(i);
 				draw_firefly(firefly_x[i], firefly_y[i], firefly_anim_frame[i], firefly_flip[i]);
-		} else if (!firefly_alive[i] && !firefly_respawn[i] &&
+		} else if (i < FIREFLY_COUNT - 1 &&
+			!firefly_alive[i] && !firefly_respawn[i] &&
 			current_scene == POND && is_night) {
 				spawn_firefly(i, FALSE);
 		}
@@ -458,7 +480,8 @@ void draw_bugs(void) BANKED {
 			butterfly_scene[i] == current_scene) {
 				update_butterfly(i);
 				draw_butterfly(butterfly_x[i], butterfly_y[i], butterfly_anim_frame[i], butterfly_flip_x[i]);
-		} else if (!butterfly_alive[i] && !butterfly_respawn[i] &&
+		} else if (i < BUTTERFLY_COUNT - 1 &&
+			!butterfly_alive[i] && !butterfly_respawn[i] &&
 			current_scene == GARDEN && !is_night) {
 				spawn_butterfly(i, FALSE);
 		}
@@ -498,15 +521,18 @@ uint8_t grab_bug(void) BANKED {
 
 	for (uint8_t i = 0; i < BUTTERFLY_COUNT; i++) {
 		if (butterfly_alive[i] && butterfly_scene[i] == current_scene &&
-			butterfly_x[i] == butterfly_goal_x[i] && butterfly_y[i] == butterfly_goal_y[i] && butterfly_goal_plant[i] &&
 			hand_x + 8 >= butterfly_x[i] && hand_x < butterfly_x[i] + 8 &&
 			hand_y + 8 >= butterfly_y[i] && hand_y < butterfly_y[i] + 8) {
-				plant_age[butterfly_goal_plant[i] - 1] = 0;
-				plant_stage[butterfly_goal_plant[i] - 1] = 0;
-				plant_is_watered[butterfly_goal_plant[i] - 1] = FALSE;
-				butterfly_alive[i] = FALSE;
-				butterfly_respawn[i] = 4 * (game_speed + 1);
-				return BUG_BUTTERFLY;
+				if (butterfly_x[i] == butterfly_goal_x[i] && butterfly_y[i] == butterfly_goal_y[i] && butterfly_goal_plant[i]) {
+					plant_age[butterfly_goal_plant[i] - 1] = 0;
+					plant_stage[butterfly_goal_plant[i] - 1] = 0;
+					plant_is_watered[butterfly_goal_plant[i] - 1] = FALSE;
+					butterfly_alive[i] = FALSE;
+					butterfly_respawn[i] = 4 * (game_speed + 1);
+					return BUG_BUTTERFLY;
+				} else {
+					butterfly_run_away[i] = TRUE;
+				}
 		}
 	}
 
@@ -578,8 +604,10 @@ void setup_bugs(void) BANKED {
 			(fly_scene[i] != current_scene ||
 			!(current_scene == POND && !is_night))) {
 				fly_alive[i] = FALSE;
-		} else if (current_scene == POND && !is_night &&
-			!fly_alive[i] && !fly_respawn[i]) {
+		} else if (i < FLY_COUNT - 1 &&
+			current_scene == POND && !is_night &&
+			!fly_alive[i] && !fly_respawn[i] &&
+			alive_count < FLY_COUNT - 1) {
 				spawn_fly(i, TRUE);
 		}
 	}
@@ -589,8 +617,10 @@ void setup_bugs(void) BANKED {
 			(dragonfly_scene[i] != current_scene ||
 			!(current_scene == POND && !is_night))) {
 				dragonfly_alive[i] = FALSE;
-		} else if (current_scene == POND && !is_night &&
-			!dragonfly_alive[i] && !dragonfly_respawn[i]) {
+		} else if (i < DRAGONFLY_COUNT - 1 &&
+			current_scene == POND && !is_night &&
+			!dragonfly_alive[i] && !dragonfly_respawn[i] &&
+			alive_count < DRAGONFLY_COUNT - 1) {
 				spawn_dragonfly(i, TRUE);
 		}
 	}
@@ -600,8 +630,10 @@ void setup_bugs(void) BANKED {
 			(firefly_scene[i] != current_scene ||
 			!(current_scene == POND && is_night))) {
 				firefly_alive[i] = FALSE;
-		} else if (current_scene == POND && is_night &&
-			!firefly_alive[i] && !firefly_respawn[i]) {
+		} else if (i < FIREFLY_COUNT - 1 &&
+			current_scene == POND && is_night &&
+			!firefly_alive[i] && !firefly_respawn[i] &&
+			alive_count < FIREFLY_COUNT - 1) {
 				spawn_firefly(i, TRUE);
 		}
 	}
@@ -611,8 +643,10 @@ void setup_bugs(void) BANKED {
 			(butterfly_scene[i] != current_scene ||
 			!(current_scene == GARDEN && !is_night))) {
 				butterfly_alive[i] = FALSE;
-		} else if (current_scene == GARDEN && !is_night &&
-			!butterfly_alive[i] && !butterfly_respawn[i]) {
+		} else if (i < BUTTERFLY_COUNT - 1 &&
+			current_scene == GARDEN && !is_night &&
+			!butterfly_alive[i] && !butterfly_respawn[i] &&
+			alive_count < BUTTERFLY_COUNT - 1) {
 				spawn_butterfly(i, TRUE);
 		}
 	}
@@ -623,4 +657,26 @@ void setup_bugs_data(void) BANKED {
 	set_banked_sprite_data(BANK(dragonfly), DRAGONFLY_VRAM, dragonfly_TILE_COUNT, dragonfly_tiles);
 	set_banked_sprite_data(BANK(firefly), FIREFLY_VRAM, firefly_TILE_COUNT, firefly_tiles);
 	set_banked_sprite_data(BANK(butterfly), BUTTERFLY_VRAM, butterfly_TILE_COUNT, butterfly_tiles);
+}
+
+void reset_bugs(void) BANKED {
+	for (uint8_t i = 0; i < FLY_COUNT; i++) {
+		fly_alive[i] = FALSE;
+		fly_respawn[i] = 0;
+	}
+
+	for (uint8_t i = 0; i < DRAGONFLY_COUNT; i++) {
+		dragonfly_alive[i] = FALSE;
+		dragonfly_respawn[i] = 0;
+	}
+
+	for (uint8_t i = 0; i < FIREFLY_COUNT; i++) {
+		firefly_alive[i] = FALSE;
+		firefly_respawn[i] = 0;
+	}
+
+	for (uint8_t i = 0; i < BUTTERFLY_COUNT; i++) {
+		butterfly_alive[i] = FALSE;
+		butterfly_respawn[i] = 0;
+	}
 }
