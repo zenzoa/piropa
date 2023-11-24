@@ -15,6 +15,7 @@
 #include "garden.h"
 #include "info.h"
 #include "inventory.h"
+#include "credits.h"
 
 #include "common.h"
 
@@ -30,9 +31,14 @@ static time_t current_time;
 static void draw_sprites(void);
 
 void setup_scene(uint8_t new_scene) {
-	uint8_t skip_save = last_scene == TITLE && new_scene == TITLE;
-	last_scene = (current_scene == TITLE ? FIELD : current_scene);
-	current_scene = new_scene;
+	uint8_t on_start = current_scene == 255;
+	uint8_t skip_save = on_start || current_scene == CREDITS || new_scene == CREDITS;
+
+	if (!on_start && current_scene != CREDITS && new_scene != CREDITS) {
+		last_scene = current_scene;
+	}
+
+	current_scene = on_start ? TITLE : new_scene;
 
 	switch(current_scene) {
 		case TITLE:
@@ -57,6 +63,10 @@ void setup_scene(uint8_t new_scene) {
 
 		case INVENTORY:
 			setup_inventory();
+			break;
+
+		case CREDITS:
+			setup_credits();
 			break;
 	}
 
@@ -129,7 +139,7 @@ static void update_transition(void) {
 void transition_to_scene(uint8_t new_scene, uint8_t new_is_night) {
 	is_transitioning = TRUE;
 	transition_counter = 0;
-	transition_frame = 0;
+	transition_frame = current_scene == 255 ? 2 : 0;
 	next_scene = new_scene;
 	next_is_night = new_is_night;
 }

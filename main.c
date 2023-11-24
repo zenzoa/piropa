@@ -11,10 +11,13 @@
 void main(void) {
 	// enable graphics
 	DISPLAY_ON;
+
+	BGP_REG = DMG_PALETTE(DMG_BLACK, DMG_BLACK, DMG_BLACK, DMG_BLACK);
 	SHOW_BKG;
-	SHOW_SPRITES;
-	SPRITES_8x8;
+
 	OBP0_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_WHITE, DMG_LITE_GRAY, DMG_BLACK);
+	SPRITES_8x8;
+	SHOW_SPRITES;
 
 	// enable sound
 	NR52_REG = 0x80;
@@ -31,7 +34,7 @@ void main(void) {
 
 	setup_data(!has_save);
 
-	setup_scene(TITLE);
+	transition_to_scene(TITLE, is_night);
 
 	// main loop
 	while(1) {

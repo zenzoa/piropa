@@ -12,6 +12,7 @@ extern uint8_t game_speed;
 #define GARDEN 3
 #define INFO 4
 #define INVENTORY 5
+#define CREDITS 6
 extern uint8_t current_scene;
 extern uint8_t last_scene;
 

@@ -29,7 +29,7 @@ static void handle_dpad(void) {
 			} else if ((joypad_value & J_DOWN) && !dpad_button_pressed) {
 				dpad_button_pressed = TRUE;
 				handle_title_input(DOWN_BUTTON);
-			} else if (!(joypad_value & J_UP) && !(joypad_value & J_UP)) {
+			} else if (!(joypad_value & J_UP) && !(joypad_value & J_DOWN)) {
 				dpad_button_pressed = FALSE;
 			}
 			break;
@@ -249,6 +249,10 @@ static void handle_b_button(void) {
 
 			case INVENTORY:
 				handle_inventory_input(B_BUTTON);
+				break;
+
+			case CREDITS:
+				transition_to_scene(TITLE, is_night);
 				break;
 		}
 

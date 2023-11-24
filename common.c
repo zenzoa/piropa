@@ -17,7 +17,8 @@ uint8_t game_speed = SPEED_MEDIUM;
 #define GARDEN 3
 #define INFO 4
 #define INVENTORY 5
-uint8_t current_scene;
+#define CREDITS 6
+uint8_t current_scene = 255;
 uint8_t last_scene;
 
 uint8_t is_night;
