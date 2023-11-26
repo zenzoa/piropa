@@ -139,6 +139,7 @@ void setup_inventory(void) BANKED {
 
 	set_sprite_tile(0, 0xff);
 	set_sprite_tile(1, 0xff);
+	set_sprite_prop(0, 0);
 	set_sprite_prop(1, 32);
 
 	hide_sprites_range(0, MAX_HARDWARE_SPRITES);

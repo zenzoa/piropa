@@ -159,7 +159,7 @@ void draw_hand(void) BANKED {
 		hand_offset = hand_mod - frog_mod;
 	}
 
-	draw_banked_sprite(hand_sprite.bank, hand_sprite.metasprites, hand_offset, hand_vram, hand_x - hand_offset, hand_y);
+	draw_banked_sprite(hand_sprite.bank, hand_sprite.metasprites, hand_offset, hand_vram, BROWN_PALETTE, hand_x - hand_offset, hand_y);
 }
 
 static uint8_t update_wiggle(void) {

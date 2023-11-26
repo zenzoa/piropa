@@ -17,6 +17,7 @@
 #include "inventory.h"
 #include "credits.h"
 
+#include "colors.h"
 #include "common.h"
 
 static uint8_t is_transitioning;
@@ -100,36 +101,36 @@ static void update_transition(void) {
 
 		switch(transition_frame) {
 			case 1:
-				BGP_REG = DMG_PALETTE(DMG_LITE_GRAY, DMG_DARK_GRAY, DMG_BLACK, DMG_BLACK);
-				OBP0_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_LITE_GRAY, DMG_DARK_GRAY, DMG_BLACK);
+				set_bkg_colors(1);
+				set_sprite_colors(1);
 				break;
 
 			case 2:
-				BGP_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_BLACK, DMG_BLACK, DMG_BLACK);
-				OBP0_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_DARK_GRAY, DMG_BLACK, DMG_BLACK);
+				set_bkg_colors(2);
+				set_sprite_colors(2);
 				break;
 
 			case 3:
-				BGP_REG = DMG_PALETTE(DMG_BLACK, DMG_BLACK, DMG_BLACK, DMG_BLACK);
-				OBP0_REG = DMG_PALETTE(DMG_BLACK, DMG_BLACK, DMG_BLACK, DMG_BLACK);
+				set_bkg_colors(3);
+				set_sprite_colors(3);
 				is_night = next_is_night;
 				setup_scene(next_scene);
 				place_in_scene();
 				break;
 
 			case 4:
-				BGP_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_BLACK, DMG_BLACK, DMG_BLACK);
-				OBP0_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_DARK_GRAY, DMG_BLACK, DMG_BLACK);
+				set_bkg_colors(2);
+				set_sprite_colors(2);
 				break;
 
 			case 5:
-				BGP_REG = DMG_PALETTE(DMG_LITE_GRAY, DMG_DARK_GRAY, DMG_BLACK, DMG_BLACK);
-				OBP0_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_LITE_GRAY, DMG_DARK_GRAY, DMG_BLACK);
+				set_bkg_colors(1);
+				set_sprite_colors(1);
 				break;
 
 			case 6:
-				BGP_REG = DMG_PALETTE(DMG_WHITE, DMG_LITE_GRAY, DMG_DARK_GRAY, DMG_BLACK);
-				OBP0_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_WHITE, DMG_LITE_GRAY, DMG_BLACK);
+				set_bkg_colors(0);
+				set_sprite_colors(0);
 				is_transitioning = FALSE;
 				break;
 		}

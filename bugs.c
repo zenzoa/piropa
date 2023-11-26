@@ -167,33 +167,33 @@ void respawn_bugs(void) BANKED {
 
 static void draw_fly(uint8_t x, uint8_t y, uint8_t frame, uint8_t flip) {
 	if (flip) {
-		draw_banked_sprite_flip(BANK(fly), (uint8_t *) fly_metasprites, frame, FLY_VRAM, x + 8, y);
+		draw_banked_sprite_flip(BANK(fly), (uint8_t *) fly_metasprites, frame, FLY_VRAM, GREY_PALETTE, x + 8, y);
 	} else {
-		draw_banked_sprite(BANK(fly), (uint8_t *) fly_metasprites, frame, FLY_VRAM, x, y);
+		draw_banked_sprite(BANK(fly), (uint8_t *) fly_metasprites, frame, FLY_VRAM, GREY_PALETTE, x, y);
 	}
 }
 
 static void draw_dragonfly(uint8_t x, uint8_t y, uint8_t frame, uint8_t flip) {
 	if (flip) {
-		draw_banked_sprite_flip(BANK(dragonfly), (uint8_t *) dragonfly_metasprites, frame, DRAGONFLY_VRAM, x + 16, y + (frame * 3));
+		draw_banked_sprite_flip(BANK(dragonfly), (uint8_t *) dragonfly_metasprites, frame, DRAGONFLY_VRAM, BROWN_PALETTE, x + 16, y + (frame * 3));
 	} else {
-		draw_banked_sprite(BANK(dragonfly), (uint8_t *) dragonfly_metasprites, frame, DRAGONFLY_VRAM, x, y + (frame * 3));
+		draw_banked_sprite(BANK(dragonfly), (uint8_t *) dragonfly_metasprites, frame, DRAGONFLY_VRAM, BROWN_PALETTE, x, y + (frame * 3));
 	}
 }
 
 static void draw_firefly(uint8_t x, uint8_t y, uint8_t frame, uint8_t flip) {
 	if (flip) {
-		draw_banked_sprite_flip(BANK(firefly), (uint8_t *) firefly_metasprites, frame, FIREFLY_VRAM, x + 8, y);
+		draw_banked_sprite_flip(BANK(firefly), (uint8_t *) firefly_metasprites, frame, FIREFLY_VRAM, GLOW_PALETTE, x + 8, y);
 	} else {
-		draw_banked_sprite(BANK(firefly), (uint8_t *) firefly_metasprites, frame, FIREFLY_VRAM, x, y);
+		draw_banked_sprite(BANK(firefly), (uint8_t *) firefly_metasprites, frame, FIREFLY_VRAM, GLOW_PALETTE, x, y);
 	}
 }
 
 static void draw_butterfly(uint8_t x, uint8_t y, uint8_t frame, uint8_t flip) {
 	if (flip) {
-		draw_banked_sprite_flip(BANK(butterfly), (uint8_t *) butterfly_metasprites, frame, BUTTERFLY_VRAM, x + 8, y);
+		draw_banked_sprite_flip(BANK(butterfly), (uint8_t *) butterfly_metasprites, frame, BUTTERFLY_VRAM, PINK_PALETTE, x + 8, y);
 	} else {
-		draw_banked_sprite(BANK(butterfly), (uint8_t *) butterfly_metasprites, frame, BUTTERFLY_VRAM, x, y);
+		draw_banked_sprite(BANK(butterfly), (uint8_t *) butterfly_metasprites, frame, BUTTERFLY_VRAM, PINK_PALETTE, x, y);
 	}
 }
 

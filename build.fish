@@ -45,8 +45,8 @@ if test $sprites
 
 	set_color $text_color; echo ">> convert png files to gbdk assets..."; set_color normal
 
-	set sprite_map_args -map -noflip -keep_duplicate_tiles -keep_palette_order -b 255
-	set sprite_args -spr8x8 -px 0 -py 0 -keep_palette_order -b 255
+	set sprite_map_args -map -noflip -keep_duplicate_tiles -keep_palette_order -no_palettes -b 255
+	set sprite_args -spr8x8 -px 0 -py 0 -keep_palette_order -no_palettes -b 255
 
 	for file in sprites/frogs/*
 		png2asset $file $sprite_map_args
@@ -78,7 +78,7 @@ if test $sprites
 end
 
 # build roms
-set compiler_args -autobank -Wl-yt0x1B -Wl-ya1 -Ihugedriver/include -Wl-lhugedriver/gbdk/hUGEDriver.lib -o
+set compiler_args -autobank -Wl-yt0x1B -Wl-ya1 -Wm-yc -Ihugedriver/include -Wl-lhugedriver/gbdk/hUGEDriver.lib -o
 set compiler_sources sprites/*/*.c music/*.c *.c
 
 if test $compile_gameboy_rom

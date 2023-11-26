@@ -117,7 +117,7 @@ void set_emote_sprite_data(uint8_t emote) {
 }
 
 void draw_emote_sprite(uint8_t x, uint8_t y, uint8_t frame) {
-	last_sprite += move_metasprite_ex(emote_metasprites[frame], emote_vram, 0, last_sprite, x, y);
+	last_sprite += move_metasprite_ex(emote_metasprites[frame], emote_vram, GREY_PALETTE, last_sprite, x, y);
 }
 
 void setup_emote_sprites(void) {
@@ -132,7 +132,7 @@ void draw_dirt_sprite(uint8_t x, uint8_t y) {
 		dirt_anim_counter = 0;
 		dirt_frame = !dirt_frame;
 	}
-	draw_banked_sprite(BANK(dirt), emote_metasprites, dirt_frame, DIRT_VRAM, x + 8, y + 18);
+	draw_banked_sprite(BANK(dirt), emote_metasprites, dirt_frame, DIRT_VRAM, BROWN_PALETTE, x + 8, y + 18);
 }
 
 void draw_bath_sprite(uint8_t x, uint8_t y, int8_t y_offset) {
@@ -141,8 +141,8 @@ void draw_bath_sprite(uint8_t x, uint8_t y, int8_t y_offset) {
 		bath_anim_counter = 0;
 		bath_frame = !bath_frame;
 	}
-	draw_banked_sprite(BANK(bath), emote_metasprites, bath_frame, BATH_VRAM, x + 8, y + y_offset);
-	draw_banked_sprite(BANK(bath), emote_metasprites, bath_frame, BATH_VRAM, x + 8, y + 18);
+	draw_banked_sprite(BANK(bath), emote_metasprites, bath_frame, BATH_VRAM, BLUE_PALETTE, x + 8, y + y_offset);
+	draw_banked_sprite(BANK(bath), emote_metasprites, bath_frame, BATH_VRAM, BLUE_PALETTE, x + 8, y + 18);
 }
 
 void draw_watering_sprite(uint8_t x, uint8_t y) {
@@ -151,5 +151,5 @@ void draw_watering_sprite(uint8_t x, uint8_t y) {
 		watering_anim_counter = 0;
 		watering_frame = !watering_frame;
 	}
-	draw_banked_sprite(BANK(watering_can), emote_metasprites, watering_frame, WATERING_CAN_VRAM, x + 16, y + 12);
+	draw_banked_sprite(BANK(watering_can), emote_metasprites, watering_frame, WATERING_CAN_VRAM, GREY_PALETTE, x + 16, y + 12);
 }

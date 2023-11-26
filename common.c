@@ -173,6 +173,8 @@ typedef struct sprite_data_t {
 
 uint8_t last_sprite;
 
+#define PALETTE_MASK 0x07
+
 void set_banked_sprite_data(uint8_t bank, uint8_t vram, uint8_t tile_count, uint8_t * tiles) {
 	saved_bank = _current_bank;
 	SWITCH_ROM(bank);
@@ -180,17 +182,17 @@ void set_banked_sprite_data(uint8_t bank, uint8_t vram, uint8_t tile_count, uint
 	SWITCH_ROM(saved_bank);
 }
 
-void draw_banked_sprite(uint8_t bank, uint8_t * metasprites, uint8_t frame, uint8_t vram, uint8_t x, uint8_t y) {
+void draw_banked_sprite(uint8_t bank, uint8_t * metasprites, uint8_t frame, uint8_t vram, uint8_t palette, uint8_t x, uint8_t y) {
 	saved_bank = _current_bank;
 	SWITCH_ROM(bank);
-	last_sprite += move_metasprite_ex(((metasprite_t**)metasprites)[frame], vram, 0, last_sprite, x, y);
+	last_sprite += move_metasprite_ex(((metasprite_t**)metasprites)[frame], vram, palette & PALETTE_MASK, last_sprite, x, y);
 	SWITCH_ROM(saved_bank);
 }
 
-void draw_banked_sprite_flip(uint8_t bank, uint8_t * metasprites, uint8_t frame, uint8_t vram, uint8_t x, uint8_t y) {
+void draw_banked_sprite_flip(uint8_t bank, uint8_t * metasprites, uint8_t frame, uint8_t vram, uint8_t palette, uint8_t x, uint8_t y) {
 	saved_bank = _current_bank;
 	SWITCH_ROM(bank);
-	last_sprite += move_metasprite_flipx(((metasprite_t**)metasprites)[frame], vram, 0, last_sprite, x, y);
+	last_sprite += move_metasprite_flipx(((metasprite_t**)metasprites)[frame], vram, palette & PALETTE_MASK, last_sprite, x, y);
 	SWITCH_ROM(saved_bank);
 }
 

@@ -79,8 +79,8 @@ void draw_title_sprites(void) BANKED {
 				break;
 
 			case TITLE_ITEM_CREDITS:
-				move_sprite(0, 103 - arrow_anim_frame, 136);
-				move_sprite(1, 153 + arrow_anim_frame, 136);
+				move_sprite(0, 107 - arrow_anim_frame, 136);
+				move_sprite(1, 149 + arrow_anim_frame, 136);
 				break;
 		}
 	}
@@ -135,6 +135,7 @@ void setup_title(void) BANKED {
 	set_banked_sprite_data(BANK(select_arrow), 0xff, select_arrow_TILE_COUNT, select_arrow_tiles);
 	set_sprite_tile(0, 0xff);
 	set_sprite_tile(1, 0xff);
+	set_sprite_prop(0, 0);
 	set_sprite_prop(1, 32);
 
 	if (has_save) {

@@ -168,9 +168,17 @@ extern typedef struct sprite_data_t {
 
 extern uint8_t last_sprite;
 
+#define UI_PALETTE 0
+#define GREEN_PALETTE 1
+#define BLUE_PALETTE 2
+#define PINK_PALETTE 3
+#define BROWN_PALETTE 4
+#define GREY_PALETTE 5
+#define GLOW_PALETTE 6
+
 extern void set_banked_sprite_data(uint8_t bank, uint8_t vram, uint8_t tile_count, uint8_t * tiles);
-extern void draw_banked_sprite(uint8_t bank, uint8_t * metasprites, uint8_t frame, uint8_t vram, uint8_t x, uint8_t y);
-extern void draw_banked_sprite_flip(uint8_t bank, uint8_t * metasprites, uint8_t frame, uint8_t vram, uint8_t x, uint8_t y);
+extern void draw_banked_sprite(uint8_t bank, uint8_t * metasprites, uint8_t frame, uint8_t vram, uint8_t palette, uint8_t x, uint8_t y);
+extern void draw_banked_sprite_flip(uint8_t bank, uint8_t * metasprites, uint8_t frame, uint8_t vram, uint8_t palette, uint8_t x, uint8_t y);
 
 extern void set_banked_bkg_data(uint8_t bank, uint8_t vram, uint8_t tile_count, uint8_t * tiles);
 extern void set_banked_bkg_tiles(uint8_t bank, uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t * tile_map);

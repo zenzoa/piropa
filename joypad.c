@@ -98,8 +98,12 @@ static void handle_a_button(void) {
 						grab_moon_from_sky();
 						set_hand_state(HAND_MOON);
 
-					} else if (hand_state == HAND_BROOM || hand_state == HAND_BROOM_USE) {
+					} else if (hand_state == HAND_BROOM) {
 						set_hand_state(HAND_BROOM_USE);
+						sweep_count = 2;
+
+					} else if (hand_state == HAND_BROOM_USE) {
+						set_hand_state(HAND_BROOM);
 						sweep_count = 2;
 
 					} else if (is_hand_over_frog() && !is_night && life_stage != EGG && life_stage != DEAD) {

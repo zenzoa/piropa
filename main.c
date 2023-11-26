@@ -6,18 +6,20 @@
 #include "joypad.h"
 #include "scene.h"
 #include "music.h"
+#include "colors.h"
 #include "common.h"
 
 void main(void) {
+	// setup color palettes
+	can_use_color = (_cpu == CGB_TYPE);
+	set_bkg_colors(3);
+	set_sprite_colors(3);
+
 	// enable graphics
-	DISPLAY_ON;
-
-	BGP_REG = DMG_PALETTE(DMG_BLACK, DMG_BLACK, DMG_BLACK, DMG_BLACK);
-	SHOW_BKG;
-
-	OBP0_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_WHITE, DMG_LITE_GRAY, DMG_BLACK);
 	SPRITES_8x8;
+	SHOW_BKG;
 	SHOW_SPRITES;
+	DISPLAY_ON;
 
 	// enable sound
 	NR52_REG = 0x80;

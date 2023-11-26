@@ -5,6 +5,7 @@
 #include <rand.h>
 
 #include "common.h"
+#include "colors.h"
 #include "save.h"
 #include "bugs.h"
 #include "animation.h"
@@ -63,6 +64,8 @@ static void start_evolution(uint8_t new_stage);
 static uint8_t frog_vram = FROG_VRAM_1;
 
 static sprite_data_t frog_sprite;
+
+static uint8_t frog_palette = GREEN_PALETTE;
 
 static void swap_frog_vram(void) {
 	if (frog_vram == FROG_VRAM_1) {
@@ -423,13 +426,20 @@ void draw_frog(void) BANKED {
 		} else if (hygiene == 0) {
 			draw_dirt_sprite(frog_x, frog_y);
 		}
+	}
 
+	if (stage == STAGE_TEEN_BW || stage == STAGE_PANDA || stage == STAGE_APPLE || stage == STAGE_MUSH) {
+		frog_palette = BROWN_PALETTE;
+	} else if (stage == STAGE_AXO) {
+		frog_palette = PINK_PALETTE;
+	} else {
+		frog_palette = GREEN_PALETTE;
 	}
 
 	if (anim == ANIM_WALK_RIGHT) {
-		draw_banked_sprite_flip(frog_sprite.bank, frog_sprite.metasprites, frog_anim.frame, frog_vram, frog_x + 32, frog_y);
+		draw_banked_sprite_flip(frog_sprite.bank, frog_sprite.metasprites, frog_anim.frame, frog_vram, frog_palette, frog_x + 32, frog_y);
 	} else {
-		draw_banked_sprite(frog_sprite.bank, frog_sprite.metasprites, frog_anim.frame, frog_vram, frog_x, frog_y);
+		draw_banked_sprite(frog_sprite.bank, frog_sprite.metasprites, frog_anim.frame, frog_vram, frog_palette, frog_x, frog_y);
 	}
 }
 
@@ -758,20 +768,20 @@ static void update_evolution(void) {
 		evolution_frame += 1;
 		switch(evolution_frame) {
 			case 1:
-				BGP_REG = DMG_PALETTE(DMG_LITE_GRAY, DMG_DARK_GRAY, DMG_BLACK, DMG_BLACK);
-				OBP0_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_LITE_GRAY, DMG_DARK_GRAY, DMG_BLACK);
+				set_bkg_colors(1);
+				set_sprite_colors(1);
 				break;
 			case 2:
-				BGP_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_BLACK, DMG_BLACK, DMG_BLACK);
-				OBP0_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_DARK_GRAY, DMG_BLACK, DMG_BLACK);
+				set_bkg_colors(2);
+				set_sprite_colors(2);
 				break;
 			case 3:
-				BGP_REG = DMG_PALETTE(DMG_BLACK, DMG_BLACK, DMG_BLACK, DMG_BLACK);
-				OBP0_REG = DMG_PALETTE(DMG_BLACK, DMG_BLACK, DMG_BLACK, DMG_BLACK);
+				set_bkg_colors(3);
+				set_sprite_colors(3);
 				break;
 			case 9:
 			case 15:
-				BGP_REG = DMG_PALETTE(DMG_BLACK, DMG_BLACK, DMG_BLACK, DMG_BLACK);
+				set_bkg_colors(3);
 				break;
 			case 4:
 			case 8:
@@ -779,7 +789,7 @@ static void update_evolution(void) {
 			case 14:
 			case 16:
 			case 20:
-				BGP_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_DARK_GRAY, DMG_DARK_GRAY, DMG_DARK_GRAY);
+				set_bkg_colors(4);
 				break;
 			case 5:
 			case 7:
@@ -787,28 +797,28 @@ static void update_evolution(void) {
 			case 13:
 			case 17:
 			case 19:
-				BGP_REG = DMG_PALETTE(DMG_LITE_GRAY, DMG_LITE_GRAY, DMG_LITE_GRAY, DMG_LITE_GRAY);
+				set_bkg_colors(5);
 				break;
 			case 6:
 			case 12:
 			case 18:
-				BGP_REG = DMG_PALETTE(DMG_WHITE, DMG_WHITE, DMG_WHITE, DMG_WHITE);
+				set_bkg_colors(6);
 				break;
 			case 21:
-				BGP_REG = DMG_PALETTE(DMG_BLACK, DMG_BLACK, DMG_BLACK, DMG_BLACK);
+				set_bkg_colors(3);
 				set_stage(next_stage);
 				break;
 			case 22:
-				BGP_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_BLACK, DMG_BLACK, DMG_BLACK);
-				OBP0_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_DARK_GRAY, DMG_BLACK, DMG_BLACK);
+				set_bkg_colors(2);
+				set_sprite_colors(2);
 				break;
 			case 23:
-				BGP_REG = DMG_PALETTE(DMG_LITE_GRAY, DMG_DARK_GRAY, DMG_BLACK, DMG_BLACK);
-				OBP0_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_LITE_GRAY, DMG_DARK_GRAY, DMG_BLACK);
+				set_bkg_colors(1);
+				set_sprite_colors(1);
 				break;
 			case 24:
-				BGP_REG = DMG_PALETTE(DMG_WHITE, DMG_LITE_GRAY, DMG_DARK_GRAY, DMG_BLACK);
-				OBP0_REG = DMG_PALETTE(DMG_DARK_GRAY, DMG_WHITE, DMG_LITE_GRAY, DMG_BLACK);
+				set_bkg_colors(0);
+				set_sprite_colors(0);
 				is_evolving = FALSE;
 				break;
 		}
