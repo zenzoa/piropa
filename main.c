@@ -5,7 +5,7 @@
 #include "save.h"
 #include "joypad.h"
 #include "scene.h"
-#include "music.h"
+#include "audio.h"
 #include "colors.h"
 #include "common.h"
 
@@ -21,16 +21,12 @@ void main(void) {
 	SHOW_SPRITES;
 	DISPLAY_ON;
 
-	// enable sound
-	NR52_REG = 0x80;
-	NR51_REG = 0xFF;
-	NR50_REG = 0x77;
-
 	// init music
 	__critical {
-		set_music(FROG_MUSIC);
-		add_VBL(play_music);
+		add_VBL(update_audio);
 	}
+	play_music(NO_MUSIC);
+	play_sfx(SFX_EVOLVE);
 
 	load_data();
 

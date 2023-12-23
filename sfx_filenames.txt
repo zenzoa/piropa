@@ -1,0 +1,15 @@
+sfx_tap
+sfx_drop
+sfx_pet
+sfx_wash
+sfx_meds
+sfx_eat
+sfx_happy
+sfx_sad
+sfx_meep1
+sfx_meep2
+sfx_meep3
+sfx_evolve
+sfx_die
+sfx_chomp
+sfx_sweep

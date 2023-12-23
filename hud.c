@@ -6,6 +6,7 @@
 #include "scene.h"
 #include "joypad.h"
 #include "common.h"
+#include "audio.h"
 
 #include "sprites/backgrounds/hud.h"
 
@@ -162,6 +163,8 @@ uint8_t handle_hud_input(uint8_t button_pressed) BANKED {
 	} else {
 		return FALSE;
 	}
+
+	play_sfx(SFX_TAP);
 
 	return TRUE;
 }

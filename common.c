@@ -23,6 +23,7 @@ uint8_t last_scene;
 
 uint8_t is_night;
 
+uint8_t do_restore;
 uint8_t restore_x;
 uint8_t restore_y;
 
@@ -142,6 +143,10 @@ uint8_t inventory_flies;
 uint8_t inventory_dragonflies;
 uint8_t inventory_fireflies;
 uint8_t inventory_butterflies;
+
+uint8_t num_dragonflies_eaten;
+uint8_t num_fireflies_eaten;
+uint8_t num_butterflies_eaten;
 
 #define PLANT_COUNT 3
 uint8_t plant_age[PLANT_COUNT];

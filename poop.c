@@ -83,6 +83,7 @@ void clean_poop_at(uint8_t x, uint8_t y) BANKED {
 				if (poop_count > 0) {
 					poop_count -= 1;
 				}
+				do_restore = TRUE;
 				restore_x = poops_x[i];
 				restore_y = poops_y[i];
 				poops_x[i] = 0;

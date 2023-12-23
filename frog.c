@@ -5,6 +5,7 @@
 #include <rand.h>
 
 #include "common.h"
+#include "audio.h"
 #include "colors.h"
 #include "save.h"
 #include "bugs.h"
@@ -246,14 +247,17 @@ void start_feed(uint8_t bug_type) BANKED {
 			break;
 		case BUG_DRAGONFLY:
 			stomach += 3;
+			if (num_dragonflies_eaten < 255) { num_dragonflies_eaten += 1; }
 			break;
 		case BUG_FIREFLY:
 			stomach += 3;
 			energy += 3;
+			if (num_fireflies_eaten < 255) { num_fireflies_eaten += 1; }
 			break;
 		case BUG_BUTTERFLY:
 			stomach += 3;
 			love += 3;
+			if (num_butterflies_eaten < 255) { num_butterflies_eaten += 1; }
 			break;
 	}
 	if (stomach > 9) {
@@ -266,8 +270,10 @@ void start_feed(uint8_t bug_type) BANKED {
 
 void start_wash(void) BANKED {
 	if (action == ACTION_STAND || action == ACTION_EMOTE || action == ACTION_WALK) {
+		play_sfx(SFX_WASH);
 		start_action(ACTION_WASH);
 	} else if (action == ACTION_WASH) {
+		if (frog_anim.loop > 0) { play_sfx(SFX_WASH); }
 		wash_loops += frog_anim.loop;
 		frog_anim.loop = 0;
 	}
@@ -287,8 +293,10 @@ static void end_wash(void) {
 
 void start_pet(void) BANKED {
 	if (action == ACTION_STAND || action == ACTION_EMOTE || action == ACTION_WALK) {
+		play_sfx(SFX_PET);
 		start_action(ACTION_PET);
 	} else if (action == ACTION_PET) {
+		if (frog_anim.loop > 0) { play_sfx(SFX_PET); }
 		pet_loops += frog_anim.loop;
 		frog_anim.loop = 0;
 	}
@@ -547,22 +555,27 @@ static void start_action(uint8_t new_action) {
 					emote = EMOTE_NONE;
 					break;
 				case MOOD_HAPPY:
+					play_sfx(SFX_HAPPY);
 					anim = ANIM_LAUGH;
 					emote = EMOTE_SUN;
 					break;
 				case MOOD_HUNGRY:
+					play_sfx(SFX_SAD);
 					anim = ANIM_ANGRY;
 					emote = EMOTE_ANGRY;
 					break;
 				case MOOD_TIRED:
+					play_sfx(SFX_SAD);
 					anim = ANIM_YAWN;
 					emote = EMOTE_BUBBLES;
 					break;
 				case MOOD_LONELY:
+					play_sfx(SFX_SAD);
 					anim = ANIM_STRESSED;
 					emote = EMOTE_HEARTBREAK;
 					break;
 				case MOOD_SICK:
+					play_sfx(SFX_SAD);
 					anim = ANIM_STRESSED;
 					emote = EMOTE_SKULL;
 					break;
@@ -585,6 +598,7 @@ static void start_action(uint8_t new_action) {
 			break;
 
 		case ACTION_BITE:
+			play_sfx(SFX_CHOMP);
 			anim = ANIM_YAWN;
 			emote = EMOTE_NONE;
 			frog_anim = new_animation(24, 2, 1);
@@ -598,6 +612,7 @@ static void start_action(uint8_t new_action) {
 			break;
 
 		case ACTION_REFUSE:
+			play_sfx(SFX_SAD);
 			anim = ANIM_SAD;
 			emote = EMOTE_SAD;
 			frog_anim = new_animation(32, 2, 3);
@@ -605,6 +620,7 @@ static void start_action(uint8_t new_action) {
 			break;
 
 		case ACTION_ENJOY:
+			play_sfx(SFX_HAPPY);
 			anim = ANIM_LAUGH;
 			emote = EMOTE_SUN;
 			frog_anim = new_animation(32, 2, 3);
@@ -612,6 +628,7 @@ static void start_action(uint8_t new_action) {
 			break;
 
 		case ACTION_YAWN:
+			play_sfx(SFX_MEEP3);
 			anim = ANIM_YAWN;
 			emote = EMOTE_BUBBLES;
 			frog_anim = new_animation(64, 2, 1);
@@ -619,6 +636,7 @@ static void start_action(uint8_t new_action) {
 			break;
 
 		case ACTION_SLEEP:
+			if (current_scene == FIELD) { play_sfx(SFX_MEEP3); }
 			anim = ANIM_SLEEP;
 			emote = EMOTE_SLEEP;
 			frog_anim = new_animation(48, 2, 0);
@@ -626,6 +644,7 @@ static void start_action(uint8_t new_action) {
 			break;
 
 		case ACTION_WAKE:
+			play_sfx(SFX_MEEP3);
 			anim = ANIM_YAWN;
 			emote = EMOTE_BUBBLES;
 			frog_anim = new_animation(64, 2, 1);
@@ -640,6 +659,7 @@ static void start_action(uint8_t new_action) {
 			break;
 
 		case ACTION_CLEAN:
+			play_sfx(SFX_HAPPY);
 			anim = ANIM_LAUGH;
 			emote = EMOTE_SPARKLE;
 			frog_anim = new_animation(32, 2, 3);
@@ -654,12 +674,14 @@ static void start_action(uint8_t new_action) {
 			break;
 
 		case ACTION_LOVE:
+			play_sfx(SFX_HAPPY);
 			anim = ANIM_LAUGH;
 			emote = EMOTE_HEART;
 			frog_anim = new_animation(32, 2, 3);
 			break;
 
 		case ACTION_MEDICATE:
+			play_sfx(SFX_MEDS);
 			anim = ANIM_STRESSED;
 			emote = EMOTE_HEAL;
 			frog_anim = new_animation(32, 2, 3);
@@ -667,12 +689,14 @@ static void start_action(uint8_t new_action) {
 			break;
 
 		case ACTION_POOP:
+			play_sfx(SFX_MEEP2);
 			anim = ANIM_HAPPY;
 			emote = EMOTE_NONE;
 			frog_anim = new_animation(64, 2, 1);
 			break;
 
 		case ACTION_WATERING:
+			play_sfx(SFX_WASH);
 			anim = ANIM_WALK_RIGHT;
 			emote = EMOTE_NONE;
 			frog_anim = new_animation(24, 1, 6);
@@ -759,6 +783,12 @@ static void start_evolution(uint8_t new_stage) {
 	evolution_counter = 0;
 	evolution_frame = 0;
 	next_stage = new_stage;
+	if (new_stage == STAGE_DEAD_GOOD || new_stage == STAGE_DEAD_BAD) {
+		play_music(NO_MUSIC);
+		play_sfx(SFX_DIE);
+	} else {
+		play_sfx(SFX_EVOLVE);
+	}
 }
 
 static void update_evolution(void) {
@@ -781,6 +811,7 @@ static void update_evolution(void) {
 				break;
 			case 9:
 			case 15:
+				play_sfx(SFX_EVOLVE);
 				set_bkg_colors(3);
 				break;
 			case 4:
@@ -820,6 +851,9 @@ static void update_evolution(void) {
 				set_bkg_colors(0);
 				set_sprite_colors(0);
 				is_evolving = FALSE;
+				if (life_stage == DEAD) {
+					play_music(DEATH_MUSIC);
+				}
 				break;
 		}
 	}
@@ -833,29 +867,44 @@ static void evolve(void) {
 		start_evolution(STAGE_FROGLET);
 
 	} else if (life_stage == FROGLET) {
-		uint8_t n = rand();
-		if (n < 85) {
-			start_evolution(STAGE_TEEN_NORM);
-		} else if (n < 170) {
+		if (num_fireflies_eaten >= 4) {
+			start_evolution(STAGE_TEEN_BW);
+		} else if (num_dragonflies_eaten >= 2) {
 			start_evolution(STAGE_TEEN_TAIL);
 		} else {
-			start_evolution(STAGE_TEEN_BW);
+			start_evolution(STAGE_TEEN_NORM);
 		}
 
 	} else if (life_stage == TEEN) {
-		uint8_t n = rand();
-		if (n < 42) {
-			start_evolution(STAGE_NORM);
-		} else if (n < 85) {
-			start_evolution(STAGE_MUSH);
-		} else if (n < 128) {
-			start_evolution(STAGE_AXO);
-		} else if (n < 170) {
-			start_evolution(STAGE_DINO);
-		} else if (n < 212) {
-			start_evolution(STAGE_APPLE);
-		} else {
-			start_evolution(STAGE_PANDA);
+		switch (stage) {
+			case STAGE_TEEN_NORM:
+				if (num_butterflies_eaten >= 4) {
+					start_evolution(STAGE_MUSH);
+				} else {
+					start_evolution(STAGE_NORM);
+				}
+				break;
+
+			case STAGE_TEEN_TAIL:
+				if (weight >= 20) {
+					start_evolution(STAGE_DINO);
+				} else if (num_dragonflies_eaten >= 4) {
+					start_evolution(STAGE_AXO);
+				} else {
+					start_evolution(STAGE_NORM);
+				}
+				break;
+
+			case STAGE_TEEN_BW:
+				if (num_dragonflies_eaten == 0) {
+					start_evolution(STAGE_PANDA);
+				} else {
+					start_evolution(STAGE_APPLE);
+				}
+				break;
+
+			default:
+				start_evolution(STAGE_NORM);
 		}
 
 	} else if (life_stage == ADULT) {
@@ -902,6 +951,9 @@ void setup_frog(uint8_t reset) BANKED {
 		medicine = 0;
 		health = 9;
 		sickness = 0;
+		num_dragonflies_eaten = 0;
+		num_fireflies_eaten = 0;
+		num_butterflies_eaten = 0;
 	}
 	update_mood();
 
@@ -993,6 +1045,8 @@ void update_frog(void) BANKED {
 					case ACTION_EAT:
 						if (anim_complete) {
 							start_action(ACTION_ENJOY);
+						} else if (frog_anim.frame == 0) {
+							play_sfx(SFX_EAT);
 						}
 						break;
 
@@ -1017,6 +1071,8 @@ void update_frog(void) BANKED {
 					case ACTION_SLEEP:
 						if (!is_night) {
 							start_action(ACTION_WAKE);
+						} else if (frog_anim.frame == 0) {
+							play_sfx(SFX_MEEP1);
 						}
 						break;
 

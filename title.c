@@ -163,10 +163,10 @@ void handle_title_input(uint8_t button_pressed) BANKED {
 						rand_seeded = TRUE;
 						initrand(DIV_REG);
 					}
-					if (last_scene == TITLE) {
-						transition_to_scene(FIELD, is_night);
-					} else {
+					if (last_scene == FIELD || last_scene == POND || last_scene == GARDEN) {
 						transition_to_scene(last_scene, is_night);
+					} else {
+						transition_to_scene(FIELD, is_night);
 					}
 					break;
 				case TITLE_ITEM_RESET:

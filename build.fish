@@ -15,6 +15,8 @@ for option in $argv
 		set compile_gameboy_rom true
 	case -pocket
 		set compile_pocket_rom true
+	case -sfx
+		python3 hammer2cbt.py --fxammo 15 --fxnamelist sfx_filenames.txt sfx.sav 0 ./sfx/
 	end
 end
 
@@ -22,7 +24,9 @@ end
 if test $clean
 	set_color $text_color; echo ">> cleaning out old build files..."; set_color normal
 	for file in *.{gb,pocket,sav,rtc,map,noi,cdb}
-		rm $file
+		if not file sfx.sav
+			rm $file
+		end
 	end
 	for file in sprites/*/*.{c,h,png}
 		rm $file
@@ -79,7 +83,7 @@ end
 
 # build roms
 set compiler_args -autobank -Wl-yt0x1B -Wl-ya1 -Wm-yc -Ihugedriver/include -Wl-lhugedriver/gbdk/hUGEDriver.lib -o
-set compiler_sources sprites/*/*.c music/*.c *.c
+set compiler_sources sprites/*/*.c music/*.c sfx/*.c *.c
 
 if test $compile_gameboy_rom
 	set_color $text_color; echo ">> building game boy rom..."; set_color normal

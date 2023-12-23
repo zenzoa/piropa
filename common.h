@@ -18,6 +18,7 @@ extern uint8_t last_scene;
 
 extern uint8_t is_night;
 
+extern uint8_t do_restore;
 extern uint8_t restore_x;
 extern uint8_t restore_y;
 
@@ -137,6 +138,10 @@ extern uint8_t inventory_flies;
 extern uint8_t inventory_dragonflies;
 extern uint8_t inventory_fireflies;
 extern uint8_t inventory_butterflies;
+
+extern uint8_t num_dragonflies_eaten;
+extern uint8_t num_fireflies_eaten;
+extern uint8_t num_butterflies_eaten;
 
 #define PLANT_COUNT 3
 extern uint8_t plant_age[PLANT_COUNT];

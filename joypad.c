@@ -14,6 +14,7 @@
 #include "info.h"
 #include "inventory.h"
 #include "common.h"
+#include "audio.h"
 
 static uint8_t joypad_value;
 static uint8_t a_button_pressed;
@@ -25,9 +26,11 @@ static void handle_dpad(void) {
 		case TITLE:
 			if ((joypad_value & J_UP) && !dpad_button_pressed) {
 				dpad_button_pressed = TRUE;
+				play_sfx(SFX_BEEP);
 				handle_title_input(UP_BUTTON);
 			} else if ((joypad_value & J_DOWN) && !dpad_button_pressed) {
 				dpad_button_pressed = TRUE;
+				play_sfx(SFX_BEEP);
 				handle_title_input(DOWN_BUTTON);
 			} else if (!(joypad_value & J_UP) && !(joypad_value & J_DOWN)) {
 				dpad_button_pressed = FALSE;
@@ -43,9 +46,11 @@ static void handle_dpad(void) {
 		case INFO:
 			if ((joypad_value & J_LEFT) && !dpad_button_pressed) {
 				dpad_button_pressed = TRUE;
+				play_sfx(SFX_BEEP);
 				handle_info_input(LEFT_BUTTON);
 			} else if ((joypad_value & J_RIGHT) && !dpad_button_pressed) {
 				dpad_button_pressed = TRUE;
+				play_sfx(SFX_BEEP);
 				handle_info_input(RIGHT_BUTTON);
 			} else if (!(joypad_value & J_LEFT) && !(joypad_value & J_RIGHT)) {
 				dpad_button_pressed = FALSE;
@@ -55,15 +60,19 @@ static void handle_dpad(void) {
 		case INVENTORY:
 			if ((joypad_value & J_LEFT) && !dpad_button_pressed) {
 				dpad_button_pressed = TRUE;
+				play_sfx(SFX_BEEP);
 				handle_inventory_input(LEFT_BUTTON);
 			} else if ((joypad_value & J_RIGHT) && !dpad_button_pressed) {
 				dpad_button_pressed = TRUE;
+				play_sfx(SFX_BEEP);
 				handle_inventory_input(RIGHT_BUTTON);
 			} else if ((joypad_value & J_UP) && !dpad_button_pressed) {
 				dpad_button_pressed = TRUE;
+				play_sfx(SFX_BEEP);
 				handle_inventory_input(UP_BUTTON);
 			} else if ((joypad_value & J_DOWN) && !dpad_button_pressed) {
 				dpad_button_pressed = TRUE;
+				play_sfx(SFX_BEEP);
 				handle_inventory_input(DOWN_BUTTON);
 			} else if (!(joypad_value & J_LEFT) && !(joypad_value & J_RIGHT) && !(joypad_value & J_UP) && !(joypad_value & J_DOWN)) {
 				dpad_button_pressed = FALSE;
@@ -78,6 +87,7 @@ static void handle_a_button(void) {
 
 		switch(current_scene) {
 			case TITLE:
+				play_sfx(SFX_TAP);
 				handle_title_input(A_BUTTON);
 				break;
 
@@ -86,6 +96,7 @@ static void handle_a_button(void) {
 			case GARDEN:
 				if (!handle_hud_input(A_BUTTON)) {
 					if (hand_state == HAND_MOON && hand_y >= 32 && hand_y < 80) {
+						play_sfx(SFX_DROP);
 						if (is_night && current_scene == FIELD) {
 							set_hand_state(HAND_DEFAULT);
 							return_moon_to_sky();
@@ -95,10 +106,12 @@ static void handle_a_button(void) {
 						}
 
 					} else if (is_night && current_scene == FIELD && hand_x >= 72 && hand_x < 96 && hand_y >= 48 && hand_y < 68) {
+						play_sfx(SFX_TAP);
 						grab_moon_from_sky();
 						set_hand_state(HAND_MOON);
 
 					} else if (hand_state == HAND_BROOM) {
+						play_sfx(SFX_SWEEP);
 						set_hand_state(HAND_BROOM_USE);
 						sweep_count = 2;
 
@@ -136,15 +149,19 @@ static void handle_a_button(void) {
 					} else if (is_hand_over_basket() && current_scene == FIELD && (hand_state == HAND_FLY || hand_state == HAND_DRAGONFLY || hand_state == HAND_FIREFLY || hand_state == HAND_BUTTERFLY)) {
 						switch(hand_state) {
 							case HAND_FLY:
+								play_sfx(SFX_DROP);
 								put_bug_in_inventory(BUG_FLY);
 								break;
 							case HAND_DRAGONFLY:
+								play_sfx(SFX_DROP);
 								put_bug_in_inventory(BUG_DRAGONFLY);
 								break;
 							case HAND_FIREFLY:
+								play_sfx(SFX_DROP);
 								put_bug_in_inventory(BUG_FIREFLY);
 								break;
 							case HAND_BUTTERFLY:
+								play_sfx(SFX_DROP);
 								put_bug_in_inventory(BUG_BUTTERFLY);
 								break;
 						}
@@ -154,21 +171,26 @@ static void handle_a_button(void) {
 						uint8_t bug_type = grab_bug();
 						switch(bug_type) {
 							case BUG_FLY:
+								play_sfx(SFX_BEEP);
 								set_hand_state(HAND_FLY);
 								break;
 							case BUG_DRAGONFLY:
+								play_sfx(SFX_BEEP);
 								set_hand_state(HAND_DRAGONFLY);
 								break;
 							case BUG_FIREFLY:
+								play_sfx(SFX_BEEP);
 								set_hand_state(HAND_FIREFLY);
 								break;
 							case BUG_BUTTERFLY:
+								play_sfx(SFX_BEEP);
 								set_hand_state(HAND_BUTTERFLY);
 								draw_plants();
 								break;
 
 							default:
 								if (current_scene == FIELD && is_hand_over_basket()) {
+									play_sfx(SFX_TAP);
 									transition_to_scene(INVENTORY, is_night);
 
 								} else if (current_scene == GARDEN && !is_night) {
@@ -188,10 +210,12 @@ static void handle_a_button(void) {
 				break;
 
 			case INFO:
+				play_sfx(SFX_TAP);
 				handle_info_input(A_BUTTON);
 				break;
 
 			case INVENTORY:
+				play_sfx(SFX_TAP);
 				handle_inventory_input(A_BUTTON);
 				break;
 
@@ -244,18 +268,22 @@ static void handle_b_button(void) {
 						break;
 				}
 				drop_all(0);
+				play_sfx(SFX_DROP);
 				set_hand_state(HAND_DEFAULT);
 				break;
 
 			case INFO:
+				play_sfx(SFX_DROP);
 				handle_info_input(B_BUTTON);
 				break;
 
 			case INVENTORY:
+				play_sfx(SFX_DROP);
 				handle_inventory_input(B_BUTTON);
 				break;
 
 			case CREDITS:
+				play_sfx(SFX_DROP);
 				transition_to_scene(TITLE, is_night);
 				break;
 		}

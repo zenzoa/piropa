@@ -8,6 +8,7 @@
 #include "poop.h"
 #include "hud.h"
 #include "save.h"
+#include "audio.h"
 
 #include "title.h"
 #include "field.h"
@@ -88,6 +89,14 @@ void setup_scene(uint8_t new_scene) {
 
 	if (!skip_save) {
 		save_data();
+	}
+
+	if ((current_scene == FIELD || current_scene == POND || current_scene == GARDEN) && life_stage != DEAD) {
+		if (is_night) {
+			play_music(NIGHT_MUSIC);
+		} else {
+			play_music(DAY_MUSIC);
+		}
 	}
 
 	draw_sprites();
@@ -191,8 +200,8 @@ void update_scene(void) {
 			update_poops();
 
 			current_time = clock() / CLOCKS_PER_SEC;
-			if (current_time >= last_time + 60) {
-				last_time = clock() / CLOCKS_PER_SEC;
+			if (current_time >= last_time + 60 || current_time < last_time) {
+				last_time = current_time;
 				update_every_minute();
 				is_time_to_save = TRUE;
 			}
@@ -211,29 +220,26 @@ void update_scene(void) {
 				} else {
 					set_basket(FALSE);
 				}
-				if (restore_x > 0 && restore_y > 0) {
+				if (do_restore) {
 					restore_field_tile(restore_x, restore_y);
-					restore_x = 0;
-					restore_y = 0;
+					do_restore = FALSE;
 				}
 				break;
 
 			case POND:
 				update_pond();
-				if (restore_x > 0 && restore_y > 0) {
+				if (do_restore) {
 					restore_pond_tile(restore_x, restore_y);
-					restore_x = 0;
-					restore_y = 0;
+					do_restore = FALSE;
 				}
 				break;
 
 			case GARDEN:
 				update_garden();
-				if (restore_x > 0 && restore_y > 0) {
+				if (do_restore) {
 					restore_garden_tile(restore_x, restore_y);
 					draw_plants();
-					restore_x = 0;
-					restore_y = 0;
+					do_restore = FALSE;
 				}
 				break;
 		}
