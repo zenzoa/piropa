@@ -9,6 +9,7 @@
 #include "sprites/backgrounds/garden_night.h"
 #include "sprites/backgrounds/clouds.h"
 #include "sprites/backgrounds/plants.h"
+#include "sprites/backgrounds/flowers.h"
 
 static uint8_t plant_anim_counter[PLANT_COUNT];
 static uint8_t plant_anim_frame[PLANT_COUNT];
@@ -88,6 +89,45 @@ void update_plants(void) BANKED {
 	}
 }
 
+void draw_flowers(void) BANKED {
+	if (num_past_frogs >= 1) {
+		set_bkg_tile_xy(18, 11, 0x4F);
+	}
+	if (num_past_frogs >= 2) {
+		set_bkg_tile_xy(12, 16, 0x4E);
+	}
+	if (num_past_frogs >= 3) {
+		set_bkg_tile_xy(17, 11, 0x4E);
+	}
+	if (num_past_frogs >= 4) {
+		set_bkg_tile_xy(2, 11, 0x4F);
+	}
+	if (num_past_frogs >= 5) {
+		set_bkg_tile_xy(5, 10, 0x4E);
+	}
+	if (num_past_frogs >= 6) {
+		set_bkg_tile_xy(16, 12, 0x4F);
+	}
+	if (num_past_frogs >= 7) {
+		set_bkg_tile_xy(14, 15, 0x4F);
+	}
+	if (num_past_frogs >= 8) {
+		set_bkg_tile_xy(3, 12, 0x4E);
+	}
+	if (num_past_frogs >= 9) {
+		set_bkg_tile_xy(13, 10, 0x4F);
+	}
+	if (num_past_frogs >= 10) {
+		set_bkg_tile_xy(19, 10, 0x4E);
+	}
+	if (num_past_frogs >= 11) {
+		set_bkg_tile_xy(9, 13, 0x4F);
+	}
+	if (num_past_frogs >= 12) {
+		set_bkg_tile_xy(8, 12, 0x4E);
+	}
+}
+
 void setup_garden(void) BANKED {
 	if (is_night) {
 		set_banked_bkg_data(BANK(garden_night), 0, garden_night_TILE_COUNT, garden_night_tiles);
@@ -116,6 +156,9 @@ void setup_garden(void) BANKED {
 		}
 	}
 
+	set_banked_bkg_data(BANK(flowers), 0x4E, flowers_TILE_COUNT, flowers_tiles);
+
+	draw_flowers();
 	draw_plants();
 }
 

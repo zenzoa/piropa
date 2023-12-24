@@ -261,6 +261,10 @@ void setup_data(uint8_t reset) {
 }
 
 void reset_data(void) {
+	if (life_stage == DEAD && num_past_frogs < 255) {
+		num_past_frogs += 1;
+	}
+
 	reset_bugs();
 	reset_plants();
 	reset_poops();

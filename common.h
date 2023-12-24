@@ -108,6 +108,8 @@ extern uint8_t medicine;
 extern uint8_t health;
 extern uint8_t sickness;
 
+extern uint8_t num_past_frogs;
+
 #define MAX_POOPS 6
 extern uint8_t poop_count;
 extern uint8_t poops_to_add;

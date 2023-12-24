@@ -113,6 +113,8 @@ uint8_t medicine;
 uint8_t health;
 uint8_t sickness;
 
+uint8_t num_past_frogs;
+
 #define MAX_POOPS 6
 uint8_t poop_count;
 uint8_t poops_to_add;
