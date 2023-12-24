@@ -323,19 +323,6 @@ const sprite_data_t frog_sprite_table[14][11] = {
 		{ BANK(panda_sleep), FROG_TILE_COUNT, (uint8_t *)panda_sleep_tiles, (uint8_t *)frog_metasprites }
 	},
 	{
-		{ BANK(dead_good), FROG_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)frog_metasprites },
-		{ BANK(dead_good), FROG_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)frog_metasprites },
-		{ BANK(dead_good), FROG_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)frog_metasprites },
-		{ BANK(dead_good), FROG_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)frog_metasprites },
-		{ BANK(dead_good), FROG_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)frog_metasprites },
-		{ BANK(dead_good), FROG_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)frog_metasprites },
-		{ BANK(dead_good), FROG_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)frog_metasprites },
-		{ BANK(dead_good), FROG_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)frog_metasprites },
-		{ BANK(dead_good), FROG_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)frog_metasprites },
-		{ BANK(dead_good), FROG_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)frog_metasprites },
-		{ BANK(dead_good), FROG_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)frog_metasprites }
-	},
-	{
 		{ BANK(dead_bad), FROG_TILE_COUNT, (uint8_t *)dead_bad_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(dead_bad), FROG_TILE_COUNT, (uint8_t *)dead_bad_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(dead_bad), FROG_TILE_COUNT, (uint8_t *)dead_bad_tiles, (uint8_t *)frog_metasprites },
@@ -347,5 +334,18 @@ const sprite_data_t frog_sprite_table[14][11] = {
 		{ BANK(dead_bad), FROG_TILE_COUNT, (uint8_t *)dead_bad_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(dead_bad), FROG_TILE_COUNT, (uint8_t *)dead_bad_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(dead_bad), FROG_TILE_COUNT, (uint8_t *)dead_bad_tiles, (uint8_t *)frog_metasprites }
+	},
+	{
+		{ BANK(dead_good), FROG_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dead_good), FROG_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dead_good), FROG_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dead_good), FROG_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dead_good), FROG_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dead_good), FROG_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dead_good), FROG_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dead_good), FROG_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dead_good), FROG_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dead_good), FROG_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dead_good), FROG_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)frog_metasprites }
 	}
 };
