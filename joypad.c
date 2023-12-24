@@ -20,6 +20,7 @@ static uint8_t joypad_value;
 static uint8_t a_button_pressed;
 static uint8_t b_button_pressed;
 static uint8_t dpad_button_pressed;
+static uint8_t snapped_to_edge;
 
 static void handle_dpad(void) {
 	switch(current_scene) {
@@ -40,7 +41,15 @@ static void handle_dpad(void) {
 		case FIELD:
 		case POND:
 		case GARDEN:
-			move_hand(joypad_value);
+			if (b_button_pressed) {
+				snap_hand_to_edge(joypad_value);
+				snapped_to_edge = TRUE;
+			} else {
+				move_hand(joypad_value);
+			}
+			if (snapped_to_edge && !(joypad_value & J_LEFT) && !(joypad_value & J_RIGHT) && !(joypad_value & J_UP) && !(joypad_value & J_DOWN)) {
+				snapped_to_edge = FALSE;
+			}
 			break;
 
 		case INFO:
@@ -229,6 +238,8 @@ static void handle_a_button(void) {
 static void handle_b_button(void) {
 	if (joypad_value & J_B && !b_button_pressed) {
 		b_button_pressed = TRUE;
+
+	} else if (!(joypad_value & J_B) && b_button_pressed) {
 		switch(current_scene) {
 			case TITLE:
 				handle_title_input(B_BUTTON);
@@ -237,39 +248,43 @@ static void handle_b_button(void) {
 			case FIELD:
 			case POND:
 			case GARDEN:
-				switch(hand_state) {
-					case HAND_FLY:
-						if (is_hand_over_basket() && current_scene == FIELD) {
-							put_bug_in_inventory(BUG_FLY);
-						} else {
-							drop_bug(BUG_FLY);
-						}
-						break;
-					case HAND_DRAGONFLY:
-						if (is_hand_over_basket() && current_scene == FIELD) {
-							put_bug_in_inventory(BUG_DRAGONFLY);
-						} else {
-							drop_bug(BUG_DRAGONFLY);
-						}
-						break;
-					case HAND_FIREFLY:
-						if (is_hand_over_basket() && current_scene == FIELD) {
-							put_bug_in_inventory(BUG_FIREFLY);
-						} else {
-							drop_bug(BUG_FIREFLY);
-						}
-						break;
-					case HAND_BUTTERFLY:
-						if (is_hand_over_basket() && current_scene == FIELD) {
-							put_bug_in_inventory(BUG_BUTTERFLY);
-						} else {
-							drop_bug(BUG_BUTTERFLY);
-						}
-						break;
+				if (snapped_to_edge) {
+					snapped_to_edge = FALSE;
+				} else {
+					switch(hand_state) {
+						case HAND_FLY:
+							if (is_hand_over_basket() && current_scene == FIELD) {
+								put_bug_in_inventory(BUG_FLY);
+							} else {
+								drop_bug(BUG_FLY);
+							}
+							break;
+						case HAND_DRAGONFLY:
+							if (is_hand_over_basket() && current_scene == FIELD) {
+								put_bug_in_inventory(BUG_DRAGONFLY);
+							} else {
+								drop_bug(BUG_DRAGONFLY);
+							}
+							break;
+						case HAND_FIREFLY:
+							if (is_hand_over_basket() && current_scene == FIELD) {
+								put_bug_in_inventory(BUG_FIREFLY);
+							} else {
+								drop_bug(BUG_FIREFLY);
+							}
+							break;
+						case HAND_BUTTERFLY:
+							if (is_hand_over_basket() && current_scene == FIELD) {
+								put_bug_in_inventory(BUG_BUTTERFLY);
+							} else {
+								drop_bug(BUG_BUTTERFLY);
+							}
+							break;
+					}
+					drop_all(0);
+					play_sfx(SFX_DROP);
+					set_hand_state(HAND_DEFAULT);
 				}
-				drop_all(0);
-				play_sfx(SFX_DROP);
-				set_hand_state(HAND_DEFAULT);
 				break;
 
 			case INFO:
@@ -288,7 +303,6 @@ static void handle_b_button(void) {
 				break;
 		}
 
-	} else if (!(joypad_value & J_B)) {
 		b_button_pressed = FALSE;
 	}
 }

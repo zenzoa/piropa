@@ -108,6 +108,23 @@ void move_hand(uint8_t joypad_value) BANKED {
 	}
 }
 
+void snap_hand_to_edge(uint8_t joypad_value) BANKED {
+	if (joypad_value & J_LEFT) {
+		hand_x = 12;
+		hand_x_frac = hand_x << 8;
+	} else if (joypad_value & J_RIGHT) {
+		hand_x = 148;
+		hand_x_frac = hand_x << 8;
+	}
+	if (joypad_value & J_UP) {
+		hand_y = 20;
+		hand_y_frac = hand_y << 8;
+	} else if (joypad_value & J_DOWN) {
+		hand_y = 140;
+		hand_y_frac = hand_y << 8;
+	}
+}
+
 uint8_t is_hand_empty(void) BANKED {
 	return (hand_state == HAND_DEFAULT || hand_state == HAND_POINT);
 }
