@@ -155,7 +155,7 @@ static void handle_a_button(void) {
 							start_feed(BUG_BUTTERFLY);
 						}
 
-					} else if (is_hand_over_basket() && current_scene == FIELD && (hand_state == HAND_FLY || hand_state == HAND_DRAGONFLY || hand_state == HAND_FIREFLY || hand_state == HAND_BUTTERFLY)) {
+					} else if (is_hand_over_basket() && (hand_state == HAND_FLY || hand_state == HAND_DRAGONFLY || hand_state == HAND_FIREFLY || hand_state == HAND_BUTTERFLY)) {
 						switch(hand_state) {
 							case HAND_FLY:
 								play_sfx(SFX_DROP);
@@ -253,34 +253,50 @@ static void handle_b_button(void) {
 				} else {
 					switch(hand_state) {
 						case HAND_FLY:
-							if (is_hand_over_basket() && current_scene == FIELD) {
+							if (is_hand_over_frog() && !is_night && life_stage != EGG && life_stage != DEAD) {
+								set_hand_state(HAND_DEFAULT);
+								start_feed(BUG_FLY);
+							} else if (is_hand_over_basket()) {
 								put_bug_in_inventory(BUG_FLY);
 							} else {
 								drop_bug(BUG_FLY);
 							}
 							break;
+
 						case HAND_DRAGONFLY:
-							if (is_hand_over_basket() && current_scene == FIELD) {
+							if (is_hand_over_frog() && !is_night && life_stage != EGG && life_stage != DEAD) {
+								set_hand_state(HAND_DEFAULT);
+								start_feed(BUG_DRAGONFLY);
+							} else if (is_hand_over_basket()) {
 								put_bug_in_inventory(BUG_DRAGONFLY);
 							} else {
 								drop_bug(BUG_DRAGONFLY);
 							}
 							break;
+
 						case HAND_FIREFLY:
-							if (is_hand_over_basket() && current_scene == FIELD) {
+							if (is_hand_over_frog() && !is_night && life_stage != EGG && life_stage != DEAD) {
+								set_hand_state(HAND_DEFAULT);
+								start_feed(BUG_FIREFLY);
+							} else if (is_hand_over_basket()) {
 								put_bug_in_inventory(BUG_FIREFLY);
 							} else {
 								drop_bug(BUG_FIREFLY);
 							}
 							break;
+
 						case HAND_BUTTERFLY:
-							if (is_hand_over_basket() && current_scene == FIELD) {
+							if (is_hand_over_frog() && !is_night && life_stage != EGG && life_stage != DEAD) {
+								set_hand_state(HAND_DEFAULT);
+								start_feed(BUG_BUTTERFLY);
+							} else if (is_hand_over_basket()) {
 								put_bug_in_inventory(BUG_BUTTERFLY);
 							} else {
 								drop_bug(BUG_BUTTERFLY);
 							}
 							break;
 					}
+
 					drop_all(0);
 					play_sfx(SFX_DROP);
 					set_hand_state(HAND_DEFAULT);

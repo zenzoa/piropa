@@ -268,7 +268,8 @@ void reset_data(void) {
 	reset_bugs();
 	reset_plants();
 	reset_poops();
-	reset_inventory();
+	// reset_inventory();
+
 	setup_data(TRUE);
 	transition_to_scene(FIELD, FALSE);
 }

@@ -25,7 +25,7 @@ static uint8_t sky_anim_counter;
 static uint8_t basket_is_open;
 
 uint8_t is_hand_over_basket(void) BANKED {
-	return hand_x + 16 >= 120 && hand_x < 136 && hand_y + 16 >= 80 && hand_y < 96;
+	return hand_x + 16 >= 120 && hand_x < 136 && hand_y + 16 >= 80 && hand_y < 96 && current_scene == FIELD;
 }
 
 void set_basket(uint8_t is_open) BANKED {

@@ -64,6 +64,7 @@ static uint8_t chance_to_move_up;
 static uint8_t alive_count;
 
 static void spawn_fly(uint8_t i, uint8_t is_setup) {
+	if (life_stage == DEAD) { return; }
 	fly_alive[i] = TRUE;
 	fly_respawn[i] = 0;
 	fly_scene[i] = POND;
@@ -78,6 +79,7 @@ static void spawn_fly(uint8_t i, uint8_t is_setup) {
 }
 
 static void spawn_dragonfly(uint8_t i, uint8_t is_setup) {
+	if (life_stage == DEAD) { return; }
 	dragonfly_alive[i] = TRUE;
 	dragonfly_respawn[i] = 0;
 	dragonfly_scene[i] = POND;
@@ -92,6 +94,7 @@ static void spawn_dragonfly(uint8_t i, uint8_t is_setup) {
 }
 
 static void spawn_firefly(uint8_t i, uint8_t is_setup) {
+	if (life_stage == DEAD) { return; }
 	firefly_alive[i] = TRUE;
 	firefly_respawn[i] = 0;
 	firefly_scene[i] = POND;
@@ -106,6 +109,7 @@ static void spawn_firefly(uint8_t i, uint8_t is_setup) {
 }
 
 static void spawn_butterfly(uint8_t i, uint8_t is_setup) {
+	if (life_stage == DEAD) { return; }
 	butterfly_alive[i] = TRUE;
 	butterfly_respawn[i] = 0;
 	butterfly_scene[i] = GARDEN;
@@ -600,7 +604,9 @@ void drop_bug(uint8_t bug_type) BANKED {
 
 void setup_bugs(void) BANKED {
 	for (uint8_t i = 0; i < FLY_COUNT; i++) {
-		if (fly_alive[i] &&
+		if (life_stage == DEAD) {
+			fly_alive[i] = FALSE;
+		} else if (fly_alive[i] &&
 			(fly_scene[i] != current_scene ||
 			!(current_scene == POND && !is_night))) {
 				fly_alive[i] = FALSE;
@@ -613,7 +619,9 @@ void setup_bugs(void) BANKED {
 	}
 
 	for (uint8_t i = 0; i < DRAGONFLY_COUNT; i++) {
-		if (dragonfly_alive[i] &&
+		if (life_stage == DEAD) {
+			dragonfly_alive[i] = FALSE;
+		} else if (dragonfly_alive[i] &&
 			(dragonfly_scene[i] != current_scene ||
 			!(current_scene == POND && !is_night))) {
 				dragonfly_alive[i] = FALSE;
@@ -626,7 +634,9 @@ void setup_bugs(void) BANKED {
 	}
 
 	for (uint8_t i = 0; i < FIREFLY_COUNT; i++) {
-		if (firefly_alive[i] &&
+		if (life_stage == DEAD) {
+			firefly_alive[i] = FALSE;
+		} else if (firefly_alive[i] &&
 			(firefly_scene[i] != current_scene ||
 			!(current_scene == POND && is_night))) {
 				firefly_alive[i] = FALSE;
@@ -639,7 +649,9 @@ void setup_bugs(void) BANKED {
 	}
 
 	for (uint8_t i = 0; i < BUTTERFLY_COUNT; i++) {
-		if (butterfly_alive[i] &&
+		if (life_stage == DEAD) {
+			butterfly_alive[i] = FALSE;
+		} else if (butterfly_alive[i] &&
 			(butterfly_scene[i] != current_scene ||
 			!(current_scene == GARDEN && !is_night))) {
 				butterfly_alive[i] = FALSE;
