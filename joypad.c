@@ -41,13 +41,16 @@ static void handle_dpad(void) {
 		case FIELD:
 		case POND:
 		case GARDEN:
-			if (b_button_pressed) {
-				snap_hand_to_edge(joypad_value);
-				snapped_to_edge = TRUE;
+			if ((joypad_value & J_LEFT) || (joypad_value & J_RIGHT) || (joypad_value & J_UP) || (joypad_value & J_DOWN)) {
+				if (!dpad_button_pressed && b_button_pressed) {
+					snap_hand_to_edge(joypad_value);
+					snapped_to_edge = TRUE;
+				} else if (!b_button_pressed) {
+					move_hand(joypad_value);
+				}
+				dpad_button_pressed = TRUE;
 			} else {
-				move_hand(joypad_value);
-			}
-			if (snapped_to_edge && !(joypad_value & J_LEFT) && !(joypad_value & J_RIGHT) && !(joypad_value & J_UP) && !(joypad_value & J_DOWN)) {
+				dpad_button_pressed = FALSE;
 				snapped_to_edge = FALSE;
 			}
 			break;
