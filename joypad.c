@@ -301,7 +301,9 @@ static void handle_b_button(void) {
 					}
 
 					drop_all(0);
-					play_sfx(SFX_DROP);
+					if (!is_hand_empty()) {
+						play_sfx(SFX_DROP);
+					}
 					set_hand_state(HAND_DEFAULT);
 				}
 				break;
