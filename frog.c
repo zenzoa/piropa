@@ -260,8 +260,8 @@ void start_feed(uint8_t bug_type) BANKED {
 			if (num_butterflies_eaten < 255) { num_butterflies_eaten += 1; }
 			break;
 	}
-	if (stomach > 9) {
-		weight += 1;
+	if (stomach > 9 && weight < 200) {
+		weight += (stomach - 9);
 	}
 	update_mood();
 	start_action(ACTION_BITE);
