@@ -37,6 +37,11 @@ void put_bug_in_inventory(uint8_t bug_type) BANKED {
 				inventory_butterflies += 1;
 			}
 			break;
+		case BUG_CICADA:
+			if (inventory_cicadas < 9) {
+				inventory_cicadas += 1;
+			}
+			break;
 	}
 }
 
@@ -66,6 +71,12 @@ static void take_bug_out_of_inventory(void) {
 				set_hand_state(HAND_BUTTERFLY);
 			}
 			break;
+		case BUG_CICADA:
+			if (inventory_cicadas > 0) {
+				inventory_cicadas -= 1;
+				set_hand_state(HAND_CICADA);
+			}
+			break;
 	}
 	transition_to_scene(FIELD, is_night);
 }
@@ -77,20 +88,24 @@ void draw_inventory_sprites(void) BANKED {
 		arrow_anim_frame = !arrow_anim_frame;
 		switch(selected_inventory_item) {
 			case BUG_FLY:
-				move_sprite(0, 48 - arrow_anim_frame, 71);
-				move_sprite(1, 83 + arrow_anim_frame, 71);
+				move_sprite(0, 48 - arrow_anim_frame, 62);
+				move_sprite(1, 83 + arrow_anim_frame, 62);
 				break;
 			case BUG_DRAGONFLY:
-				move_sprite(0, 88 - arrow_anim_frame, 71);
-				move_sprite(1, 123 + arrow_anim_frame, 71);
+				move_sprite(0, 88 - arrow_anim_frame, 62);
+				move_sprite(1, 123 + arrow_anim_frame, 62);
 				break;
 			case BUG_FIREFLY:
-				move_sprite(0, 88 - arrow_anim_frame, 103);
-				move_sprite(1, 123 + arrow_anim_frame, 103);
+				move_sprite(0, 88 - arrow_anim_frame, 86);
+				move_sprite(1, 123 + arrow_anim_frame, 86);
 				break;
 			case BUG_BUTTERFLY:
-				move_sprite(0, 48 - arrow_anim_frame, 103);
-				move_sprite(1, 83 + arrow_anim_frame, 103);
+				move_sprite(0, 48 - arrow_anim_frame, 86);
+				move_sprite(1, 83 + arrow_anim_frame, 86);
+				break;
+			case BUG_CICADA:
+				move_sprite(0, 48 - arrow_anim_frame, 110);
+				move_sprite(1, 83 + arrow_anim_frame, 110);
 				break;
 		}
 	}
@@ -107,34 +122,41 @@ void setup_inventory(void) BANKED {
 	set_banked_bkg_data(BANK(inventory), 0, inventory_TILE_COUNT, inventory_tiles);
 	set_banked_bkg_tiles(BANK(inventory), 0, 0, 20, 18, inventory_map);
 
-	set_banked_bkg_data(BANK(numbers), 0x30, numbers_TILE_COUNT, numbers_tiles);
+	set_banked_bkg_data(BANK(numbers), 0x50, numbers_TILE_COUNT, numbers_tiles);
 	set_banked_bkg_data(BANK(inventory_bugs), 0x40, inventory_bugs_TILE_COUNT, inventory_bugs_tiles);
 
 	set_banked_sprite_data(BANK(select_arrow), 0xff, select_arrow_TILE_COUNT, select_arrow_tiles);
 
 	if (inventory_flies > 0) {
-		set_bkg_tile_xy(6, 7, 0x48);
-		set_bkg_tile_xy(7, 7, 0x49);
-		set_bkg_tile_xy(8, 7, 0x30 + inventory_flies);
+		set_bkg_tile_xy(6, 6, 0x40);
+		set_bkg_tile_xy(7, 6, 0x41);
+		set_bkg_tile_xy(8, 6, 0x50 + inventory_flies);
 	}
 	if (inventory_dragonflies > 0) {
-		set_bkg_tile_xy(11, 6, 0x40);
-		set_bkg_tile_xy(12, 6, 0x41);
-		set_bkg_tile_xy(11, 7, 0x46);
-		set_bkg_tile_xy(12, 7, 0x47);
-		set_bkg_tile_xy(13, 7, 0x30 + inventory_dragonflies);
+		set_bkg_tile_xy(11, 5, 0x44);
+		set_bkg_tile_xy(12, 5, 0x45);
+		set_bkg_tile_xy(11, 6, 0x46);
+		set_bkg_tile_xy(12, 6, 0x47);
+		set_bkg_tile_xy(13, 6, 0x50 + inventory_dragonflies);
 	}
 	if (inventory_fireflies > 0) {
-		set_bkg_tile_xy(11, 11, 0x42);
-		set_bkg_tile_xy(12, 11, 0x43);
-		set_bkg_tile_xy(13, 11, 0x30 + inventory_fireflies);
+		set_bkg_tile_xy(11, 9, 0x42);
+		set_bkg_tile_xy(12, 9, 0x43);
+		set_bkg_tile_xy(13, 9, 0x50 + inventory_fireflies);
 	}
 	if (inventory_butterflies > 0) {
-		set_bkg_tile_xy(6, 10, 0x44);
-		set_bkg_tile_xy(7, 10, 0x45);
-		set_bkg_tile_xy(6, 11, 0x4a);
-		set_bkg_tile_xy(7, 11, 0x4b);
-		set_bkg_tile_xy(8, 11, 0x30 + inventory_butterflies);
+		set_bkg_tile_xy(6, 8, 0x48);
+		set_bkg_tile_xy(7, 8, 0x49);
+		set_bkg_tile_xy(6, 9, 0x4a);
+		set_bkg_tile_xy(7, 9, 0x4b);
+		set_bkg_tile_xy(8, 9, 0x50 + inventory_butterflies);
+	}
+	if (inventory_cicadas > 0) {
+		set_bkg_tile_xy(6, 11, 0x4c);
+		set_bkg_tile_xy(7, 11, 0x49);
+		set_bkg_tile_xy(6, 12, 0x4d);
+		set_bkg_tile_xy(7, 12, 0x4e);
+		set_bkg_tile_xy(8, 12, 0x50 + inventory_cicadas);
 	}
 
 	set_sprite_tile(0, 0xff);
@@ -185,6 +207,9 @@ void handle_inventory_input(uint8_t button_pressed) BANKED {
 				case BUG_FIREFLY:
 					select_inventory_item(BUG_DRAGONFLY);
 					break;
+				case BUG_CICADA:
+					select_inventory_item(BUG_BUTTERFLY);
+					break;
 			}
 			break;
 
@@ -196,6 +221,9 @@ void handle_inventory_input(uint8_t button_pressed) BANKED {
 				case BUG_DRAGONFLY:
 					select_inventory_item(BUG_FIREFLY);
 					break;
+				case BUG_BUTTERFLY:
+					select_inventory_item(BUG_CICADA);
+					break;
 			}
 			break;
 	}
@@ -206,4 +234,5 @@ void reset_inventory(void) BANKED {
 	inventory_dragonflies = 0;
 	inventory_fireflies = 0;
 	inventory_butterflies = 0;
+	inventory_cicadas = 0;
 }

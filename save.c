@@ -40,15 +40,19 @@ typedef struct save_slot_t {
 	uint8_t firefly_respawn[FIREFLY_COUNT];
 	uint8_t butterfly_alive[BUTTERFLY_COUNT];
 	uint8_t butterfly_respawn[BUTTERFLY_COUNT];
+	uint8_t cicada_alive[CICADA_COUNT];
+	uint8_t cicada_respawn[CICADA_COUNT];
 
 	uint8_t inventory_flies;
 	uint8_t inventory_dragonflies;
 	uint8_t inventory_fireflies;
 	uint8_t inventory_butterflies;
+	uint8_t inventory_cicadas;
 
 	uint8_t num_dragonflies_eaten;
 	uint8_t num_fireflies_eaten;
 	uint8_t num_butterflies_eaten;
+	uint8_t num_cicadas_eaten;
 
 	uint8_t plant_age[PLANT_COUNT];
 	uint8_t plant_stage[PLANT_COUNT];
@@ -115,10 +119,12 @@ static void save_data_to_slot(uint8_t i) {
 	save_slots[i].inventory_dragonflies = inventory_dragonflies;
 	save_slots[i].inventory_fireflies = inventory_fireflies;
 	save_slots[i].inventory_butterflies = inventory_butterflies;
+	save_slots[i].inventory_cicadas = inventory_cicadas;
 
 	save_slots[i].num_dragonflies_eaten = num_dragonflies_eaten;
 	save_slots[i].num_fireflies_eaten = num_fireflies_eaten;
 	save_slots[i].num_butterflies_eaten = num_butterflies_eaten;
+	save_slots[i].num_cicadas_eaten = num_cicadas_eaten;
 
 	for (uint8_t j = 0; j < PLANT_COUNT; j++) {
 		save_slots[i].plant_age[j] = plant_age[j];
@@ -193,10 +199,12 @@ static uint8_t load_data_from_slot(uint8_t i) {
 		inventory_dragonflies = save_slots[i].inventory_dragonflies;
 		inventory_fireflies = save_slots[i].inventory_fireflies;
 		inventory_butterflies = save_slots[i].inventory_butterflies;
+		inventory_cicadas = save_slots[i].inventory_cicadas;
 
 		num_dragonflies_eaten = save_slots[i].num_dragonflies_eaten;
 		num_fireflies_eaten = save_slots[i].num_fireflies_eaten;
 		num_butterflies_eaten = save_slots[i].num_butterflies_eaten;
+		num_cicadas_eaten = save_slots[i].num_cicadas_eaten;
 
 		for (uint8_t j = 0; j < PLANT_COUNT; j++) {
 			plant_age[j] = save_slots[i].plant_age[j];

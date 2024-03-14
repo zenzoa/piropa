@@ -259,6 +259,11 @@ void start_feed(uint8_t bug_type) BANKED {
 			love += 3;
 			if (num_butterflies_eaten < 255) { num_butterflies_eaten += 1; }
 			break;
+		case BUG_CICADA:
+			stomach += 3;
+			love += 3;
+			if (num_cicadas_eaten < 255) { num_cicadas_eaten += 1; }
+			break;
 	}
 	if (stomach > 9 && weight < 200) {
 		weight += (stomach - 9);
@@ -954,6 +959,7 @@ void setup_frog(uint8_t reset) BANKED {
 		num_dragonflies_eaten = 0;
 		num_fireflies_eaten = 0;
 		num_butterflies_eaten = 0;
+		num_cicadas_eaten = 0;
 	}
 	update_mood();
 

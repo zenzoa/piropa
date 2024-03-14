@@ -156,6 +156,9 @@ static void handle_a_button(void) {
 						} else if (hand_state == HAND_BUTTERFLY) {
 							set_hand_state(HAND_DEFAULT);
 							start_feed(BUG_BUTTERFLY);
+						} else if (hand_state == HAND_CICADA) {
+							set_hand_state(HAND_DEFAULT);
+							start_feed(BUG_CICADA);
 						}
 
 					} else if (is_hand_over_basket() && (hand_state == HAND_FLY || hand_state == HAND_DRAGONFLY || hand_state == HAND_FIREFLY || hand_state == HAND_BUTTERFLY)) {
@@ -175,6 +178,10 @@ static void handle_a_button(void) {
 							case HAND_BUTTERFLY:
 								play_sfx(SFX_DROP);
 								put_bug_in_inventory(BUG_BUTTERFLY);
+								break;
+							case HAND_CICADA:
+								play_sfx(SFX_DROP);
+								put_bug_in_inventory(BUG_CICADA);
 								break;
 						}
 						set_hand_state(HAND_DEFAULT);
@@ -198,6 +205,10 @@ static void handle_a_button(void) {
 								play_sfx(SFX_BEEP);
 								set_hand_state(HAND_BUTTERFLY);
 								draw_plants();
+								break;
+							case BUG_CICADA:
+								play_sfx(SFX_BEEP);
+								set_hand_state(HAND_CICADA);
 								break;
 
 							default:
@@ -296,6 +307,17 @@ static void handle_b_button(void) {
 								put_bug_in_inventory(BUG_BUTTERFLY);
 							} else {
 								drop_bug(BUG_BUTTERFLY);
+							}
+							break;
+
+						case HAND_CICADA:
+							if (is_hand_over_frog() && !is_night && life_stage != EGG && life_stage != DEAD) {
+								set_hand_state(HAND_DEFAULT);
+								start_feed(BUG_CICADA);
+							} else if (is_hand_over_basket()) {
+								put_bug_in_inventory(BUG_CICADA);
+							} else {
+								drop_bug(BUG_CICADA);
 							}
 							break;
 					}

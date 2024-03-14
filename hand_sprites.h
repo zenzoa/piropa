@@ -1,1 +1,1 @@
-extern const sprite_data_t hand_sprite_table[15];
+extern const sprite_data_t hand_sprite_table[16];

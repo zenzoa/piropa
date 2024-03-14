@@ -18,6 +18,7 @@
 #include "sprites/hand/hand_dragonfly.h"
 #include "sprites/hand/hand_firefly.h"
 #include "sprites/hand/hand_butterfly.h"
+#include "sprites/hand/hand_cicada.h"
 
 #define HAND_TILE_COUNT 48
 
@@ -103,7 +104,7 @@ static const metasprite_t hand_metasprite7[] = {
 
 static const metasprite_t* const hand_metasprites[8] = { hand_metasprite0, hand_metasprite1, hand_metasprite2, hand_metasprite3, hand_metasprite4, hand_metasprite5, hand_metasprite6, hand_metasprite7 };
 
-const sprite_data_t hand_sprite_table[15] = {
+const sprite_data_t hand_sprite_table[16] = {
 	{ BANK(hand_default), HAND_TILE_COUNT, (uint8_t *)hand_default_tiles, (uint8_t *)hand_metasprites },
 	{ BANK(hand_point), HAND_TILE_COUNT, (uint8_t *)hand_point_tiles, (uint8_t *)hand_metasprites },
 	{ BANK(hand_pet1), HAND_TILE_COUNT, (uint8_t *)hand_pet1_tiles, (uint8_t *)hand_metasprites },
@@ -118,5 +119,6 @@ const sprite_data_t hand_sprite_table[15] = {
 	{ BANK(hand_fly), HAND_TILE_COUNT, (uint8_t *)hand_fly_tiles, (uint8_t *)hand_metasprites },
 	{ BANK(hand_dragonfly), HAND_TILE_COUNT, (uint8_t *)hand_dragonfly_tiles, (uint8_t *)hand_metasprites },
 	{ BANK(hand_firefly), HAND_TILE_COUNT, (uint8_t *)hand_firefly_tiles, (uint8_t *)hand_metasprites },
-	{ BANK(hand_butterfly), HAND_TILE_COUNT, (uint8_t *)hand_butterfly_tiles, (uint8_t *)hand_metasprites }
+	{ BANK(hand_butterfly), HAND_TILE_COUNT, (uint8_t *)hand_butterfly_tiles, (uint8_t *)hand_metasprites },
+	{ BANK(hand_cicada), HAND_TILE_COUNT, (uint8_t *)hand_cicada_tiles, (uint8_t *)hand_metasprites }
 };

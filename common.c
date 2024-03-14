@@ -49,6 +49,7 @@ uint8_t restore_y;
 #define HAND_DRAGONFLY 12
 #define HAND_FIREFLY 13
 #define HAND_BUTTERFLY 14
+#define HAND_CICADA 15
 uint8_t hand_state;
 
 uint8_t hand_x;
@@ -127,6 +128,7 @@ uint8_t poops_y[MAX_POOPS];
 #define BUG_DRAGONFLY 2
 #define BUG_FIREFLY 3
 #define BUG_BUTTERFLY 4
+#define BUG_CICADA 5
 
 #define FLY_COUNT 6
 uint8_t fly_alive[FLY_COUNT];
@@ -140,15 +142,20 @@ uint8_t firefly_respawn[FIREFLY_COUNT];
 #define BUTTERFLY_COUNT 4
 uint8_t butterfly_alive[BUTTERFLY_COUNT];
 uint8_t butterfly_respawn[BUTTERFLY_COUNT];
+#define CICADA_COUNT 4
+uint8_t cicada_alive[CICADA_COUNT];
+uint8_t cicada_respawn[CICADA_COUNT];
 
 uint8_t inventory_flies;
 uint8_t inventory_dragonflies;
 uint8_t inventory_fireflies;
 uint8_t inventory_butterflies;
+uint8_t inventory_cicadas;
 
 uint8_t num_dragonflies_eaten;
 uint8_t num_fireflies_eaten;
 uint8_t num_butterflies_eaten;
+uint8_t num_cicadas_eaten;
 
 #define PLANT_COUNT 3
 uint8_t plant_age[PLANT_COUNT];
