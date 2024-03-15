@@ -51,7 +51,6 @@ static void handle_dpad(void) {
 				dpad_button_pressed = TRUE;
 			} else {
 				dpad_button_pressed = FALSE;
-				snapped_to_edge = FALSE;
 			}
 			break;
 
