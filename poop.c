@@ -95,7 +95,7 @@ void clean_poop_at(uint8_t x, uint8_t y) BANKED {
 void update_poops(void) BANKED {
 	if (poops_to_add > 0) {
 		for (uint8_t i = 0; i < poops_to_add; i++) {
-			add_poop(frog_x / 8, frog_y / 8);
+			add_poop(frog_x >> 3, frog_y >> 3);
 		}
 		poops_to_add = 0;
 	}

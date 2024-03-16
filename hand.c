@@ -257,7 +257,7 @@ void update_hand(void) BANKED {
 			if (hand_timeout == 0) {
 				sweep_count -= 1;
 				if (sweep_count == 0) {
-					clean_poop_at(hand_x / 8, hand_y / 8);
+					clean_poop_at(hand_x >> 3, hand_y >> 3);
 				}
 				set_hand_state(HAND_BROOM);
 			}
