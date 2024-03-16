@@ -40,6 +40,7 @@ if test $sprites
 	aseprite -b sprites/frogs.aseprite --save-as sprites/frogs/{slice}.png
 	aseprite -b sprites/hand.aseprite --save-as sprites/hand/{slice}.png
 	aseprite -b sprites/emotes.aseprite --save-as sprites/emotes/{slice}.png
+	aseprite -b sprites/death.aseprite --save-as sprites/death/{slice}.png
 	aseprite -b sprites/bugs_small.aseprite --save-as sprites/bugs_small/{slice}.png
 	aseprite -b sprites/bugs_big.aseprite --save-as sprites/bugs_big/{slice}.png
 	aseprite -b sprites/arrows.aseprite --save-as sprites/arrows/{slice}.png
@@ -62,6 +63,10 @@ if test $sprites
 
 	for file in sprites/emotes/*
 		png2asset $file $sprite_map_args
+	end
+
+	for file in sprites/death/*
+		png2asset $file $sprite_args -sw 16 -sh 16
 	end
 
 	for file in sprites/bugs_small/*

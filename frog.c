@@ -87,11 +87,13 @@ uint8_t is_sleeping(void) BANKED {
 }
 
 static void die_badly(void) {
-	start_evolution(STAGE_DEAD_BAD);
+	death_anim_start = TRUE;
+	good_death = FALSE;
 }
 
 static void die_well(void) {
-	start_evolution(STAGE_DEAD_GOOD);
+	death_anim_start = TRUE;
+	good_death = TRUE;
 }
 
 static void update_mood(void) {
@@ -403,6 +405,15 @@ void place_in_scene(void) BANKED {
 }
 
 void draw_frog(void) BANKED {
+	if (death_anim_complete) {
+		death_anim_complete = FALSE;
+		if (good_death) {
+			set_stage(STAGE_DEAD_GOOD);
+		} else {
+			set_stage(STAGE_DEAD_BAD);
+		}
+	}
+
 	anim_complete = update_animation(&frog_anim);
 	update_animation(&emote_anim);
 
@@ -788,12 +799,7 @@ static void start_evolution(uint8_t new_stage) {
 	evolution_counter = 0;
 	evolution_frame = 0;
 	next_stage = new_stage;
-	if (new_stage == STAGE_DEAD_GOOD || new_stage == STAGE_DEAD_BAD) {
-		play_music(NO_MUSIC);
-		play_sfx(SFX_DIE);
-	} else {
-		play_sfx(SFX_EVOLVE);
-	}
+	play_sfx(SFX_EVOLVE);
 }
 
 static void update_evolution(void) {

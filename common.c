@@ -17,7 +17,8 @@ uint8_t game_speed = SPEED_MEDIUM;
 #define GARDEN 3
 #define INFO 4
 #define INVENTORY 5
-#define CREDITS 6
+#define ENDSCREEN 6
+#define CREDITS 7
 uint8_t current_scene = 255;
 uint8_t last_scene;
 
@@ -98,6 +99,7 @@ uint8_t stage;
 #define ANIM_WALK_LEFT 8
 #define ANIM_WALK_RIGHT 9
 #define ANIM_SLEEP 10
+#define ANIM_DEAD 11
 uint8_t anim;
 
 uint8_t emote;
@@ -113,6 +115,10 @@ uint8_t love;
 uint8_t medicine;
 uint8_t health;
 uint8_t sickness;
+
+uint8_t death_anim_start;
+uint8_t death_anim_complete;
+uint8_t good_death;
 
 uint8_t num_past_frogs;
 

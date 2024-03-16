@@ -16,6 +16,7 @@
 #include "garden.h"
 #include "info.h"
 #include "inventory.h"
+#include "endscreen.h"
 #include "credits.h"
 
 #include "colors.h"
@@ -67,6 +68,10 @@ void setup_scene(uint8_t new_scene) {
 			setup_inventory();
 			break;
 
+		case ENDSCREEN:
+			setup_endscreen();
+			break;
+
 		case CREDITS:
 			setup_credits();
 			break;
@@ -91,7 +96,7 @@ void setup_scene(uint8_t new_scene) {
 		save_data();
 	}
 
-	if ((current_scene == FIELD || current_scene == POND || current_scene == GARDEN) && life_stage != DEAD) {
+	if ((current_scene == FIELD || current_scene == POND || current_scene == GARDEN) && life_stage != DEAD && !death_anim_start && !death_anim_complete) {
 		if (is_night) {
 			play_music(NIGHT_MUSIC);
 		} else {
@@ -175,6 +180,10 @@ static void draw_sprites(void) {
 		case INVENTORY:
 			draw_inventory_sprites();
 			break;
+
+		case ENDSCREEN:
+			draw_endscreen_sprites();
+			break;
 	}
 
 	hide_sprites_range(last_sprite, MAX_HARDWARE_SPRITES);
@@ -210,6 +219,11 @@ void update_scene(void) {
 				save_data();
 				is_time_to_save = FALSE;
 			}
+
+			if (death_anim_start) {
+				death_anim_start = FALSE;
+				transition_to_scene(ENDSCREEN, is_night);
+			}
 		}
 
 		switch(current_scene) {
@@ -241,6 +255,10 @@ void update_scene(void) {
 					draw_plants();
 					do_restore = FALSE;
 				}
+				break;
+
+			case ENDSCREEN:
+				update_endscreen();
 				break;
 		}
 	}
