@@ -92,7 +92,7 @@ static uint8_t butterfly_respawn_time(void) {
 }
 
 static uint8_t cicada_respawn_time(void) {
-	return 6 * (game_speed + 1);
+	return 4 * (game_speed + 1);
 }
 
 static void spawn_fly(uint8_t i, uint8_t is_setup) {
@@ -164,30 +164,31 @@ static void spawn_cicada(uint8_t i, uint8_t is_setup) {
 	cicada_alive[i] = TRUE;
 	cicada_respawn[i] = 0;
 	cicada_scene[i] = FIELD;
-	uint8_t tree = rand() % 3;
-	switch(tree) {
-		case 0:
-			cicada_x[i] = 20;
-			cicada_y[i] = MIN_Y;
-			cicada_goal_x[i] = 28 + rand() % 6;
-			cicada_goal_y[i] = 50 + rand() % 30;
-			break;
-		case 1:
-			cicada_x[i] = 30;
-			cicada_y[i] = MIN_Y;
-			cicada_goal_x[i] = 38 + rand() % 6;
-			cicada_goal_y[i] = 56 + rand() % 24;
-			break;
-		case 2:
-			cicada_x[i] = 124;
-			cicada_y[i] = MIN_Y;
-			cicada_goal_x[i] = 132 + rand() % 6;
-			cicada_goal_y[i] = 50 + rand() % 24;
-			break;
-	}
 	if (is_setup) {
 		cicada_x[i] = cicada_goal_x[i];
 		cicada_y[i] = cicada_goal_y[i];
+	} else {
+		uint8_t tree = rand() % 3;
+		switch(tree) {
+			case 0:
+				cicada_x[i] = 20;
+				cicada_y[i] = MIN_Y;
+				cicada_goal_x[i] = 28 + rand() % 6;
+				cicada_goal_y[i] = 50 + rand() % 30;
+				break;
+			case 1:
+				cicada_x[i] = 30;
+				cicada_y[i] = MIN_Y;
+				cicada_goal_x[i] = 38 + rand() % 6;
+				cicada_goal_y[i] = 56 + rand() % 24;
+				break;
+			case 2:
+				cicada_x[i] = 124;
+				cicada_y[i] = MIN_Y;
+				cicada_goal_x[i] = 132 + rand() % 6;
+				cicada_goal_y[i] = 50 + rand() % 24;
+				break;
+		}
 	}
 	cicada_anim_counter[i] = rand() % 36;
 	cicada_anim_frame[i] = rand() % 2;
@@ -240,7 +241,7 @@ void respawn_bugs(void) BANKED {
 	for (uint8_t i = 0; i < CICADA_COUNT; i++) {
 		if (cicada_alive[i]) {
 			alive_count += 1;
-		} else if (cicada_respawn[i] > 0 && alive_count < CICADA_COUNT - 1) {
+		} else if (cicada_respawn[i] > 0 && alive_count < CICADA_COUNT - 1 && current_scene == FIELD && !is_night) {
 			cicada_respawn[i] -= 1;
 			break;
 		}
