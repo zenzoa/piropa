@@ -257,13 +257,15 @@ void start_feed(uint8_t bug_type) BANKED {
 			if (num_fireflies_eaten < 255) { num_fireflies_eaten += 1; }
 			break;
 		case BUG_BUTTERFLY:
-			stomach += 3;
-			love += 3;
+			stomach = 9;
+			love = 9;
 			if (num_butterflies_eaten < 255) { num_butterflies_eaten += 1; }
 			break;
 		case BUG_CICADA:
-			stomach += 3;
-			love += 3;
+			stomach = 9;
+			if (weight < 200) {
+				weight += 2;
+			}
 			if (num_cicadas_eaten < 255) { num_cicadas_eaten += 1; }
 			break;
 	}
@@ -322,13 +324,13 @@ static void end_pet(void) {
 }
 
 void start_medicate(void) BANKED {
-	if (sickness == 0 && health > 0) {
+	if (sickness == 0) {
 		if (love > 0) {
 			love -= 1;
 		}
 		start_action(ACTION_REFUSE);
 	} else {
-		medicine = +1;
+		medicine += 1;
 		health += 1;
 		sickness = 0;
 		update_mood();
@@ -870,12 +872,29 @@ static void update_evolution(void) {
 	}
 }
 
+static void adjust_stats_at_evolution(void) {
+	if (stomach > 1) {
+		stomach = stomach >> 1;
+	}
+	if (hygiene > 1) {
+		hygiene = hygiene >> 1;
+	}
+	if (love > 1) {
+		love = love >> 1;
+	}
+	if (health > 1) {
+		health = health >> 1;
+	}
+}
+
 static void evolve(void) {
 	if (life_stage == EGG) {
 		start_evolution(STAGE_TADPOLE);
+		adjust_stats_at_evolution();
 
 	} else if (life_stage == TADPOLE) {
 		start_evolution(STAGE_FROGLET);
+		adjust_stats_at_evolution();
 
 	} else if (life_stage == FROGLET) {
 		if (num_fireflies_eaten >= 4) {
@@ -885,6 +904,7 @@ static void evolve(void) {
 		} else {
 			start_evolution(STAGE_TEEN_NORM);
 		}
+		adjust_stats_at_evolution();
 
 	} else if (life_stage == TEEN) {
 		switch (stage) {
@@ -907,7 +927,7 @@ static void evolve(void) {
 				break;
 
 			case STAGE_TEEN_BW:
-				if (num_dragonflies_eaten == 0) {
+				if (num_dragonflies_eaten == 0 && num_cicadas_eaten == 0 && num_butterflies_eaten == 0) {
 					start_evolution(STAGE_PANDA);
 				} else {
 					start_evolution(STAGE_APPLE);
@@ -917,6 +937,7 @@ static void evolve(void) {
 			default:
 				start_evolution(STAGE_NORM);
 		}
+		adjust_stats_at_evolution();
 
 	} else if (life_stage == ADULT) {
 		die_well();
@@ -953,12 +974,12 @@ void setup_frog(uint8_t reset) BANKED {
 	if (reset) {
 		age = 0;
 		age_part = 0;
-		stomach = 5;
+		stomach = 9;
 		bowels = 0;
 		weight = 1;
-		hygiene = 5;
+		hygiene = 9;
 		energy = 9;
-		love = 5;
+		love = 9;
 		medicine = 0;
 		health = 9;
 		sickness = 0;
