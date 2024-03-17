@@ -561,6 +561,8 @@ void update_cicada(uint8_t i) {
 }
 
 void draw_bugs(void) BANKED {
+	if (is_evolving) { return; }
+
 	for (uint8_t i = 0; i < FLY_COUNT; i++) {
 		if (fly_alive[i] &&
 			fly_scene[i] == current_scene) {
