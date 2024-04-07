@@ -93,8 +93,10 @@ extern uint8_t stage;
 #define ANIM_YAWN 7
 #define ANIM_WALK_LEFT 8
 #define ANIM_WALK_RIGHT 9
-#define ANIM_SLEEP 10
-#define ANIM_DEAD 11
+#define ANIM_SWIM_LEFT 10
+#define ANIM_SWIM_RIGHT 11
+#define ANIM_SLEEP 12
+#define ANIM_DEAD 13
 extern uint8_t anim;
 
 extern uint8_t emote;
@@ -114,6 +116,8 @@ extern uint8_t sickness;
 extern uint8_t death_anim_start;
 extern uint8_t death_anim_complete;
 extern uint8_t good_death;
+
+extern uint8_t num_swims;
 
 extern uint8_t num_past_frogs;
 

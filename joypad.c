@@ -22,6 +22,10 @@ static uint8_t b_button_pressed;
 static uint8_t dpad_button_pressed;
 static uint8_t snapped_to_edge;
 
+static uint8_t frog_is_available(void) {
+	return is_hand_over_frog() && !is_night && life_stage != EGG && life_stage != DEAD && anim != ANIM_SWIM_LEFT && anim != ANIM_SWIM_RIGHT;
+}
+
 static void handle_dpad(void) {
 	switch(current_scene) {
 		case TITLE:
@@ -130,7 +134,7 @@ static void handle_a_button(void) {
 						set_hand_state(HAND_BROOM);
 						sweep_count = 2;
 
-					} else if (is_hand_over_frog() && !is_night && life_stage != EGG && life_stage != DEAD) {
+					} else if (frog_is_available()) {
 						if (is_hand_empty() || hand_state == HAND_PET2) {
 							set_hand_state(HAND_PET1);
 							start_pet();
@@ -266,7 +270,7 @@ static void handle_b_button(void) {
 				} else {
 					switch(hand_state) {
 						case HAND_FLY:
-							if (is_hand_over_frog() && !is_night && life_stage != EGG && life_stage != DEAD) {
+							if (frog_is_available()) {
 								set_hand_state(HAND_DEFAULT);
 								start_feed(BUG_FLY);
 							} else if (is_hand_over_basket()) {
@@ -277,7 +281,7 @@ static void handle_b_button(void) {
 							break;
 
 						case HAND_DRAGONFLY:
-							if (is_hand_over_frog() && !is_night && life_stage != EGG && life_stage != DEAD) {
+							if (frog_is_available()) {
 								set_hand_state(HAND_DEFAULT);
 								start_feed(BUG_DRAGONFLY);
 							} else if (is_hand_over_basket()) {
@@ -288,7 +292,7 @@ static void handle_b_button(void) {
 							break;
 
 						case HAND_FIREFLY:
-							if (is_hand_over_frog() && !is_night && life_stage != EGG && life_stage != DEAD) {
+							if (frog_is_available()) {
 								set_hand_state(HAND_DEFAULT);
 								start_feed(BUG_FIREFLY);
 							} else if (is_hand_over_basket()) {
@@ -299,7 +303,7 @@ static void handle_b_button(void) {
 							break;
 
 						case HAND_BUTTERFLY:
-							if (is_hand_over_frog() && !is_night && life_stage != EGG && life_stage != DEAD) {
+							if (frog_is_available()) {
 								set_hand_state(HAND_DEFAULT);
 								start_feed(BUG_BUTTERFLY);
 							} else if (is_hand_over_basket()) {
@@ -310,7 +314,7 @@ static void handle_b_button(void) {
 							break;
 
 						case HAND_CICADA:
-							if (is_hand_over_frog() && !is_night && life_stage != EGG && life_stage != DEAD) {
+							if (frog_is_available()) {
 								set_hand_state(HAND_DEFAULT);
 								start_feed(BUG_CICADA);
 							} else if (is_hand_over_basket()) {

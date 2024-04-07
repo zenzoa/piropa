@@ -25,6 +25,8 @@ typedef struct save_slot_t {
 	uint8_t health;
 	uint8_t sickness;
 
+	uint8_t num_swims;
+
 	uint8_t num_past_frogs;
 
 	uint8_t poop_count;
@@ -88,6 +90,8 @@ static void save_data_to_slot(uint8_t i) {
 	save_slots[i].medicine = medicine;
 	save_slots[i].health = health;
 	save_slots[i].sickness = sickness;
+
+	save_slots[i].num_swims = num_swims;
 
 	save_slots[i].num_past_frogs = num_past_frogs;
 
@@ -168,6 +172,8 @@ static uint8_t load_data_from_slot(uint8_t i) {
 		medicine = save_slots[i].medicine;
 		health = save_slots[i].health;
 		sickness = save_slots[i].sickness;
+
+		num_swims = save_slots[i].num_swims;
 
 		num_past_frogs = save_slots[i].num_past_frogs;
 

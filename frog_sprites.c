@@ -14,6 +14,7 @@
 #include "sprites/frogs/tadpole_yawn.h"
 #include "sprites/frogs/tadpole_eat.h"
 #include "sprites/frogs/tadpole_walk.h"
+#include "sprites/frogs/tadpole_swim.h"
 #include "sprites/frogs/tadpole_sleep.h"
 #include "sprites/frogs/tadpole_dead.h"
 
@@ -26,6 +27,7 @@
 #include "sprites/frogs/froglet_yawn.h"
 #include "sprites/frogs/froglet_eat.h"
 #include "sprites/frogs/froglet_walk.h"
+#include "sprites/frogs/froglet_swim.h"
 #include "sprites/frogs/froglet_sleep.h"
 #include "sprites/frogs/froglet_dead.h"
 
@@ -38,6 +40,7 @@
 #include "sprites/frogs/teen_norm_yawn.h"
 #include "sprites/frogs/teen_norm_eat.h"
 #include "sprites/frogs/teen_norm_walk.h"
+#include "sprites/frogs/teen_norm_swim.h"
 #include "sprites/frogs/teen_norm_sleep.h"
 #include "sprites/frogs/teen_norm_dead.h"
 
@@ -50,6 +53,7 @@
 #include "sprites/frogs/teen_tail_yawn.h"
 #include "sprites/frogs/teen_tail_eat.h"
 #include "sprites/frogs/teen_tail_walk.h"
+#include "sprites/frogs/teen_tail_swim.h"
 #include "sprites/frogs/teen_tail_sleep.h"
 #include "sprites/frogs/teen_tail_dead.h"
 
@@ -62,6 +66,7 @@
 #include "sprites/frogs/teen_bw_yawn.h"
 #include "sprites/frogs/teen_bw_eat.h"
 #include "sprites/frogs/teen_bw_walk.h"
+#include "sprites/frogs/teen_bw_swim.h"
 #include "sprites/frogs/teen_bw_sleep.h"
 #include "sprites/frogs/teen_bw_dead.h"
 
@@ -74,6 +79,7 @@
 #include "sprites/frogs/norm_yawn.h"
 #include "sprites/frogs/norm_eat.h"
 #include "sprites/frogs/norm_walk.h"
+#include "sprites/frogs/norm_swim.h"
 #include "sprites/frogs/norm_sleep.h"
 #include "sprites/frogs/norm_dead.h"
 
@@ -86,6 +92,7 @@
 #include "sprites/frogs/mush_yawn.h"
 #include "sprites/frogs/mush_eat.h"
 #include "sprites/frogs/mush_walk.h"
+#include "sprites/frogs/mush_swim.h"
 #include "sprites/frogs/mush_sleep.h"
 #include "sprites/frogs/mush_dead.h"
 
@@ -98,6 +105,7 @@
 #include "sprites/frogs/axo_yawn.h"
 #include "sprites/frogs/axo_eat.h"
 #include "sprites/frogs/axo_walk.h"
+#include "sprites/frogs/axo_swim.h"
 #include "sprites/frogs/axo_sleep.h"
 #include "sprites/frogs/axo_dead.h"
 
@@ -110,6 +118,7 @@
 #include "sprites/frogs/dino_yawn.h"
 #include "sprites/frogs/dino_eat.h"
 #include "sprites/frogs/dino_walk.h"
+#include "sprites/frogs/dino_swim.h"
 #include "sprites/frogs/dino_sleep.h"
 #include "sprites/frogs/dino_dead.h"
 
@@ -122,6 +131,7 @@
 #include "sprites/frogs/apple_yawn.h"
 #include "sprites/frogs/apple_eat.h"
 #include "sprites/frogs/apple_walk.h"
+#include "sprites/frogs/apple_swim.h"
 #include "sprites/frogs/apple_sleep.h"
 #include "sprites/frogs/apple_dead.h"
 
@@ -134,6 +144,7 @@
 #include "sprites/frogs/panda_yawn.h"
 #include "sprites/frogs/panda_eat.h"
 #include "sprites/frogs/panda_walk.h"
+#include "sprites/frogs/panda_swim.h"
 #include "sprites/frogs/panda_sleep.h"
 #include "sprites/frogs/panda_dead.h"
 
@@ -176,8 +187,10 @@ static const metasprite_t frog_metasprite1[] = {
 
 static const metasprite_t* const frog_metasprites[2] = { frog_metasprite0, frog_metasprite1 };
 
-const sprite_data_t frog_sprite_table[14][12] = {
+const sprite_data_t frog_sprite_table[14][14] = {
 	{
+		{ BANK(egg), FROG_TILE_COUNT, (uint8_t *)egg_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(egg), FROG_TILE_COUNT, (uint8_t *)egg_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(egg), FROG_TILE_COUNT, (uint8_t *)egg_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(egg), FROG_TILE_COUNT, (uint8_t *)egg_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(egg), FROG_TILE_COUNT, (uint8_t *)egg_tiles, (uint8_t *)frog_metasprites },
@@ -202,6 +215,8 @@ const sprite_data_t frog_sprite_table[14][12] = {
 		{ BANK(tadpole_yawn), FROG_TILE_COUNT, (uint8_t *)tadpole_yawn_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(tadpole_walk), FROG_TILE_COUNT, (uint8_t *)tadpole_walk_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(tadpole_walk), FROG_TILE_COUNT, (uint8_t *)tadpole_walk_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(tadpole_swim), FROG_TILE_COUNT, (uint8_t *)tadpole_swim_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(tadpole_swim), FROG_TILE_COUNT, (uint8_t *)tadpole_swim_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(tadpole_sleep), FROG_TILE_COUNT, (uint8_t *)tadpole_sleep_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(tadpole_dead), FROG_TILE_COUNT, (uint8_t *)tadpole_dead_tiles, (uint8_t *)frog_metasprites }
 	},
@@ -216,6 +231,8 @@ const sprite_data_t frog_sprite_table[14][12] = {
 		{ BANK(froglet_yawn), FROG_TILE_COUNT, (uint8_t *)froglet_yawn_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(froglet_walk), FROG_TILE_COUNT, (uint8_t *)froglet_walk_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(froglet_walk), FROG_TILE_COUNT, (uint8_t *)froglet_walk_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(froglet_swim), FROG_TILE_COUNT, (uint8_t *)froglet_swim_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(froglet_swim), FROG_TILE_COUNT, (uint8_t *)froglet_swim_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(froglet_sleep), FROG_TILE_COUNT, (uint8_t *)froglet_sleep_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(froglet_dead), FROG_TILE_COUNT, (uint8_t *)froglet_dead_tiles, (uint8_t *)frog_metasprites }
 	},
@@ -230,6 +247,8 @@ const sprite_data_t frog_sprite_table[14][12] = {
 		{ BANK(teen_norm_yawn), FROG_TILE_COUNT, (uint8_t *)teen_norm_yawn_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(teen_norm_walk), FROG_TILE_COUNT, (uint8_t *)teen_norm_walk_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(teen_norm_walk), FROG_TILE_COUNT, (uint8_t *)teen_norm_walk_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(teen_norm_swim), FROG_TILE_COUNT, (uint8_t *)teen_norm_swim_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(teen_norm_swim), FROG_TILE_COUNT, (uint8_t *)teen_norm_swim_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(teen_norm_sleep), FROG_TILE_COUNT, (uint8_t *)teen_norm_sleep_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(teen_norm_dead), FROG_TILE_COUNT, (uint8_t *)teen_norm_dead_tiles, (uint8_t *)frog_metasprites }
 	},
@@ -244,6 +263,8 @@ const sprite_data_t frog_sprite_table[14][12] = {
 		{ BANK(teen_tail_yawn), FROG_TILE_COUNT, (uint8_t *)teen_tail_yawn_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(teen_tail_walk), FROG_TILE_COUNT, (uint8_t *)teen_tail_walk_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(teen_tail_walk), FROG_TILE_COUNT, (uint8_t *)teen_tail_walk_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(teen_tail_swim), FROG_TILE_COUNT, (uint8_t *)teen_tail_swim_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(teen_tail_swim), FROG_TILE_COUNT, (uint8_t *)teen_tail_swim_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(teen_tail_sleep), FROG_TILE_COUNT, (uint8_t *)teen_tail_sleep_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(teen_tail_dead), FROG_TILE_COUNT, (uint8_t *)teen_tail_dead_tiles, (uint8_t *)frog_metasprites }
 	},
@@ -258,6 +279,8 @@ const sprite_data_t frog_sprite_table[14][12] = {
 		{ BANK(teen_bw_yawn), FROG_TILE_COUNT, (uint8_t *)teen_bw_yawn_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(teen_bw_walk), FROG_TILE_COUNT, (uint8_t *)teen_bw_walk_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(teen_bw_walk), FROG_TILE_COUNT, (uint8_t *)teen_bw_walk_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(teen_bw_swim), FROG_TILE_COUNT, (uint8_t *)teen_bw_swim_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(teen_bw_swim), FROG_TILE_COUNT, (uint8_t *)teen_bw_swim_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(teen_bw_sleep), FROG_TILE_COUNT, (uint8_t *)teen_bw_sleep_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(teen_bw_dead), FROG_TILE_COUNT, (uint8_t *)teen_bw_dead_tiles, (uint8_t *)frog_metasprites }
 	},
@@ -272,6 +295,8 @@ const sprite_data_t frog_sprite_table[14][12] = {
 		{ BANK(norm_yawn), FROG_TILE_COUNT, (uint8_t *)norm_yawn_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(norm_walk), FROG_TILE_COUNT, (uint8_t *)norm_walk_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(norm_walk), FROG_TILE_COUNT, (uint8_t *)norm_walk_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(norm_swim), FROG_TILE_COUNT, (uint8_t *)norm_swim_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(norm_swim), FROG_TILE_COUNT, (uint8_t *)norm_swim_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(norm_sleep), FROG_TILE_COUNT, (uint8_t *)norm_sleep_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(norm_dead), FROG_TILE_COUNT, (uint8_t *)norm_dead_tiles, (uint8_t *)frog_metasprites }
 	},
@@ -286,6 +311,8 @@ const sprite_data_t frog_sprite_table[14][12] = {
 		{ BANK(mush_yawn), FROG_TILE_COUNT, (uint8_t *)mush_yawn_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(mush_walk), FROG_TILE_COUNT, (uint8_t *)mush_walk_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(mush_walk), FROG_TILE_COUNT, (uint8_t *)mush_walk_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(mush_swim), FROG_TILE_COUNT, (uint8_t *)mush_swim_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(mush_swim), FROG_TILE_COUNT, (uint8_t *)mush_swim_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(mush_sleep), FROG_TILE_COUNT, (uint8_t *)mush_sleep_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(mush_dead), FROG_TILE_COUNT, (uint8_t *)mush_dead_tiles, (uint8_t *)frog_metasprites }
 	},
@@ -300,6 +327,8 @@ const sprite_data_t frog_sprite_table[14][12] = {
 		{ BANK(axo_yawn), FROG_TILE_COUNT, (uint8_t *)axo_yawn_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(axo_walk), FROG_TILE_COUNT, (uint8_t *)axo_walk_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(axo_walk), FROG_TILE_COUNT, (uint8_t *)axo_walk_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(axo_swim), FROG_TILE_COUNT, (uint8_t *)axo_swim_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(axo_swim), FROG_TILE_COUNT, (uint8_t *)axo_swim_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(axo_sleep), FROG_TILE_COUNT, (uint8_t *)axo_sleep_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(axo_dead), FROG_TILE_COUNT, (uint8_t *)axo_dead_tiles, (uint8_t *)frog_metasprites }
 	},
@@ -314,6 +343,8 @@ const sprite_data_t frog_sprite_table[14][12] = {
 		{ BANK(dino_yawn), FROG_TILE_COUNT, (uint8_t *)dino_yawn_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(dino_walk), FROG_TILE_COUNT, (uint8_t *)dino_walk_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(dino_walk), FROG_TILE_COUNT, (uint8_t *)dino_walk_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dino_swim), FROG_TILE_COUNT, (uint8_t *)dino_swim_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dino_swim), FROG_TILE_COUNT, (uint8_t *)dino_swim_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(dino_sleep), FROG_TILE_COUNT, (uint8_t *)dino_sleep_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(dino_dead), FROG_TILE_COUNT, (uint8_t *)dino_dead_tiles, (uint8_t *)frog_metasprites }
 	},
@@ -328,6 +359,8 @@ const sprite_data_t frog_sprite_table[14][12] = {
 		{ BANK(apple_yawn), FROG_TILE_COUNT, (uint8_t *)apple_yawn_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(apple_walk), FROG_TILE_COUNT, (uint8_t *)apple_walk_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(apple_walk), FROG_TILE_COUNT, (uint8_t *)apple_walk_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(apple_swim), FROG_TILE_COUNT, (uint8_t *)apple_swim_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(apple_swim), FROG_TILE_COUNT, (uint8_t *)apple_swim_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(apple_sleep), FROG_TILE_COUNT, (uint8_t *)apple_sleep_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(apple_dead), FROG_TILE_COUNT, (uint8_t *)apple_dead_tiles, (uint8_t *)frog_metasprites }
 	},
@@ -342,6 +375,8 @@ const sprite_data_t frog_sprite_table[14][12] = {
 		{ BANK(panda_yawn), FROG_TILE_COUNT, (uint8_t *)panda_yawn_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(panda_walk), FROG_TILE_COUNT, (uint8_t *)panda_walk_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(panda_walk), FROG_TILE_COUNT, (uint8_t *)panda_walk_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(panda_swim), FROG_TILE_COUNT, (uint8_t *)panda_swim_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(panda_swim), FROG_TILE_COUNT, (uint8_t *)panda_swim_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(panda_sleep), FROG_TILE_COUNT, (uint8_t *)panda_sleep_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(panda_dead), FROG_TILE_COUNT, (uint8_t *)panda_dead_tiles, (uint8_t *)frog_metasprites }
 	},
@@ -357,9 +392,13 @@ const sprite_data_t frog_sprite_table[14][12] = {
 		{ BANK(dead_bad), FROG_TILE_COUNT, (uint8_t *)dead_bad_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(dead_bad), FROG_TILE_COUNT, (uint8_t *)dead_bad_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(dead_bad), FROG_TILE_COUNT, (uint8_t *)dead_bad_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dead_bad), FROG_TILE_COUNT, (uint8_t *)dead_bad_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dead_bad), FROG_TILE_COUNT, (uint8_t *)dead_bad_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(dead_bad), FROG_TILE_COUNT, (uint8_t *)dead_bad_tiles, (uint8_t *)frog_metasprites }
 	},
 	{
+		{ BANK(dead_good), FROG_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)frog_metasprites },
+		{ BANK(dead_good), FROG_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(dead_good), FROG_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(dead_good), FROG_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)frog_metasprites },
 		{ BANK(dead_good), FROG_TILE_COUNT, (uint8_t *)dead_good_tiles, (uint8_t *)frog_metasprites },

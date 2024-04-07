@@ -98,8 +98,10 @@ uint8_t stage;
 #define ANIM_YAWN 7
 #define ANIM_WALK_LEFT 8
 #define ANIM_WALK_RIGHT 9
-#define ANIM_SLEEP 10
-#define ANIM_DEAD 11
+#define ANIM_SWIM_LEFT 10
+#define ANIM_SWIM_RIGHT 11
+#define ANIM_SLEEP 12
+#define ANIM_DEAD 13
 uint8_t anim;
 
 uint8_t emote;
@@ -119,6 +121,8 @@ uint8_t sickness;
 uint8_t death_anim_start;
 uint8_t death_anim_complete;
 uint8_t good_death;
+
+uint8_t num_swims;
 
 uint8_t num_past_frogs;
 

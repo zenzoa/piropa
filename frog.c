@@ -41,6 +41,7 @@ static uint8_t mood;
 #define ACTION_MEDICATE 14
 #define ACTION_POOP 15
 #define ACTION_WATERING 16
+#define ACTION_SWIM 17
 static uint8_t action;
 
 static uint8_t night_timer;
@@ -59,6 +60,7 @@ static uint8_t next_stage;
 static void start_action(uint8_t new_action);
 static void set_stage(uint8_t new_stage);
 static void start_evolution(uint8_t new_stage);
+static void random_swim_goal(void);
 
 #define FROG_VRAM_1 0x0
 #define FROG_VRAM_2 0x20
@@ -67,6 +69,9 @@ static uint8_t frog_vram = FROG_VRAM_1;
 static sprite_data_t frog_sprite;
 
 static uint8_t frog_palette = GREEN_PALETTE;
+
+#define SHORE_X 88
+#define SHORE_Y 120
 
 static void swap_frog_vram(void) {
 	if (frog_vram == FROG_VRAM_1) {
@@ -366,6 +371,28 @@ void start_walk_to_plant(uint8_t plant_number) BANKED {
 	start_action(ACTION_WALK);
 }
 
+static void start_swim(void) {
+	num_swims += 1;
+	if (hygiene > 0) {
+		hygiene -= 1;
+	}
+	if (health < 9) {
+		health += 1;
+	}
+	frog_x = SHORE_X;
+	frog_y = SHORE_Y;
+	random_swim_goal();
+	start_action(ACTION_SWIM);
+}
+
+static void end_swim(void) {
+	frog_x = SHORE_X + 8;
+	frog_y = SHORE_Y;
+	goal_x = 128;
+	goal_y = 128;
+	start_action(ACTION_WALK);
+}
+
 void place_in_scene(void) BANKED {
 	if (life_stage != EGG && life_stage != DEAD) {
 		switch(current_scene) {
@@ -384,6 +411,9 @@ void place_in_scene(void) BANKED {
 					frog_x = 132;
 					frog_y = 100;
 				}
+				if (action == ACTION_SWIM) {
+					start_action(ACTION_STAND);
+				}
 				break;
 
 			case POND:
@@ -397,6 +427,9 @@ void place_in_scene(void) BANKED {
 				if (!is_night) {
 					frog_x = 16;
 					frog_y = 128;
+				}
+				if (action == ACTION_SWIM) {
+					start_action(ACTION_STAND);
 				}
 				break;
 		}
@@ -462,7 +495,7 @@ void draw_frog(void) BANKED {
 		frog_palette = GREEN_PALETTE;
 	}
 
-	if (anim == ANIM_WALK_RIGHT) {
+	if (anim == ANIM_WALK_RIGHT || anim == ANIM_SWIM_RIGHT) {
 		draw_banked_sprite_flip(frog_sprite.bank, frog_sprite.metasprites, frog_anim.frame, frog_vram, frog_palette, frog_x + 32, frog_y);
 	} else {
 		draw_banked_sprite(frog_sprite.bank, frog_sprite.metasprites, frog_anim.frame, frog_vram, frog_palette, frog_x, frog_y);
@@ -496,6 +529,33 @@ static void random_goal(void) {
 	} else {
 		goal_x = 120;
 		goal_y = 124;
+	}
+}
+
+static void random_swim_goal(void) {
+	uint8_t zone = rand();
+
+	if (zone < 37) {
+		goal_x = 8;
+		goal_y = 128;
+	} else if (zone < 73) {
+		goal_x = 44;
+		goal_y = 128;
+	} else if (zone < 110) {
+		goal_x = 80;
+		goal_y = 128;
+	} else if (zone < 146) {
+		goal_x = 28;
+		goal_y = 136;
+	} else if (zone < 183) {
+		goal_x = 64;
+		goal_y = 136;
+	} else if (zone < 219) {
+		goal_x = 36;
+		goal_y = 112;
+	} else {
+		goal_x = 56;
+		goal_y = 112;
 	}
 }
 
@@ -610,6 +670,17 @@ static void start_action(uint8_t new_action) {
 				anim = ANIM_WALK_LEFT;
 			} else {
 				anim = ANIM_WALK_RIGHT;
+			}
+			frog_anim = new_animation(24, 2, 0);
+			emote = EMOTE_NONE;
+			break;
+
+		case ACTION_SWIM:
+			play_sfx(SFX_WASH);
+			if (goal_x < frog_x) {
+				anim = ANIM_SWIM_LEFT;
+			} else {
+				anim = ANIM_SWIM_RIGHT;
 			}
 			frog_anim = new_animation(24, 2, 0);
 			emote = EMOTE_NONE;
@@ -899,7 +970,7 @@ static void evolve(void) {
 	} else if (life_stage == FROGLET) {
 		if (num_fireflies_eaten >= 4) {
 			start_evolution(STAGE_TEEN_BW);
-		} else if (num_dragonflies_eaten >= 2) {
+		} else if (num_dragonflies_eaten >= 2 || num_swims >= 2) {
 			start_evolution(STAGE_TEEN_TAIL);
 		} else {
 			start_evolution(STAGE_TEEN_NORM);
@@ -919,7 +990,7 @@ static void evolve(void) {
 			case STAGE_TEEN_TAIL:
 				if (weight >= 20) {
 					start_evolution(STAGE_DINO);
-				} else if (num_dragonflies_eaten >= 4) {
+				} else if (num_swims >= 4) {
 					start_evolution(STAGE_AXO);
 				} else {
 					start_evolution(STAGE_NORM);
@@ -983,6 +1054,7 @@ void setup_frog(uint8_t reset) BANKED {
 		medicine = 0;
 		health = 9;
 		sickness = 0;
+		num_swims = 0;
 		num_dragonflies_eaten = 0;
 		num_fireflies_eaten = 0;
 		num_butterflies_eaten = 0;
@@ -1035,7 +1107,11 @@ void update_frog(void) BANKED {
 
 							} else if (!check_bowels()) {
 								uint8_t n = rand();
-								if (n < 25 && current_scene == FIELD) {
+								if (current_scene == POND && mood == MOOD_HAPPY && n < 3) {
+									goal_x = SHORE_X + 8;
+									goal_y = SHORE_Y;
+									start_action(ACTION_WALK);
+								} else if (current_scene == FIELD && n < 26) {
 									start_action(ACTION_WALK);
 								} else if (n < 50) {
 									start_action(ACTION_EMOTE);
@@ -1054,7 +1130,9 @@ void update_frog(void) BANKED {
 						if (frog_anim.ticks == 6 || frog_anim.ticks == 18) {
 							move_toward_goal();
 							if (frog_x == goal_x && frog_y == goal_y) {
-								if (current_scene == GARDEN && frog_y < 128) {
+								if (current_scene == POND && goal_x == SHORE_X + 8 && goal_y == SHORE_Y) {
+									start_swim();
+								} else if (current_scene == GARDEN && frog_y < 128) {
 									if (frog_x == PLANT_0_X * 8 - 16) {
 										watering_plant = 1;
 									} else if (frog_x == 64) {
@@ -1065,6 +1143,24 @@ void update_frog(void) BANKED {
 									start_action(ACTION_WATERING);
 								} else {
 									start_action(ACTION_STAND);
+								}
+							}
+						}
+						break;
+
+					case ACTION_SWIM:
+						if (frog_anim.ticks == 6 || frog_anim.ticks == 18) {
+							move_toward_goal();
+							if (frog_x == goal_x && frog_y == goal_y) {
+								if (goal_x == SHORE_X && goal_y == SHORE_Y) {
+									end_swim();
+								} else if ((mood != MOOD_NEUTRAL && mood != MOOD_HAPPY) || rand() < 26) {
+									goal_x = SHORE_X;
+									goal_y = SHORE_Y;
+									start_action(ACTION_SWIM);
+								} else {
+									random_swim_goal();
+									start_action(ACTION_SWIM);
 								}
 							}
 						}
