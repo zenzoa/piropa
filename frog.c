@@ -268,7 +268,7 @@ void start_feed(uint8_t bug_type) BANKED {
 			break;
 		case BUG_CICADA:
 			stomach = 9;
-			if (weight < 200) {
+			if (weight < 199) {
 				weight += 2;
 			}
 			if (num_cicadas_eaten < 255) { num_cicadas_eaten += 1; }
