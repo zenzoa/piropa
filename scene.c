@@ -102,6 +102,8 @@ void setup_scene(uint8_t new_scene) {
 		} else {
 			play_music(DAY_MUSIC);
 		}
+	} else if (current_scene == TITLE) {
+		play_music(NO_MUSIC);
 	}
 
 	draw_sprites();

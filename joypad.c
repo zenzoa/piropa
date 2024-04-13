@@ -19,6 +19,8 @@
 static uint8_t joypad_value;
 static uint8_t a_button_pressed;
 static uint8_t b_button_pressed;
+static uint8_t select_button_pressed;
+static uint8_t start_button_pressed;
 static uint8_t dpad_button_pressed;
 static uint8_t snapped_to_edge;
 
@@ -353,14 +355,55 @@ static void handle_b_button(void) {
 	}
 }
 
+static void handle_select_button(void) {
+	if (joypad_value & J_SELECT && !select_button_pressed) {
+		select_button_pressed = TRUE;
+
+	} else if (!(joypad_value & J_SELECT) && select_button_pressed) {
+		switch(current_scene) {
+			case TITLE:
+				play_sfx(SFX_BEEP);
+				handle_title_input(DOWN_BUTTON);
+				break;
+		}
+
+		select_button_pressed = FALSE;
+	}
+}
+
+static void handle_start_button(void) {
+	if (joypad_value & J_START && !start_button_pressed) {
+		start_button_pressed = TRUE;
+
+	} else if (!(joypad_value & J_START) && start_button_pressed) {
+		switch(current_scene) {
+			case TITLE:
+				play_sfx(SFX_TAP);
+				handle_title_input(A_BUTTON);
+				break;
+
+			case FIELD:
+			case POND:
+			case GARDEN:
+			case INFO:
+			case INVENTORY:
+			case CREDITS:
+				transition_to_scene(TITLE, is_night);
+				break;
+		}
+
+		start_button_pressed = FALSE;
+	}
+}
+
 void handle_input(void) BANKED {
 	joypad_value = joypad();
 
 	handle_dpad();
+
 	handle_a_button();
 	handle_b_button();
 
-	if (current_scene != TITLE && ((joypad_value & J_START) || (joypad_value & J_SELECT))) {
-		transition_to_scene(TITLE, is_night);
-	}
+	handle_select_button();
+	handle_start_button();
 }

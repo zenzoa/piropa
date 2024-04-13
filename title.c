@@ -192,6 +192,8 @@ void handle_title_input(uint8_t button_pressed) BANKED {
 		case UP_BUTTON:
 			if (selected_title_item == TITLE_ITEM_CREDITS && has_save) {
 				select_title_item(TITLE_ITEM_RESET);
+			} else if (selected_title_item == TITLE_ITEM_CONTINUE) {
+				select_title_item(TITLE_ITEM_CREDITS);
 			} else {
 				select_title_item(TITLE_ITEM_CONTINUE);
 			}
@@ -200,6 +202,8 @@ void handle_title_input(uint8_t button_pressed) BANKED {
 		case DOWN_BUTTON:
 			if (selected_title_item == TITLE_ITEM_CONTINUE && has_save) {
 				select_title_item(TITLE_ITEM_RESET);
+			} else if (selected_title_item == TITLE_ITEM_CREDITS) {
+				select_title_item(TITLE_ITEM_CONTINUE);
 			} else {
 				select_title_item(TITLE_ITEM_CREDITS);
 			}
