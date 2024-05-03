@@ -1,5 +1,3 @@
-#pragma bank 255
-
 #include <gbdk/platform.h>
 
 #include "scene.h"
@@ -105,7 +103,7 @@ static void update_bad_death(void) {
 	}
 }
 
-void update_endscreen(void) BANKED {
+void update_endscreen(void) {
 	if (good_death) {
 		update_good_death();
 	} else {
@@ -113,7 +111,7 @@ void update_endscreen(void) BANKED {
 	}
 }
 
-void draw_endscreen_sprites(void) BANKED {
+void draw_endscreen_sprites(void) {
 	if (stage != STAGE_DEAD_GOOD && stage != STAGE_DEAD_BAD) {
 		draw_banked_sprite(frog_sprite.bank, frog_sprite.metasprites, 0, frog_vram, frog_palette, frog_x, frog_y);
 	}
@@ -129,7 +127,7 @@ void draw_endscreen_sprites(void) BANKED {
 	}
 }
 
-void setup_endscreen(void) BANKED {
+void setup_endscreen(void) {
 	set_banked_bkg_data(BANK(endscreen), 0, endscreen_TILE_COUNT, endscreen_tiles);
 	set_banked_bkg_tiles(BANK(endscreen), 0, 0, 20, 18, endscreen_map);
 
